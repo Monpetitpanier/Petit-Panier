@@ -1,0 +1,19 @@
+export const Citations = [
+
+  "Chaque petit pas te rapproche de ton objectif.",
+
+  "Le calme est une force.",
+
+  "Aujourd'hui est une belle journée pour avancer.",
+
+  "Respire profondément. Tu n'as pas à tout porter seule.",
+
+  "Les grandes choses commencent souvent par un petit geste.",
+
+  "Prends soin de toi avec la même douceur que tu offres aux autres.",
+
+  "L'organisation libère l'esprit.",
+
+  "Tu n'as pas besoin d'aller vite pour avancer.",
+
+];

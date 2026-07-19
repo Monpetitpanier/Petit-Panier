@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Petit Panier",
+    "slug": "petit-panier",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#FBF6EF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.monpetitpanier.app"
+    },
+    "android": {
+      "package": "com.monpetitpanier.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FBF6EF"
+      }
+    },
+    "plugins": [
+      "@react-native-community/datetimepicker"
+    ]
+  }
+}
