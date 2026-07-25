@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   FlatList,
 } from "react-native";
 
@@ -16,46 +14,19 @@ import { Colors } from "../../theme/colors";
 import { Spacing } from "../../theme/spacing";
 
 export default function Gratitude() {
-  const [texte, setTexte] = useState("");
 
-  const {
-    gratitudes,
-    ajouterGratitude,
-    supprimerGratitude,
-    basculerFavori,
-  } = useBienEtre();
 
-  function enregistrer() {
-    if (!texte.trim()) {
-      return;
-    }
-
-    ajouterGratitude(texte.trim());
-    setTexte("");
-  }
+const {
+  gratitudes,
+  supprimerGratitude,
+  basculerFavori,
+} = useBienEtre();
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.titre}>
         Mes gratitudes
       </Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Aujourd'hui je suis reconnaissante pour..."
-        value={texte}
-        onChangeText={setTexte}
-        multiline
-      />
-
-      <TouchableOpacity
-        style={styles.bouton}
-        onPress={enregistrer}
-      >
-        <Text style={styles.texteBouton}>
-          Ajouter
-        </Text>
-      </TouchableOpacity>
 
       <FlatList
         data={gratitudes}
@@ -90,29 +61,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: Colors.text,
     marginBottom: Spacing.lg,
-  },
-
-  input: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 15,
-    padding: 15,
-    minHeight: 100,
-    textAlignVertical: "top",
-    marginBottom: Spacing.md,
-  },
-
-  bouton: {
-    backgroundColor: "#8BA888",
-    padding: 15,
-    borderRadius: 15,
-    alignItems: "center",
-    marginBottom: Spacing.lg,
-  },
-
-  texteBouton: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
   },
 
   liste: {

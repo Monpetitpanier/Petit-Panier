@@ -11,9 +11,14 @@ import { analyserPensee } from "../services/analyseurPanier";
 
 const PanierContext = createContext(null);
 
+// Durée minimale (ms) pendant laquelle on affiche l'état "en analyse",
+// même si le traitement réel est instantané — laisse le temps à l'animation d'être visible.
+const DUREE_MIN_ANALYSE = 900;
+
 export function PanierProvider({ children }) {
   const [notes, setNotes] = useState([]);
   const [chargementTermine, setChargementTermine] = useState(false);
+  const [enAnalyse, setEnAnalyse] = useState(false);
 
   useEffect(() => {
     chargerNotes().then((notesChargees) => {
@@ -27,6 +32,8 @@ export function PanierProvider({ children }) {
     type = "texte",
     pieceJointe = null
   ) {
+    setEnAnalyse(true);
+
     const analyse = analyserPensee(contenu);
 
     const nouvelleNote = {
@@ -35,7 +42,6 @@ export function PanierProvider({ children }) {
       contenu,
       type,
 
-      // ⭐ Nouveau
       pieceJointe,
 
       dateCreation: new Date().toISOString(),
@@ -54,6 +60,8 @@ export function PanierProvider({ children }) {
 
     setNotes(nouvellesNotes);
     sauvegarderNotes(nouvellesNotes);
+
+    setTimeout(() => setEnAnalyse(false), DUREE_MIN_ANALYSE);
 
     return analyse;
   }
@@ -87,6 +95,7 @@ export function PanierProvider({ children }) {
       value={{
         notes,
         chargementTermine,
+        enAnalyse,
         ajouterNote,
         supprimerNote,
         modifierNote,

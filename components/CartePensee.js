@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 
 export default function CartePensee({ pensee }) {
 
@@ -30,6 +30,13 @@ export default function CartePensee({ pensee }) {
       <Text style={styles.contenu}>
         {pensee.contenu}
       </Text>
+{pensee.pieceJointe?.type === "image" && (
+  <Image
+    source={{ uri: pensee.pieceJointe.uri }}
+    style={styles.image}
+    resizeMode="cover"
+  />
+)}
 
     </View>
   );
@@ -65,5 +72,10 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 24,
   },
-
+image: {
+  width: "100%",
+  height: 220,
+  borderRadius: 14,
+  marginTop: 14,
+},
 });
