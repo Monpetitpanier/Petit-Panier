@@ -16,7 +16,7 @@ export default function Fifi({ size = 260, style }: Props) {
   return (
     <View style={[styles.container, { width: largeur, height: size }, style]}>
       <Image
-        source={require("../../assets/characters/fifi_corps.png")}
+        source={require("../../assets/characters/Fifi/poses/assise.png")}
         resizeMode="contain"
         style={{ width: "100%", height: "100%" }}
       />

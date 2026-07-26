@@ -7,6 +7,7 @@ import {
 } from "react-native";
 
 import BulleFifi from "./BulleFifi";
+import FifiAccueil from "./FifiAccueil";
 
 import { obtenirEtatFifi } from "../services/fifiEngine";
 

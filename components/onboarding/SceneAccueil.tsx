@@ -19,8 +19,8 @@ const CLE_INTRO_VUE = "fifi_intro_vue";
 
 const HAUTEUR_FIFI = 360;
 const LARGEUR_FIFI = HAUTEUR_FIFI * (FIFI_CANVAS_W / FIFI_CANVAS_H);
-const POSITION_FIFI = 55;
-const LARGEUR_PANIER = 280;
+const POSITION_FIFI = 98;
+const LARGEUR_PANIER = 420;
 
 const OREILLE_GAUCHE = {
   left: (280 / FIFI_CANVAS_W) * 100,
@@ -39,11 +39,11 @@ const OREILLE_DROITE = {
 const MARCHE_RATIO = 885 / 1112;
 const SAUT_RATIO = 899 / 713;
 
-const HAUTEUR_MARCHE = 225;
+const HAUTEUR_MARCHE = HAUTEUR_FIFI;
 const LARGEUR_MARCHE = HAUTEUR_MARCHE * MARCHE_RATIO;
 
-const LARGEUR_SAUT = LARGEUR_MARCHE * 1.15;
-const HAUTEUR_SAUT = LARGEUR_SAUT / SAUT_RATIO;
+const HAUTEUR_SAUT = HAUTEUR_FIFI;
+const LARGEUR_SAUT = HAUTEUR_SAUT * SAUT_RATIO;
 
 const DECALAGE_ENTREE = 400; // distance (px) hors-écran à gauche, point de départ de la marche
 const MODE_DEVELOPPEMENT_INTRO = true;
@@ -76,7 +76,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
   const opaciteCorpsGroupe = useRef(new Animated.Value(0)).current;
   const rebondCorps = useRef(new Animated.Value(1)).current;
   const dandinement = useRef(new Animated.Value(0)).current;
-
+const POSITION_BLOC = -220;
   useEffect(() => {
     if (!pretPourSequence) return;
 
@@ -312,8 +312,11 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
 
   return (
     <View style={styles.container}>
-      <Panier width={LARGEUR_PANIER} style={styles.panier} />
-
+      <Panier
+    partie="arriere"
+    width={LARGEUR_PANIER} 
+    style={styles.panier} 
+    />
       {/* Pose "marche" : visible uniquement pendant l'entrée */}
       <Animated.View
         pointerEvents="none"
@@ -327,7 +330,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
         }}
       >
         <Image
-          source={require("../../assets/characters/fifi_marche.png")}
+          source={require("../../assets/characters/Fifi/poses/marche_01.png")}
           resizeMode="contain"
           style={{ width: "100%", height: "100%" }}
         />
@@ -346,7 +349,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
         }}
       >
         <Image
-          source={require("../../assets/characters/fifi_saut.png")}
+          source={require("../../assets/characters/Fifi/poses/saut.png")}
           resizeMode="contain"
           style={{ width: "100%", height: "100%" }}
         />
@@ -356,7 +359,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
       <Animated.View
         style={{
           position: "absolute",
-          bottom: POSITION_FIFI,
+          bottom: POSITION_FIFI-240,
           width: LARGEUR_FIFI,
           height: HAUTEUR_FIFI,
           opacity: opaciteCorpsGroupe,
@@ -373,7 +376,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
             ]}
           >
             <Image
-              source={require("../../assets/characters/fifi_poitrine.png")}
+              source={require("../../assets/characters/Fifi/visage/poitrine.png")}
               resizeMode="contain"
               style={{ width: "100%", height: "100%" }}
             />
@@ -381,7 +384,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
 
           <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: clignement }]}>
             <Image
-              source={require("../../assets/characters/fifi_yeux_fermes.png")}
+              source={require("../../assets/characters/Fifi/visage/yeux_fermes.png")}
               resizeMode="contain"
               style={{ width: "100%", height: "100%" }}
             />
@@ -389,7 +392,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
 
           <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: clinOeil }]}>
             <Image
-              source={require("../../assets/characters/fifi_clin_oeil_droit.png")}
+              source={require("../../assets/characters/Fifi/visage/clin_oeil_droit.png")}
               resizeMode="contain"
               style={{ width: "100%", height: "100%" }}
             />
@@ -407,7 +410,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
             }}
           >
             <Image
-              source={require("../../assets/characters/fifi_oreille_gauche.png")}
+              source={require("../../assets/characters/Fifi/visage/oreille_gauche.png")}
               resizeMode="contain"
               style={{ width: "100%", height: "100%" }}
             />
@@ -425,7 +428,7 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
             }}
           >
             <Image
-              source={require("../../assets/characters/fifi_oreille_droite.png")}
+              source={require("../../assets/characters/Fifi/visage/oreille_droite.png")}
               resizeMode="contain"
               style={{ width: "100%", height: "100%" }}
             />
@@ -433,6 +436,16 @@ export default function SceneAccueil({ onTerminerOnboarding }: Props) {
         </Pressable>
       </Animated.View>
 
+<Panier
+  partie="avant"
+  width={LARGEUR_PANIER}
+  style={[
+    styles.panier,
+    {
+      transform: [{ translateY: 7 }],
+    },
+  ]}
+/>
       {afficherCarte && (
         <View style={styles.carteConteneur}>
           <CarteBienvenue onContinuer={terminerOnboarding} />
@@ -450,7 +463,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
   },
-  panier: { position: "absolute", bottom: 0 },
+  panier: { position: "absolute", bottom: -220 },
   carteConteneur: {
     position: "absolute",
     bottom: -260, // sous la scène ; ajuste selon la mise en page de ton écran

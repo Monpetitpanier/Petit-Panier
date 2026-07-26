@@ -6,7 +6,7 @@ export default function Fifi() {
     <View style={styles.container}>
 
       <Image
-        source={require("../assets/images/fifi-panier.png")}
+        source={require("../assets/furniture/panier_officiel.png")}
         style={styles.image}
       />
 
