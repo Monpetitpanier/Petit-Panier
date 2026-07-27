@@ -3,23 +3,24 @@ import {
   Animated,
   Easing,
   Image,
-  ImageBackground,
+  Modal,
   Pressable,
   StyleSheet,
   View,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useVideoPlayer, VideoView } from "expo-video";
+import { useEventListener } from "expo";
 
 import Fifi, { FIFI_CANVAS_W, FIFI_CANVAS_H } from "./Fifi";
 import Panier from "./Panier";
-import CarteBienvenue from "./CarteBienvenue";
 import { usePanier } from "../../contexts/PanierContext";
 
 const CLE_INTRO_VUE = "fifi_intro_vue";
 
 const HAUTEUR_FIFI = 360;
 const LARGEUR_FIFI = HAUTEUR_FIFI * (FIFI_CANVAS_W / FIFI_CANVAS_H);
-const POSITION_FIFI = 98;
+const POSITION_FIFI = 300;
 const LARGEUR_PANIER = 420;
 
 const OREILLE_GAUCHE = {
@@ -35,166 +36,92 @@ const OREILLE_DROITE = {
   height: (210 / FIFI_CANVAS_H) * 100,
 };
 
-// Dimensions réelles des images recadrées (marche/saut)
-const MARCHE_RATIO = 885 / 1112;
-const SAUT_RATIO = 899 / 713;
-
-const HAUTEUR_MARCHE = HAUTEUR_FIFI;
-const LARGEUR_MARCHE = HAUTEUR_MARCHE * MARCHE_RATIO;
-
-const HAUTEUR_SAUT = HAUTEUR_FIFI;
-const LARGEUR_SAUT = HAUTEUR_SAUT * SAUT_RATIO;
-
-const DECALAGE_ENTREE = 400; // distance (px) hors-écran à gauche, point de départ de la marche
 const MODE_DEVELOPPEMENT_INTRO = true;
+
+const SOURCE_VIDEO_INTRO = require("../../assets/characters/Fifi/animations/arriveeFifi.mp4");
+
 type Props = {
-  onTerminerOnboarding?: () => void;
+  onPretPourCarte?: () => void;
 };
 
-export default function SceneAccueil({ onTerminerOnboarding }: Props) {
+export default function SceneAccueil({ onPretPourCarte }: Props) {
   const { enAnalyse } = usePanier();
 
   const [pretPourSequence, setPretPourSequence] = useState(false);
   const [jouerIntro, setJouerIntro] = useState(false);
-  const [afficherCarte, setAfficherCarte] = useState(false);
+  const [videoTerminee, setVideoTerminee] = useState(false);
 
   // --- Détermine si c'est la première ouverture ---
   useEffect(() => {
     AsyncStorage.getItem(CLE_INTRO_VUE).then((valeur) => {
-  setJouerIntro(
-    MODE_DEVELOPPEMENT_INTRO ? true : valeur !== "true"
-  );
-  setPretPourSequence(true);
-});
+      setJouerIntro(MODE_DEVELOPPEMENT_INTRO ? true : valeur !== "true");
+      setPretPourSequence(true);
+    });
   }, []);
 
-  // --- Animations d'entrée (marche -> saut -> atterrissage -> dandinement) ---
-  const translateXEntree = useRef(new Animated.Value(-DECALAGE_ENTREE)).current;
-  const translateYSaut = useRef(new Animated.Value(0)).current;
-  const opaciteMarche = useRef(new Animated.Value(0)).current;
-  const opaciteSaut = useRef(new Animated.Value(0)).current;
+  // --- Lecteur vidéo de l'animation d'arrivée ---
+  const playerIntro = useVideoPlayer(SOURCE_VIDEO_INTRO, (player) => {
+    player.loop = false;
+  });
+
+  useEventListener(playerIntro, "playToEnd", () => {
+    setVideoTerminee(true);
+  });
+
+  useEffect(() => {
+    if (pretPourSequence && jouerIntro) {
+      playerIntro.play();
+    }
+  }, [pretPourSequence, jouerIntro]);
+
+  // --- Apparition de Fifi assise (groupe) après la vidéo ---
   const opaciteCorpsGroupe = useRef(new Animated.Value(0)).current;
   const rebondCorps = useRef(new Animated.Value(1)).current;
-  const dandinement = useRef(new Animated.Value(0)).current;
-const POSITION_BLOC = -220;
+
   useEffect(() => {
     if (!pretPourSequence) return;
 
     if (!jouerIntro) {
-      // Pas la première fois : Fifi directement assise, pas d'animation d'entrée
+      // Pas la première fois : Fifi directement assise, pas de vidéo
       opaciteCorpsGroupe.setValue(1);
-      setAfficherCarte(false);
-      return;
+      onPretPourCarte?.();
     }
+  }, [pretPourSequence, jouerIntro]);
 
-    opaciteMarche.setValue(1);
+  useEffect(() => {
+    if (!videoTerminee) return;
 
-    Animated.sequence([
-      // 1. Marche depuis le bord gauche
-      Animated.timing(translateXEntree, {
-        toValue: -50,
-        duration: 1100,
-        easing: Easing.out(Easing.quad),
+    Animated.parallel([
+      Animated.timing(opaciteCorpsGroupe, {
+        toValue: 1,
+        duration: 200,
         useNativeDriver: true,
       }),
-      Animated.delay(120),
-      // 2. Saut : fondu marche -> saut + arc vers le haut, fin de la translation
-      Animated.parallel([
-        Animated.timing(opaciteMarche, {
-          toValue: 0,
-          duration: 150,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opaciteSaut, {
-          toValue: 1,
-          duration: 150,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateXEntree, {
-          toValue: 0,
-          duration: 500,
+      Animated.sequence([
+        Animated.timing(rebondCorps, {
+          toValue: 0.9,
+          duration: 90,
           easing: Easing.out(Easing.quad),
           useNativeDriver: true,
         }),
-        Animated.sequence([
-          Animated.timing(translateYSaut, {
-            toValue: -55,
-            duration: 250,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-          }),
-          Animated.timing(translateYSaut, {
-            toValue: 0,
-            duration: 250,
-            easing: Easing.in(Easing.quad),
-            useNativeDriver: true,
-          }),
-        ]),
-      ]),
-      // 3. Atterrissage : fondu saut -> assise + petit rebond
-      Animated.parallel([
-        Animated.timing(opaciteSaut, {
-          toValue: 0,
-          duration: 120,
+        Animated.timing(rebondCorps, {
+          toValue: 1.04,
+          duration: 100,
+          easing: Easing.out(Easing.quad),
           useNativeDriver: true,
         }),
-        Animated.timing(opaciteCorpsGroupe, {
+        Animated.timing(rebondCorps, {
           toValue: 1,
-          duration: 150,
-          useNativeDriver: true,
-        }),
-        Animated.sequence([
-          Animated.timing(rebondCorps, {
-            toValue: 0.9,
-            duration: 90,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-          }),
-          Animated.timing(rebondCorps, {
-            toValue: 1.04,
-            duration: 100,
-            easing: Easing.out(Easing.quad),
-            useNativeDriver: true,
-          }),
-          Animated.timing(rebondCorps, {
-            toValue: 1,
-            duration: 110,
-            easing: Easing.inOut(Easing.quad),
-            useNativeDriver: true,
-          }),
-        ]),
-      ]),
-      // 4. Dandinement (2 oscillations, elle s'installe)
-      Animated.sequence([
-        Animated.timing(dandinement, {
-          toValue: 1,
-          duration: 180,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(dandinement, {
-          toValue: -1,
-          duration: 360,
-          easing: Easing.inOut(Easing.sin),
-          useNativeDriver: true,
-        }),
-        Animated.timing(dandinement, {
-          toValue: 0,
-          duration: 180,
-          easing: Easing.inOut(Easing.sin),
+          duration: 110,
+          easing: Easing.inOut(Easing.quad),
           useNativeDriver: true,
         }),
       ]),
     ]).start(() => {
       AsyncStorage.setItem(CLE_INTRO_VUE, "true");
-      setTimeout(() => setAfficherCarte(true), 300);
+      setTimeout(() => onPretPourCarte?.(), 300);
     });
-  }, [pretPourSequence, jouerIntro]);
-
-  const rotationDandinement = dandinement.interpolate({
-    inputRange: [-1, 0, 1],
-    outputRange: ["-4deg", "0deg", "4deg"],
-  });
+  }, [videoTerminee]);
 
   // --- Respiration (rythme dépendant de enAnalyse) ---
   const respiration = useRef(new Animated.Value(0)).current;
@@ -305,151 +232,112 @@ const POSITION_BLOC = -220;
     });
   };
 
-  const terminerOnboarding = () => {
-    setAfficherCarte(false);
-    onTerminerOnboarding?.();
-  };
+  const afficherVideo = jouerIntro && !videoTerminee;
+  const afficherFifiAssise = !jouerIntro || videoTerminee;
 
   return (
     <View style={styles.container}>
-      <Panier
-    partie="arriere"
-    width={LARGEUR_PANIER} 
-    style={styles.panier} 
-    />
-      {/* Pose "marche" : visible uniquement pendant l'entrée */}
-      <Animated.View
-        pointerEvents="none"
-        style={{
-          position: "absolute",
-          bottom: POSITION_FIFI,
-          width: LARGEUR_MARCHE,
-          height: HAUTEUR_MARCHE,
-          opacity: opaciteMarche,
-          transform: [{ translateX: translateXEntree }],
-        }}
-      >
-        <Image
-          source={require("../../assets/characters/Fifi/poses/marche_01.png")}
-          resizeMode="contain"
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
+      {afficherVideo && (
+        <Modal visible={afficherVideo} animationType="fade" transparent={false}>
+          <VideoView
+            player={playerIntro}
+            style={styles.videoPleinEcran}
+            contentFit="cover"
+            nativeControls={false}
+          />
+        </Modal>
+      )}
 
-      {/* Pose "saut" : visible uniquement pendant le bond */}
-      <Animated.View
-        pointerEvents="none"
-        style={{
-          position: "absolute",
-          bottom: POSITION_FIFI,
-          width: LARGEUR_SAUT,
-          height: HAUTEUR_SAUT,
-          opacity: opaciteSaut,
-          transform: [{ translateX: translateXEntree }, { translateY: translateYSaut }],
-        }}
-      >
-        <Image
-          source={require("../../assets/characters/Fifi/poses/saut.png")}
-          resizeMode="contain"
-          style={{ width: "100%", height: "100%" }}
-        />
-      </Animated.View>
-
-      {/* Groupe "assise" (corps + poitrine + yeux + oreilles), avec rebond + dandinement */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          bottom: POSITION_FIFI-240,
-          width: LARGEUR_FIFI,
-          height: HAUTEUR_FIFI,
-          opacity: opaciteCorpsGroupe,
-          transform: [{ scale: rebondCorps }, { rotate: rotationDandinement }],
-        }}
-      >
-        <Pressable onPress={faireClinOeil} hitSlop={20} style={{ width: "100%", height: "100%" }}>
-          <Fifi size={HAUTEUR_FIFI} />
-
-          <Animated.View
-            style={[
-              StyleSheet.absoluteFillObject,
-              { transform: [{ translateY: translateYCorps }, { scaleX }, { scaleY }] },
-            ]}
-          >
-            <Image
-              source={require("../../assets/characters/Fifi/visage/poitrine.png")}
-              resizeMode="contain"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </Animated.View>
-
-          <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: clignement }]}>
-            <Image
-              source={require("../../assets/characters/Fifi/visage/yeux_fermes.png")}
-              resizeMode="contain"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </Animated.View>
-
-          <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: clinOeil }]}>
-            <Image
-              source={require("../../assets/characters/Fifi/visage/clin_oeil_droit.png")}
-              resizeMode="contain"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </Animated.View>
+      {afficherFifiAssise && (
+        <>
+          <Panier partie="arriere" width={LARGEUR_PANIER} style={styles.panier} />
 
           <Animated.View
             style={{
               position: "absolute",
-              left: `${OREILLE_GAUCHE.left}%`,
-              top: `${OREILLE_GAUCHE.top}%`,
-              width: `${OREILLE_GAUCHE.width}%`,
-              height: `${OREILLE_GAUCHE.height}%`,
-              transformOrigin: ["50%", "82%", 0],
-              transform: [{ rotate: rotationOreilleG }],
+              bottom: POSITION_FIFI - 240,
+              width: LARGEUR_FIFI,
+              height: HAUTEUR_FIFI,
+              opacity: opaciteCorpsGroupe,
+              transform: [{ scale: rebondCorps }],
             }}
           >
-            <Image
-              source={require("../../assets/characters/Fifi/visage/oreille_gauche.png")}
-              resizeMode="contain"
-              style={{ width: "100%", height: "100%" }}
-            />
+            <Pressable onPress={faireClinOeil} hitSlop={20} style={{ width: "100%", height: "100%" }}>
+              <Fifi size={HAUTEUR_FIFI} />
+
+              <Animated.View
+                style={[
+                  StyleSheet.absoluteFillObject,
+                  { transform: [{ translateY: translateYCorps }, { scaleX }, { scaleY }] },
+                ]}
+              >
+                <Image
+                  source={require("../../assets/characters/Fifi/visage/poitrine.png")}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Animated.View>
+
+              <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: clignement }]}>
+                <Image
+                  source={require("../../assets/characters/Fifi/visage/yeux_fermes.png")}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Animated.View>
+
+              <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: clinOeil }]}>
+                <Image
+                  source={require("../../assets/characters/Fifi/visage/clin_oeil_droit.png")}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Animated.View>
+
+              <Animated.View
+                style={{
+                  position: "absolute",
+                  left: `${OREILLE_GAUCHE.left}%`,
+                  top: `${OREILLE_GAUCHE.top}%`,
+                  width: `${OREILLE_GAUCHE.width}%`,
+                  height: `${OREILLE_GAUCHE.height}%`,
+                  transformOrigin: ["50%", "82%", 0],
+                  transform: [{ rotate: rotationOreilleG }],
+                }}
+              >
+                <Image
+                  source={require("../../assets/characters/Fifi/visage/oreille_gauche.png")}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Animated.View>
+
+              <Animated.View
+                style={{
+                  position: "absolute",
+                  left: `${OREILLE_DROITE.left}%`,
+                  top: `${OREILLE_DROITE.top}%`,
+                  width: `${OREILLE_DROITE.width}%`,
+                  height: `${OREILLE_DROITE.height}%`,
+                  transformOrigin: ["50%", "82%", 0],
+                  transform: [{ rotate: rotationOreilleD }],
+                }}
+              >
+                <Image
+                  source={require("../../assets/characters/Fifi/visage/oreille_droite.png")}
+                  resizeMode="contain"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Animated.View>
+            </Pressable>
           </Animated.View>
 
-          <Animated.View
-            style={{
-              position: "absolute",
-              left: `${OREILLE_DROITE.left}%`,
-              top: `${OREILLE_DROITE.top}%`,
-              width: `${OREILLE_DROITE.width}%`,
-              height: `${OREILLE_DROITE.height}%`,
-              transformOrigin: ["50%", "82%", 0],
-              transform: [{ rotate: rotationOreilleD }],
-            }}
-          >
-            <Image
-              source={require("../../assets/characters/Fifi/visage/oreille_droite.png")}
-              resizeMode="contain"
-              style={{ width: "100%", height: "100%" }}
-            />
-          </Animated.View>
-        </Pressable>
-      </Animated.View>
-
-<Panier
-  partie="avant"
-  width={LARGEUR_PANIER}
-  style={[
-    styles.panier,
-    {
-      transform: [{ translateY: 7 }],
-    },
-  ]}
-/>
-      {afficherCarte && (
-        <View style={styles.carteConteneur}>
-          <CarteBienvenue onContinuer={terminerOnboarding} />
-        </View>
+          <Panier
+            partie="avant"
+            width={LARGEUR_PANIER}
+            style={[styles.panier, { transform: [{ translateY: 7 }] }]}
+          />
+        </>
       )}
     </View>
   );
@@ -463,11 +351,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
   },
-  panier: { position: "absolute", bottom: -220 },
-  carteConteneur: {
-    position: "absolute",
-    bottom: -260, // sous la scène ; ajuste selon la mise en page de ton écran
-    width: "100%",
-    paddingHorizontal: 20,
+  videoPleinEcran: {
+    flex: 1,
+    backgroundColor: "#000",
   },
+  panier: { position: "absolute", bottom: -30 },
 });
