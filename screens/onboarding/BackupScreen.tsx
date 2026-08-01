@@ -1,16 +1,81 @@
 import React from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default function NameScreen() {
+import GabaritOnboarding from "../../components/onboarding/GabaritOnboarding";
+import { useOnboarding } from "../../contexts/OnboardingContext";
+
+export default function BackupScreen() {
+  const navigation = useNavigation();
+  const { prenom } = useOnboarding();
+
+  const terminer = () => {
+    navigation.navigate("Welcome" as never);
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-    </SafeAreaView>
+    <GabaritOnboarding
+      etape={5}
+      imageFifi={require("../../assets/characters/Fifi/poses/fifi_ecriteau.png")}
+      echelleImage={1.7}
+      decalageImage={120}
+      overlayImage={
+        <Text style={styles.texteEcriteau}>{prenom || "Petit Panier"}</Text>
+      }
+      titre="Sauvegarde (facultatif)"
+      sousTitre="Pour ne rien perdre, tu peux sauvegarder ton panier sur le cloud."
+      texteBouton="Terminer"
+      onSuivant={terminer}
+    >
+      <TouchableOpacity style={styles.option} activeOpacity={0.7}>
+        <MaterialCommunityIcons name="cloud-outline" size={22} color="#6B5D53" style={styles.icone} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Sauvegarder plus tard</Text>
+          <Text style={styles.description}>Je m'en occupe plus tard</Text>
+        </View>
+        <MaterialCommunityIcons name="radiobox-marked" size={22} color="#e6a7c4" />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.option} activeOpacity={0.7}>
+        <MaterialCommunityIcons name="email-outline" size={22} color="#6B5D53" style={styles.icone} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.label}>Créer un compte (facultatif)</Text>
+          <Text style={styles.description}>Pour sauvegarder et retrouver ton panier sur un autre appareil</Text>
+        </View>
+        <MaterialCommunityIcons name="radiobox-blank" size={22} color="#D8CFC2" />
+      </TouchableOpacity>
+
+      <Text style={styles.aide}>
+        Aucune adresse e-mail n'est obligatoire pour commencer. Ton panier, ton choix !
+      </Text>
+    </GabaritOnboarding>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F8F4EE",
+  texteEcriteau: {
+    position: "absolute",
+    top: "2%",
+    left: "67%",
+    width: 100,
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#3D2F26",
+    transform: [{ translateX: -50 }, { rotate: "-3deg" }],
   },
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    backgroundColor: "#FBF3E9",
+    marginBottom: 10,
+  },
+  icone: { marginRight: 10 },
+  label: { fontSize: 15, color: "#4B4036", fontWeight: "500" },
+  description: { fontSize: 12, color: "#9C8C7E", marginTop: 2 },
+  aide: { marginTop: 10, fontSize: 12, color: "#9C8C7E", textAlign: "center" },
 });

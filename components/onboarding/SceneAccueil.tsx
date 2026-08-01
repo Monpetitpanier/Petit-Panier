@@ -20,7 +20,7 @@ const CLE_INTRO_VUE = "fifi_intro_vue";
 
 const HAUTEUR_FIFI = 360;
 const LARGEUR_FIFI = HAUTEUR_FIFI * (FIFI_CANVAS_W / FIFI_CANVAS_H);
-const POSITION_FIFI = 300;
+const POSITION_FIFI = 318; // ancien 98, +220 pour compenser l'agrandissement du conteneur
 const LARGEUR_PANIER = 420;
 
 const OREILLE_GAUCHE = {
@@ -42,22 +42,27 @@ const SOURCE_VIDEO_INTRO = require("../../assets/characters/Fifi/animations/arri
 
 type Props = {
   onPretPourCarte?: () => void;
+  jouerVideoIntro?: boolean; // false = Fifi directement assise, sans vidéo ni animation d'entrée
 };
 
-export default function SceneAccueil({ onPretPourCarte }: Props) {
+export default function SceneAccueil({ onPretPourCarte, jouerVideoIntro = true }: Props) {
   const { enAnalyse } = usePanier();
 
   const [pretPourSequence, setPretPourSequence] = useState(false);
   const [jouerIntro, setJouerIntro] = useState(false);
   const [videoTerminee, setVideoTerminee] = useState(false);
 
-  // --- Détermine si c'est la première ouverture ---
+  // --- Détermine si c'est la première ouverture (uniquement pertinent si jouerVideoIntro) ---
   useEffect(() => {
+    if (!jouerVideoIntro) {
+      setPretPourSequence(true);
+      return;
+    }
     AsyncStorage.getItem(CLE_INTRO_VUE).then((valeur) => {
       setJouerIntro(MODE_DEVELOPPEMENT_INTRO ? true : valeur !== "true");
       setPretPourSequence(true);
     });
-  }, []);
+  }, [jouerVideoIntro]);
 
   // --- Lecteur vidéo de l'animation d'arrivée ---
   const playerIntro = useVideoPlayer(SOURCE_VIDEO_INTRO, (player) => {
@@ -69,25 +74,40 @@ export default function SceneAccueil({ onPretPourCarte }: Props) {
   });
 
   useEffect(() => {
-    if (pretPourSequence && jouerIntro) {
+    if (jouerVideoIntro && pretPourSequence && jouerIntro) {
       playerIntro.play();
     }
-  }, [pretPourSequence, jouerIntro]);
+  }, [pretPourSequence, jouerIntro, jouerVideoIntro]);
 
-  // --- Apparition de Fifi assise (groupe) après la vidéo ---
+  // --- Apparition de Fifi assise (groupe) ---
   const opaciteCorpsGroupe = useRef(new Animated.Value(0)).current;
   const rebondCorps = useRef(new Animated.Value(1)).current;
 
+  // Cas où on ne joue pas la vidéo : Fifi apparaît directement, en fondu simple
   useEffect(() => {
-    if (!pretPourSequence) return;
+    if (!pretPourSequence || jouerVideoIntro) return;
+
+    Animated.timing(opaciteCorpsGroupe, {
+      toValue: 1,
+      duration: 250,
+      useNativeDriver: true,
+    }).start(() => {
+      onPretPourCarte?.();
+    });
+  }, [pretPourSequence, jouerVideoIntro]);
+
+  // Cas où c'est la vidéo qui joue, mais que ce n'est pas la première ouverture : Fifi directement assise
+  useEffect(() => {
+    if (!pretPourSequence || !jouerVideoIntro) return;
 
     if (!jouerIntro) {
       // Pas la première fois : Fifi directement assise, pas de vidéo
       opaciteCorpsGroupe.setValue(1);
       onPretPourCarte?.();
     }
-  }, [pretPourSequence, jouerIntro]);
+  }, [pretPourSequence, jouerIntro, jouerVideoIntro]);
 
+  // Cas où la vidéo vient de se terminer : Fifi apparaît avec le petit rebond d'atterrissage
   useEffect(() => {
     if (!videoTerminee) return;
 
@@ -125,8 +145,8 @@ export default function SceneAccueil({ onPretPourCarte }: Props) {
 
   // --- Respiration (rythme dépendant de enAnalyse) ---
   const respiration = useRef(new Animated.Value(0)).current;
-  const RESPIRATION_REPOS = { inspire: 2200, expire: 2600, amplitudeY: 1.035, amplitudeX: 1.015 };
-  const RESPIRATION_ANALYSE = { inspire: 1100, expire: 1300, amplitudeY: 1.06, amplitudeX: 1.03 };
+  const RESPIRATION_REPOS = { inspire: 2200, expire: 2600, amplitudeY: 1.06, amplitudeX: 1.025 };
+  const RESPIRATION_ANALYSE = { inspire: 1100, expire: 1300, amplitudeY: 1.09, amplitudeX: 1.045 };
 
   useEffect(() => {
     const config = enAnalyse ? RESPIRATION_ANALYSE : RESPIRATION_REPOS;
@@ -232,8 +252,8 @@ export default function SceneAccueil({ onPretPourCarte }: Props) {
     });
   };
 
-  const afficherVideo = jouerIntro && !videoTerminee;
-  const afficherFifiAssise = !jouerIntro || videoTerminee;
+  const afficherVideo = jouerVideoIntro && jouerIntro && !videoTerminee;
+  const afficherFifiAssise = !jouerVideoIntro || !jouerIntro || videoTerminee;
 
   return (
     <View style={styles.container}>
@@ -267,7 +287,7 @@ export default function SceneAccueil({ onPretPourCarte }: Props) {
 
               <Animated.View
                 style={[
-                  StyleSheet.absoluteFillObject,
+                  StyleSheet.absoluteFill,
                   { transform: [{ translateY: translateYCorps }, { scaleX }, { scaleY }] },
                 ]}
               >
@@ -278,7 +298,7 @@ export default function SceneAccueil({ onPretPourCarte }: Props) {
                 />
               </Animated.View>
 
-              <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: clignement }]}>
+              <Animated.View style={[StyleSheet.absoluteFill, { opacity: clignement }]}>
                 <Image
                   source={require("../../assets/characters/Fifi/visage/yeux_fermes.png")}
                   resizeMode="contain"
@@ -286,7 +306,7 @@ export default function SceneAccueil({ onPretPourCarte }: Props) {
                 />
               </Animated.View>
 
-              <Animated.View style={[StyleSheet.absoluteFillObject, { opacity: clinOeil }]}>
+              <Animated.View style={[StyleSheet.absoluteFill, { opacity: clinOeil }]}>
                 <Image
                   source={require("../../assets/characters/Fifi/visage/clin_oeil_droit.png")}
                   resizeMode="contain"
@@ -344,16 +364,16 @@ export default function SceneAccueil({ onPretPourCarte }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    height: 430,
-    position: "relative",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
+ container: {
+  width: "100%",
+  height: 520, // ancien 430
+  position: "relative",
+  justifyContent: "flex-end",
+  alignItems: "center",
+},
   videoPleinEcran: {
     flex: 1,
     backgroundColor: "#000",
   },
-  panier: { position: "absolute", bottom: -30 },
+  panier: { position: "absolute", bottom: 0 }, // ancien -220
 });

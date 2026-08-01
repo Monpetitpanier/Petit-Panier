@@ -3,12 +3,13 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 type Props = {
   onPress: () => void;
+  texte?: string;
 };
 
-export default function BoutonContinuer({ onPress }: Props) {
+export default function BoutonContinuer({ onPress, texte = "Continuer" }: Props) {
   return (
     <TouchableOpacity style={styles.bouton} onPress={onPress} activeOpacity={0.8}>
-      <Text style={styles.boutonTexte}>Continuer</Text>
+      <Text style={styles.boutonTexte}>{texte}</Text>
     </TouchableOpacity>
   );
 }
