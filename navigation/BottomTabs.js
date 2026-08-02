@@ -4,10 +4,11 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import Accueil from "../screens/Accueil";
-import Journal from "../screens/Journal";
 import Agenda from "../screens/Agenda";
 import MaisonNavigator from "./MaisonNavigator";
+import BienEtreNavigator from "./BienEtreNavigator";
 import PlusStack from "./PlusStack";
+
 import { Colors } from "../theme/colors";
 
 const Tab = createBottomTabNavigator();
@@ -17,8 +18,10 @@ export default function BottomTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+
         tabBarActiveTintColor: Colors.secondary,
         tabBarInactiveTintColor: Colors.subtitle,
+
         tabBarStyle: {
           height: 70,
           paddingBottom: 10,
@@ -28,6 +31,7 @@ export default function BottomTabs() {
           backgroundColor: Colors.card,
           elevation: 12,
         },
+
         tabBarIcon: ({ color, size }) => (
           <MaterialCommunityIcons
             name={iconesOnglets[route.name]}
@@ -43,11 +47,6 @@ export default function BottomTabs() {
       />
 
       <Tab.Screen
-        name="Journal"
-        component={Journal}
-      />
-
-      <Tab.Screen
         name="Agenda"
         component={Agenda}
       />
@@ -55,6 +54,11 @@ export default function BottomTabs() {
       <Tab.Screen
         name="Maison"
         component={MaisonNavigator}
+      />
+
+      <Tab.Screen
+        name="Bien-être"
+        component={BienEtreNavigator}
       />
 
       <Tab.Screen
@@ -67,8 +71,8 @@ export default function BottomTabs() {
 
 const iconesOnglets = {
   Accueil: "home-outline",
-  Journal: "notebook-outline",
   Agenda: "calendar-month-outline",
   Maison: "home-variant-outline",
+  "Bien-être": "flower-tulip-outline",
   Plus: "dots-horizontal-circle-outline",
 };
