@@ -18,7 +18,7 @@ export default function AppNavigation() {
   
     const verifierPremierLancement = async () => {
       try {
-        
+       
         const onboardingTermine = await AsyncStorage.getItem(
           CLE_ONBOARDING_TERMINE
         );

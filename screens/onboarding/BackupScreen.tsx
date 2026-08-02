@@ -15,20 +15,21 @@ export default function BackupScreen({
 }: Props) {
   const { prenom } = useOnboarding();
 
-  const terminer = async () => {
-    try {
-      await AsyncStorage.setItem("onboarding_termine", "true");
+ const terminer = async () => {
+  try {
+    await AsyncStorage.setItem("prenom_utilisateur", prenom.trim());
+    await AsyncStorage.setItem("onboarding_termine", "true");
 
-      console.log("✅ Onboarding enregistré comme terminé");
+    console.log("✅ Prénom et onboarding enregistrés");
 
-      onOnboardingTermine();
-    } catch (erreur) {
-      console.error(
-        "Erreur lors de l'enregistrement de l'onboarding :",
-        erreur
-      );
-    }
-  };
+    onOnboardingTermine();
+  } catch (erreur) {
+    console.error(
+      "Erreur lors de l'enregistrement de l'onboarding :",
+      erreur
+    );
+  }
+};
 
   return (
     <GabaritOnboarding

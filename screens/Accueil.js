@@ -1,37 +1,34 @@
 import React from "react";
 import {
-  View,
   ScrollView,
+  View,
   StyleSheet,
 } from "react-native";
 
-import HeaderAccueil from "../components/HeaderAccueil";
 import CarteFifi from "../components/CarteFifi";
 import BoutonPanier from "../components/BoutonPanier";
-import CarteJournee from "../components/CarteJournee";
 import CarteCitation from "../components/CarteCitation";
+import CarteJournee from "../components/CarteJournee";
 
 import { Colors } from "../theme/colors";
 import { Spacing } from "../theme/spacing";
 
-export default function Accueil({ navigation }) {
+export default function Accueil() {
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      <HeaderAccueil />
+    
 
-      <CarteFifi />
+     <CarteFifi />
 
-      <BoutonPanier
-        onPress={() => navigation.navigate("Panier")}
-      />
-
-      <CarteJournee />
-
-      <CarteCitation />
+<View style={styles.contenuAvecMarges}>
+  <BoutonPanier />
+  <CarteCitation />
+  <CarteJournee />
+</View>
     </ScrollView>
   );
 }
@@ -42,9 +39,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-  content: {
-    padding: Spacing.lg,
-    paddingTop: 50,
-    paddingBottom: 50,
-  },
+ content: {
+  paddingTop: 20,
+  paddingBottom: 50,
+},
+
+contenuAvecMarges: {
+  paddingHorizontal: Spacing.lg,
+},
 });
