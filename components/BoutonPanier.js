@@ -79,7 +79,7 @@ export default function BoutonPanier() {
     );
   }
 
-  function deposerDansLePanier() {
+  function deposeDansLePanier() {
     ajouterNote(
       texte.trim(),
       "texte",
@@ -94,7 +94,7 @@ export default function BoutonPanier() {
   if (!ouvert) {
     return (
       <BoutonPrincipal
-        titre="🧺 Déposer dans mon Petit Panier"
+        titre="🧺 Dépose dans mon Petit Panier"
         onPress={() => setOuvert(true)}
       />
     );
@@ -194,7 +194,7 @@ export default function BoutonPanier() {
           disabled={
             !texte.trim() && !pieceJointe
           }
-          onPress={deposerDansLePanier}
+          onPress={deposeDansLePanier}
         >
           <MaterialCommunityIcons
             name="paw"

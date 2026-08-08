@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
 
   titre: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: Colors.text,
   },

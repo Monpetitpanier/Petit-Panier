@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 
   titre: {
 
-    fontSize: 20,
+    fontSize: 17,
 
     fontWeight: "700",
 
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
 
   citation: {
 
-    fontSize: 17,
+    fontSize: 14,
 
     color: Colors.subtitle,
 
