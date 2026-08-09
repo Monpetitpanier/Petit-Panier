@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   View,
   Text,
@@ -9,63 +10,116 @@ import {
   Modal,
   Switch,
 } from "react-native";
+
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useAgenda } from "../contexts/AgendaContext";
-import { Colors } from "../theme/colors";
-import { Spacing } from "../theme/spacing";
+
+
+// --------------------------------------------------
+// CARTE RENDEZ-VOUS D'UNE JOURNÉE
+// --------------------------------------------------
 
 export default function CarteRendezVousJour({
   date,
   rendezVous = [],
 }) {
+
   const {
     supprimerRendezVous,
     basculerNotification,
     basculerTermine,
     modifierRendezVous,
   } = useAgenda();
-  const [rendezVousEnModification, setRendezVousEnModification] =
-    useState(null);
+
+
+  // ------------------------------------------------
+  // MODIFICATION
+  // ------------------------------------------------
+
+  const [
+    rendezVousEnModification,
+    setRendezVousEnModification,
+  ] = useState(null);
+
   const [titre, setTitre] = useState("");
-  const [dateRendezVous, setDateRendezVous] = useState(new Date());
-  const [notification, setNotification] = useState(false);
+
+  const [dateRendezVous, setDateRendezVous] =
+    useState(new Date());
+
+  const [notification, setNotification] =
+    useState(false);
+
   const [afficherSelecteurDate, setAfficherSelecteurDate] =
     useState(false);
+
   const [afficherSelecteurHeure, setAfficherSelecteurHeure] =
     useState(false);
 
+
+  // ------------------------------------------------
+  // RENDEZ-VOUS DE LA JOURNÉE
+  // ------------------------------------------------
+
   const rendezVousDuJour = rendezVous
     .filter((rdv) => rdv.date === date)
-    .sort((a, b) => a.heure.localeCompare(b.heure));
+    .sort((a, b) =>
+      a.heure.localeCompare(b.heure)
+    );
+
+
+  // ------------------------------------------------
+  // SUPPRESSION
+  // ------------------------------------------------
 
   function confirmerSuppression(rdv) {
+
     Alert.alert(
       "Supprimer le rendez-vous ?",
+
       `« ${rdv.titre} » sera supprimé définitivement.`,
+
       [
         {
           text: "Annuler",
           style: "cancel",
         },
+
         {
           text: "Supprimer",
           style: "destructive",
-          onPress: () => supprimerRendezVous(rdv.id),
+
+          onPress: () =>
+            supprimerRendezVous(rdv.id),
         },
       ]
     );
   }
 
-  function creerDateRendezVous(rdv) {
-    const [annee, mois, jour] = rdv.date.split("-").map(Number);
-    const [heures, minutes] = rdv.heure.split(":").map(Number);
 
-    if ([annee, mois, jour].some(Number.isNaN)) {
+  // ------------------------------------------------
+  // DATES
+  // ------------------------------------------------
+
+  function creerDateRendezVous(rdv) {
+
+    const [annee, mois, jour] =
+      rdv.date.split("-").map(Number);
+
+    const [heures, minutes] =
+      rdv.heure.split(":").map(Number);
+
+
+    if (
+      [annee, mois, jour].some(
+        Number.isNaN
+      )
+    ) {
       return new Date();
     }
+
 
     return new Date(
       annee,
@@ -76,435 +130,928 @@ export default function CarteRendezVousJour({
     );
   }
 
+
   function formaterDate(date) {
-    const annee = date.getFullYear();
-    const mois = String(date.getMonth() + 1).padStart(2, "0");
-    const jour = String(date.getDate()).padStart(2, "0");
+
+    const annee =
+      date.getFullYear();
+
+    const mois =
+      String(
+        date.getMonth() + 1
+      ).padStart(2, "0");
+
+    const jour =
+      String(
+        date.getDate()
+      ).padStart(2, "0");
+
 
     return `${annee}-${mois}-${jour}`;
   }
 
+
   function formaterHeure(date) {
-    const heures = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    const heures =
+      String(
+        date.getHours()
+      ).padStart(2, "0");
+
+    const minutes =
+      String(
+        date.getMinutes()
+      ).padStart(2, "0");
+
 
     return `${heures}:${minutes}`;
   }
 
+
+  // ------------------------------------------------
+  // OUVERTURE MODIFICATION
+  // ------------------------------------------------
+
   function ouvrirModification(rdv) {
+
     setRendezVousEnModification(rdv);
+
     setTitre(rdv.titre);
-    setDateRendezVous(creerDateRendezVous(rdv));
-    setNotification(rdv.notification);
+
+    setDateRendezVous(
+      creerDateRendezVous(rdv)
+    );
+
+    setNotification(
+      rdv.notification
+    );
   }
 
+
   function fermerModification() {
+
     setRendezVousEnModification(null);
+
     setAfficherSelecteurDate(false);
+
     setAfficherSelecteurHeure(false);
   }
 
-  function enregistrerModification() {
-    const titreNettoye = titre.trim();
 
-    if (!titreNettoye || !rendezVousEnModification) {
+  // ------------------------------------------------
+  // ENREGISTREMENT MODIFICATION
+  // ------------------------------------------------
+
+  function enregistrerModification() {
+
+    const titreNettoye =
+      titre.trim();
+
+
+    if (
+      !titreNettoye ||
+      !rendezVousEnModification
+    ) {
       return;
     }
 
-    modifierRendezVous(rendezVousEnModification.id, {
-      titre: titreNettoye,
-      date: formaterDate(dateRendezVous),
-      heure: formaterHeure(dateRendezVous),
-      notification,
-    });
+
+    modifierRendezVous(
+      rendezVousEnModification.id,
+      {
+        titre: titreNettoye,
+
+        date:
+          formaterDate(
+            dateRendezVous
+          ),
+
+        heure:
+          formaterHeure(
+            dateRendezVous
+          ),
+
+        notification,
+      }
+    );
+
 
     fermerModification();
   }
 
-  function gererChangementDate(event, nouvelleDate) {
+
+  // ------------------------------------------------
+  // CHANGEMENT DATE
+  // ------------------------------------------------
+
+  function gererChangementDate(
+    event,
+    nouvelleDate
+  ) {
+
     setAfficherSelecteurDate(false);
 
+
     if (nouvelleDate) {
-      setDateRendezVous((dateActuelle) => {
-        const dateMiseAJour = new Date(dateActuelle);
 
-        dateMiseAJour.setFullYear(
-          nouvelleDate.getFullYear(),
-          nouvelleDate.getMonth(),
-          nouvelleDate.getDate()
-        );
+      setDateRendezVous(
+        (dateActuelle) => {
 
-        return dateMiseAJour;
-      });
+          const dateMiseAJour =
+            new Date(dateActuelle);
+
+
+          dateMiseAJour.setFullYear(
+            nouvelleDate.getFullYear(),
+            nouvelleDate.getMonth(),
+            nouvelleDate.getDate()
+          );
+
+
+          return dateMiseAJour;
+        }
+      );
     }
   }
 
-  function gererChangementHeure(event, nouvelleHeure) {
+
+  // ------------------------------------------------
+  // CHANGEMENT HEURE
+  // ------------------------------------------------
+
+  function gererChangementHeure(
+    event,
+    nouvelleHeure
+  ) {
+
     setAfficherSelecteurHeure(false);
 
+
     if (nouvelleHeure) {
-      setDateRendezVous((dateActuelle) => {
-        const dateMiseAJour = new Date(dateActuelle);
 
-        dateMiseAJour.setHours(
-          nouvelleHeure.getHours(),
-          nouvelleHeure.getMinutes(),
-          0,
-          0
-        );
+      setDateRendezVous(
+        (dateActuelle) => {
 
-        return dateMiseAJour;
-      });
+          const dateMiseAJour =
+            new Date(dateActuelle);
+
+
+          dateMiseAJour.setHours(
+            nouvelleHeure.getHours(),
+            nouvelleHeure.getMinutes(),
+            0,
+            0
+          );
+
+
+          return dateMiseAJour;
+        }
+      );
     }
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.titre}>
-        📅 Rendez-vous du {date}
-      </Text>
 
-      {rendezVousDuJour.length === 0 ? (
-        <Text style={styles.aucun}>
-          Aucun rendez-vous pour cette journée.
+  // ------------------------------------------------
+  // FORMAT JOUR
+  // ------------------------------------------------
+
+  function formaterTitreJour() {
+
+    const dateObj =
+      new Date(
+        `${date}T12:00:00`
+      );
+
+
+    const aujourdHui =
+      new Date();
+
+    aujourdHui.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const demain =
+      new Date(aujourdHui);
+
+    demain.setDate(
+      demain.getDate() + 1
+    );
+
+
+    const dateComparee =
+      new Date(dateObj);
+
+    dateComparee.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    if (
+      dateComparee.getTime() ===
+      aujourdHui.getTime()
+    ) {
+      return "Aujourd'hui";
+    }
+
+
+    if (
+      dateComparee.getTime() ===
+      demain.getTime()
+    ) {
+      return "Demain";
+    }
+
+
+    return dateObj.toLocaleDateString(
+      "fr-FR",
+      {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+      }
+    );
+  }
+
+
+  // ------------------------------------------------
+  // SI AUCUN RDV
+  // ------------------------------------------------
+
+  if (
+    rendezVousDuJour.length === 0
+  ) {
+    return null;
+  }
+
+
+  // ------------------------------------------------
+  // AFFICHAGE
+  // ------------------------------------------------
+
+  return (
+
+    <View style={styles.jourContainer}>
+
+      {/* ------------------------------------------ */}
+      {/* JOUR */}
+      {/* ------------------------------------------ */}
+
+      <View style={styles.enteteJour}>
+
+        <Text style={styles.titreJour}>
+          {formaterTitreJour()}
         </Text>
-      ) : (
-        rendezVousDuJour.map((rdv) => (
+
+      </View>
+
+
+      {/* ------------------------------------------ */}
+      {/* RENDEZ-VOUS */}
+      {/* ------------------------------------------ */}
+
+      {rendezVousDuJour.map(
+        (rdv) => (
+
           <View
             key={rdv.id}
             style={[
               styles.carte,
-              rdv.termine && styles.carteTerminee,
+
+              rdv.termine &&
+                styles.carteTerminee,
             ]}
           >
-            <View style={styles.informations}>
-              <Text
-                style={[
-                  styles.heure,
-                  rdv.termine && styles.texteTermine,
-                ]}
-              >
-                {rdv.heure}
-              </Text>
+
+            {/* Heure */}
+
+            <Text
+              style={[
+                styles.heure,
+
+                rdv.termine &&
+                  styles.texteTermine,
+              ]}
+            >
+              {rdv.heure}
+            </Text>
+
+
+            {/* Informations */}
+
+            <View
+              style={styles.informations}
+            >
 
               <Text
+                numberOfLines={1}
                 style={[
                   styles.titreRdv,
-                  rdv.termine && styles.texteTermine,
+
+                  rdv.termine &&
+                    styles.texteTermine,
                 ]}
               >
                 {rdv.titre}
               </Text>
+
             </View>
 
-            <View style={styles.actions}>
+
+            {/* Actions */}
+
+            <View
+              style={styles.actions}
+            >
+
+              {/* Notification */}
+
               <TouchableOpacity
                 onPress={() =>
-                  basculerNotification(rdv.id)
+                  basculerNotification(
+                    rdv.id
+                  )
                 }
+                hitSlop={8}
               >
+
                 <MaterialCommunityIcons
                   name={
                     rdv.notification
                       ? "heart"
                       : "heart-outline"
                   }
-                  size={22}
+                  size={21}
                   color="#D86A87"
                 />
+
               </TouchableOpacity>
 
+
+              {/* Modifier */}
+
               <TouchableOpacity
-                onPress={() => ouvrirModification(rdv)}
+                onPress={() =>
+                  ouvrirModification(rdv)
+                }
+                hitSlop={8}
               >
+
                 <MaterialCommunityIcons
                   name="pencil-outline"
-                  size={22}
-                  color={Colors.primary}
+                  size={21}
+                  color="#B8898C"
                 />
+
               </TouchableOpacity>
+
+
+              {/* Supprimer */}
 
               <TouchableOpacity
                 onPress={() =>
                   confirmerSuppression(rdv)
                 }
+                hitSlop={8}
               >
+
                 <MaterialCommunityIcons
                   name="delete-outline"
-                  size={22}
+                  size={21}
                   color="#C95A5A"
                 />
+
               </TouchableOpacity>
+
+
+              {/* Terminé */}
 
               <TouchableOpacity
                 onPress={() =>
-                  basculerTermine(rdv.id)
+                  basculerTermine(
+                    rdv.id
+                  )
                 }
+                hitSlop={8}
               >
+
                 <MaterialCommunityIcons
                   name={
                     rdv.termine
                       ? "check-circle"
                       : "check-circle-outline"
                   }
-                  size={22}
+                  size={21}
                   color={
                     rdv.termine
                       ? "#63A76A"
-                      : Colors.primary
+                      : "#B8898C"
                   }
                 />
+
               </TouchableOpacity>
+
             </View>
+
           </View>
-        ))
+
+        )
       )}
 
+
+      {/* ------------------------------------------ */}
+      {/* MODALE MODIFICATION */}
+      {/* ------------------------------------------ */}
+
       <Modal
-        visible={Boolean(rendezVousEnModification)}
+        visible={
+          Boolean(
+            rendezVousEnModification
+          )
+        }
         transparent
         animationType="fade"
-        onRequestClose={fermerModification}
+        onRequestClose={
+          fermerModification
+        }
       >
-        <View style={styles.fondModal}>
-          <View style={styles.modal}>
-            <Text style={styles.titreModal}>
+
+        <View
+          style={styles.fondModal}
+        >
+
+          <View
+            style={styles.modal}
+          >
+
+            <Text
+              style={styles.titreModal}
+            >
               Modifier le rendez-vous
             </Text>
 
-            <Text style={styles.libelle}>Titre</Text>
+
+            {/* Titre */}
+
+            <Text
+              style={styles.libelle}
+            >
+              Titre
+            </Text>
+
             <TextInput
               style={styles.input}
               value={titre}
               onChangeText={setTitre}
               placeholder="Titre du rendez-vous"
-              placeholderTextColor={Colors.subtitle}
+              placeholderTextColor="#B7AAA0"
               autoFocus
             />
 
-            <Text style={styles.libelle}>Date</Text>
+
+            {/* Date */}
+
+            <Text
+              style={styles.libelle}
+            >
+              Date
+            </Text>
+
             <TouchableOpacity
               style={styles.selecteur}
-              onPress={() => setAfficherSelecteurDate(true)}
+              onPress={() =>
+                setAfficherSelecteurDate(
+                  true
+                )
+              }
             >
-              <Text style={styles.texteSelecteur}>
-                {formaterDate(dateRendezVous)}
+
+              <Text
+                style={styles.texteSelecteur}
+              >
+                {formaterDate(
+                  dateRendezVous
+                )}
               </Text>
+
             </TouchableOpacity>
 
-            <Text style={styles.libelle}>Heure</Text>
+
+            {/* Heure */}
+
+            <Text
+              style={styles.libelle}
+            >
+              Heure
+            </Text>
+
             <TouchableOpacity
               style={styles.selecteur}
-              onPress={() => setAfficherSelecteurHeure(true)}
+              onPress={() =>
+                setAfficherSelecteurHeure(
+                  true
+                )
+              }
             >
-              <Text style={styles.texteSelecteur}>
-                {formaterHeure(dateRendezVous)}
+
+              <Text
+                style={styles.texteSelecteur}
+              >
+                {formaterHeure(
+                  dateRendezVous
+                )}
               </Text>
+
             </TouchableOpacity>
 
-            <View style={styles.ligneNotification}>
-              <Text style={styles.libelle}>Notification</Text>
+
+            {/* Notification */}
+
+            <View
+              style={styles.ligneNotification}
+            >
+
+              <Text
+                style={styles.libelle}
+              >
+                Notification
+              </Text>
+
               <Switch
                 value={notification}
-                onValueChange={setNotification}
-                trackColor={{ false: Colors.border, true: Colors.secondary }}
-                thumbColor={Colors.white}
+                onValueChange={
+                  setNotification
+                }
+                trackColor={{
+                  false: "#D8CEC5",
+                  true: "#E8B7B7",
+                }}
+                thumbColor="#FFFFFF"
               />
+
             </View>
 
+
+            {/* Sélecteur date */}
+
             {afficherSelecteurDate && (
+
               <DateTimePicker
-                value={dateRendezVous}
+                value={
+                  dateRendezVous
+                }
                 mode="date"
-                onChange={gererChangementDate}
+                onChange={
+                  gererChangementDate
+                }
               />
+
             )}
+
+
+            {/* Sélecteur heure */}
 
             {afficherSelecteurHeure && (
+
               <DateTimePicker
-                value={dateRendezVous}
+                value={
+                  dateRendezVous
+                }
                 mode="time"
                 is24Hour
-                onChange={gererChangementHeure}
+                onChange={
+                  gererChangementHeure
+                }
               />
+
             )}
 
-            <View style={styles.actionsModal}>
+
+            {/* Boutons */}
+
+            <View
+              style={styles.actionsModal}
+            >
+
               <TouchableOpacity
-                style={styles.boutonAnnuler}
-                onPress={fermerModification}
+                style={
+                  styles.boutonAnnuler
+                }
+                onPress={
+                  fermerModification
+                }
               >
-                <Text style={styles.texteAnnuler}>Annuler</Text>
+
+                <Text
+                  style={
+                    styles.texteAnnuler
+                  }
+                >
+                  Annuler
+                </Text>
+
               </TouchableOpacity>
+
 
               <TouchableOpacity
                 style={[
                   styles.boutonEnregistrer,
-                  !titre.trim() && styles.boutonDesactive,
+
+                  !titre.trim() &&
+                    styles.boutonDesactive,
                 ]}
-                onPress={enregistrerModification}
-                disabled={!titre.trim()}
+                onPress={
+                  enregistrerModification
+                }
+                disabled={
+                  !titre.trim()
+                }
               >
-                <Text style={styles.texteEnregistrer}>Enregistrer</Text>
+
+                <Text
+                  style={
+                    styles.texteEnregistrer
+                  }
+                >
+                  Enregistrer
+                </Text>
+
               </TouchableOpacity>
+
             </View>
+
           </View>
+
         </View>
+
       </Modal>
+
     </View>
   );
 }
 
+
+// --------------------------------------------------
+// STYLES
+// --------------------------------------------------
+
 const styles = StyleSheet.create({
-  container: {
-    marginTop: Spacing.xl,
-    padding: Spacing.md,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+
+  // ------------------------------------------------
+  // JOUR
+  // ------------------------------------------------
+
+  jourContainer: {
+    marginBottom: 7,
   },
 
-  titre: {
-    fontSize: 18,
+
+  enteteJour: {
+    paddingHorizontal: 4,
+    marginBottom: 4,
+  },
+
+
+  titreJour: {
+    fontSize: 14,
     fontWeight: "700",
-    color: Colors.text,
-    marginBottom: Spacing.md,
+    color: "#8B7464",
+    textTransform: "capitalize",
   },
 
-  aucun: {
-    fontSize: 15,
-    color: Colors.textSecondary,
-    fontStyle: "italic",
-  },
+
+  // ------------------------------------------------
+  // CARTE
+  // ------------------------------------------------
 
   carte: {
-    paddingVertical: Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: "#EEEEEE",
+    flexDirection: "row",
+    alignItems: "center",
+
+    minHeight: 45,
+
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+
+    marginBottom: 5,
+
+    backgroundColor: "#FFFFFF",
+
+    borderRadius: 13,
+
+    borderWidth: 1,
+    borderColor: "#F0E5DC",
   },
+
 
   carteTerminee: {
-    opacity: 0.6,
+    opacity: 0.55,
   },
 
-  informations: {
-    marginBottom: Spacing.sm,
-  },
+
+  // ------------------------------------------------
+  // HEURE
+  // ------------------------------------------------
 
   heure: {
-    fontSize: 15,
+    width: 48,
+
+    fontSize: 13,
     fontWeight: "700",
-    color: Colors.primary,
+
+    color: "#B8898C",
   },
+
+
+  // ------------------------------------------------
+  // INFORMATIONS
+  // ------------------------------------------------
+
+  informations: {
+    flex: 1,
+
+    paddingRight: 5,
+  },
+
 
   titreRdv: {
-    marginTop: 4,
-    fontSize: 16,
-    color: Colors.text,
+    fontSize: 14,
+
+    fontWeight: "600",
+
+    color: "#5A4030",
   },
 
+
   texteTermine: {
-    color: Colors.textSecondary,
-    textDecorationLine: "line-through",
+    color: "#9B8B80",
+
+    textDecorationLine:
+      "line-through",
   },
+
+
+  // ------------------------------------------------
+  // ACTIONS
+  // ------------------------------------------------
 
   actions: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+
     alignItems: "center",
-    gap: Spacing.md,
-    marginTop: Spacing.sm,
+
+    gap: 8,
   },
+
+
+  // ------------------------------------------------
+  // MODALE
+  // ------------------------------------------------
 
   fondModal: {
     flex: 1,
+
     justifyContent: "center",
-    padding: Spacing.lg,
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
+
+    padding: 20,
+
+    backgroundColor:
+      "rgba(0, 0, 0, 0.35)",
   },
+
 
   modal: {
-    backgroundColor: Colors.card,
+    backgroundColor: "#FFFDF8",
+
     borderRadius: 20,
-    padding: Spacing.lg,
+
+    padding: 20,
   },
+
 
   titreModal: {
-    marginBottom: Spacing.lg,
+    marginBottom: 18,
+
     fontSize: 22,
+
     fontWeight: "700",
-    color: Colors.text,
+
+    color: "#5A4030",
   },
+
 
   libelle: {
-    marginBottom: Spacing.xs,
+    marginBottom: 5,
+
     fontSize: 15,
+
     fontWeight: "600",
-    color: Colors.text,
+
+    color: "#5A4030",
   },
+
 
   input: {
-    marginBottom: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    marginBottom: 14,
+
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: "#E8DCCB",
+
     borderRadius: 12,
-    backgroundColor: Colors.white,
-    color: Colors.text,
+
+    backgroundColor: "#FFFFFF",
+
+    color: "#5A4030",
+
     fontSize: 16,
   },
+
 
   selecteur: {
-    marginBottom: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    marginBottom: 14,
+
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: "#E8DCCB",
+
     borderRadius: 12,
-    backgroundColor: Colors.white,
+
+    backgroundColor: "#FFFFFF",
   },
 
+
   texteSelecteur: {
-    color: Colors.text,
+    color: "#5A4030",
+
     fontSize: 16,
   },
+
 
   ligneNotification: {
     flexDirection: "row",
+
     justifyContent: "space-between",
+
     alignItems: "center",
-    marginBottom: Spacing.lg,
+
+    marginBottom: 18,
   },
+
 
   actionsModal: {
     flexDirection: "row",
+
     justifyContent: "flex-end",
-    gap: Spacing.sm,
+
+    alignItems: "center",
+
+    gap: 8,
   },
+
 
   boutonAnnuler: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
 
+
   texteAnnuler: {
-    color: Colors.text,
+    color: "#5A4030",
+
     fontWeight: "600",
   },
 
+
   boutonEnregistrer: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+
     borderRadius: 12,
-    backgroundColor: Colors.primary,
+
+    backgroundColor: "#E8B7B7",
   },
+
 
   boutonDesactive: {
     opacity: 0.5,
   },
 
+
   texteEnregistrer: {
-    color: Colors.white,
+    color: "#5A4030",
+
     fontWeight: "700",
   },
+
 });

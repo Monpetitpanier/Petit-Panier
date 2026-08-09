@@ -24,8 +24,56 @@ export function analyserAgenda(texte) {
     "vaccin",
     "radio",
     "scanner",
+    "pneumologue",
+    "psychologue",
+    "vétérinaire",
+    "garage",
     "irm",
     "prise de sang",
+    "école",
+    "écho",
+    "psychiatre",
+    "mairie",
+    "église",
+    "diacre",
+    "mosquée",
+    "synagogue",
+    "chapelle",
+    "temple",
+    "france services",
+    "centre des impôts",
+    "préfecture",
+    "sous-préfecture",
+    "CAF",
+    "CPAM",
+    "Pôle emploi",
+    "banque",
+    "URSSAF",
+    "notaire",
+    "avocat",
+    "huissier",
+    "expert-comptable",
+    "OPH",
+    "tribunal",
+    "justice",
+    "SPIP",
+    "gendarmerie",
+    "police",
+    "pompiers",
+    "maison de retraite",
+    "entreprise",
+    "piscine",
+    "bibliothèque",
+    "musée",
+    "théâtre",
+    "CODECOM",
+    "CCAS",
+    "centre social",
+    "restaurant",
+    "cinéma",
+    "salle de sport",
+    "entretien d'embauche",
+
   ];
 
   const estRendezVous = motsAgenda.some((mot) =>
@@ -57,6 +105,26 @@ export function analyserAgenda(texte) {
   else if (contenu.includes("gynécologue")) titre = "Gynécologue";
   else if (contenu.includes("sage-femme")) titre = "Sage-femme";
   else if (contenu.includes("pédiatre")) titre = "Pédiatre";
+  else if (contenu.includes("pneumologue"))titre = "Pneumologue";
+  else if (contenu.includes("psychologue"))titre = "Psychologue";
+  else if (contenu.includes("vétérinaire"))titre = "Vétérinaire";
+  else if (contenu.includes("garage"))titre = "Garage";
+  else if (contenu.includes("école"))titre = "École";
+  else if (contenu.includes("écho"))titre = "Échographie";
+  else if (contenu.includes("psychiatre"))titre = "Psychiatre";
+  else if (contenu.includes("maison de retraite"))titre = "Maison de retraite";
+  else if (contenu.includes("entreprise"))titre = "Entreprise";
+  else if (contenu.includes("piscine"))titre = "Piscine";
+  else if (contenu.includes("bibliothèque"))titre = "Bibliothèque";
+  else if (contenu.includes("musée"))titre = "Musée";
+  else if (contenu.includes("théâtre"))titre = "Théâtre";
+  else if (contenu.includes("CODECOM"))titre = "CODECOM";
+  else if (contenu.includes("CCAS"))titre = "CCAS";
+  else if (contenu.includes("centre social"))titre = "Centre social";
+  else if (contenu.includes("restaurant"))titre = "Restaurant";
+  else if (contenu.includes("cinéma"))titre = "Cinéma";
+  else if (contenu.includes("salle de sport"))titre = "Salle de sport";
+  else if (contenu.includes("entretien d'embauche"))titre = "Entretien d'embauche";
 
   return {
 

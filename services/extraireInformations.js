@@ -3,17 +3,18 @@
 // =======================================
 
 function extraireHeure(texte) {
-
-  const resultat = texte.match(/([01]?\d|2[0-3])[h:]([0-5]\d)/i);
+  const resultat = texte.match(
+    /([01]?\d|2[0-3])(?:h|:)([0-5]\d)?/i
+  );
 
   if (!resultat) {
     return null;
   }
 
-  return resultat[0]
-    .replace("h", ":")
-    .replace("H", ":");
+  const heures = resultat[1];
+  const minutes = resultat[2] || "00";
 
+  return `${heures.padStart(2, "0")}:${minutes}`;
 }
 
 // =======================================

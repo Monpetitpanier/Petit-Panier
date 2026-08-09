@@ -6,16 +6,25 @@ import { BienEtreProvider } from "./contexts/BienEtreContext";
 
 import AppNavigation from "./navigation/AppNavigation";
 
+
 export default function App() {
   return (
     <ActionSheetProvider>
-      <PanierProvider>
-        <AgendaProvider>
+
+      <AgendaProvider>
+
+        <PanierProvider>
+
           <BienEtreProvider>
+
             <AppNavigation />
+
           </BienEtreProvider>
-        </AgendaProvider>
-      </PanierProvider>
+
+        </PanierProvider>
+
+      </AgendaProvider>
+
     </ActionSheetProvider>
   );
 }

@@ -8,6 +8,7 @@ import {
 } from "../services/panierStorage";
 
 import { analyserPensee } from "../services/analyseurPanier";
+import { useAgenda } from "./AgendaContext";
 
 const PanierContext = createContext(null);
 
@@ -19,6 +20,7 @@ export function PanierProvider({ children }) {
   const [notes, setNotes] = useState([]);
   const [chargementTermine, setChargementTermine] = useState(false);
   const [enAnalyse, setEnAnalyse] = useState(false);
+  const { ajouterRendezVous } = useAgenda();
 
   useEffect(() => {
     chargerNotes().then((notesChargees) => {
@@ -35,6 +37,14 @@ export function PanierProvider({ children }) {
     setEnAnalyse(true);
 
     const analyse = analyserPensee(contenu);
+    if (analyse?.destination === "agenda") {
+  ajouterRendezVous({
+    titre: analyse.titre,
+    date: analyse.date,
+    heure: analyse.heure,
+    categorie: analyse.categorie,
+  });
+}
 
     const nouvelleNote = {
       id: uuidv4(),
