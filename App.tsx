@@ -3,6 +3,7 @@ import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { PanierProvider } from "./contexts/PanierContext";
 import { AgendaProvider } from "./contexts/AgendaContext";
 import { BienEtreProvider } from "./contexts/BienEtreContext";
+import { MaisonProvider } from "./contexts/MaisonContext";
 
 import AppNavigation from "./navigation/AppNavigation";
 
@@ -13,15 +14,19 @@ export default function App() {
 
       <AgendaProvider>
 
-        <PanierProvider>
+        <MaisonProvider>
 
-          <BienEtreProvider>
+          <PanierProvider>
 
-            <AppNavigation />
+            <BienEtreProvider>
 
-          </BienEtreProvider>
+              <AppNavigation />
 
-        </PanierProvider>
+            </BienEtreProvider>
+
+          </PanierProvider>
+
+        </MaisonProvider>
 
       </AgendaProvider>
 

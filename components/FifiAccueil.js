@@ -45,15 +45,14 @@ const paysages = {
 const RESPIRATION_REPOS = {
   inspire: 2200,
   expire: 2600,
-  amplitude: 1.035,
+  amplitude: 1.07,
 };
 
 const RESPIRATION_ANALYSE = {
   inspire: 1100,
   expire: 1300,
-  amplitude: 1.06,
+  amplitude: 1.070,
 };
-
 
 // --------------------------------------------------
 // FIFI ACCUEIL

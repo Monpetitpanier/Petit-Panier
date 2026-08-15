@@ -9,6 +9,7 @@ import {
 
 import { analyserPensee } from "../services/analyseurPanier";
 import { useAgenda } from "./AgendaContext";
+import { useMaison } from "./MaisonContext";
 
 const PanierContext = createContext(null);
 
@@ -21,6 +22,7 @@ export function PanierProvider({ children }) {
   const [chargementTermine, setChargementTermine] = useState(false);
   const [enAnalyse, setEnAnalyse] = useState(false);
   const { ajouterRendezVous } = useAgenda();
+  const { ajouter: ajouterDansMaison } = useMaison();
 
   useEffect(() => {
     chargerNotes().then((notesChargees) => {
@@ -70,6 +72,10 @@ export function PanierProvider({ children }) {
 
   }
 }
+
+    if (analyse?.destination === "maison") {
+      ajouterDansMaison(analyse.categorie, analyse.texte || contenu, "fifi");
+    }
 
     const nouvelleNote = {
       id: uuidv4(),
