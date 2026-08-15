@@ -37,13 +37,38 @@ export function PanierProvider({ children }) {
     setEnAnalyse(true);
 
     const analyse = analyserPensee(contenu);
-    if (analyse?.destination === "agenda") {
-  ajouterRendezVous({
-    titre: analyse.titre,
-    date: analyse.date,
-    heure: analyse.heure,
-    categorie: analyse.categorie,
-  });
+  if (analyse?.destination === "agenda") {
+
+  // Plusieurs rendez-vous dans une même pensée
+  if (
+    Array.isArray(analyse.rendezVous) &&
+    analyse.rendezVous.length > 0
+  ) {
+
+    analyse.rendezVous.forEach((rdv) => {
+
+      ajouterRendezVous({
+        titre: rdv.titre,
+        date: rdv.date,
+        heure: rdv.heure,
+        categorie: rdv.categorie || "rendez-vous",
+      });
+
+    });
+
+  }
+
+  // Un seul rendez-vous
+  else {
+
+    ajouterRendezVous({
+      titre: analyse.titre,
+      date: analyse.date,
+      heure: analyse.heure,
+      categorie: analyse.categorie,
+    });
+
+  }
 }
 
     const nouvelleNote = {

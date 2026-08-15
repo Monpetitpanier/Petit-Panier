@@ -23,30 +23,39 @@ export function AgendaProvider({ children }) {
     });
   }, []);
 
-  function ajouterRendezVous(rendezVousData) {
-    const nouveauRendezVous = {
-      id: Date.now().toString(),
+ function ajouterRendezVous(rendezVousData) {
+  const nouveauRendezVous = {
+    id: Date.now().toString(),
 
-      titre: rendezVousData.titre || "Rendez-vous",
+    titre: rendezVousData.titre || "Rendez-vous",
 
-      date: rendezVousData.date || "À définir",
+    date: rendezVousData.date || "À définir",
 
-      heure: rendezVousData.heure || "--:--",
+    heure: rendezVousData.heure || "--:--",
 
-      categorie: rendezVousData.categorie || "rendez-vous",
+    categorie:
+      rendezVousData.categorie || "rendez-vous",
 
-      notification: false,
+    notification: false,
 
-      termine: false,
+    termine: false,
 
-      dateCreation: new Date().toISOString(),
-    };
+    dateCreation:
+      new Date().toISOString(),
+  };
 
-    const nouveaux = [nouveauRendezVous, ...rendezVous];
+  setRendezVous((rendezVousActuels) => {
 
-    setRendezVous(nouveaux);
+    const nouveaux = [
+      nouveauRendezVous,
+      ...rendezVousActuels,
+    ];
+
     sauvegarderRendezVous(nouveaux);
-  }
+
+    return nouveaux;
+  });
+}
 
   function modifierRendezVous(id, modifications) {
     const nouveaux = rendezVous.map((rdv) =>

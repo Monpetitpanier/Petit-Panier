@@ -1305,3 +1305,66 @@
 {"_e":"metro:bundling:done","_t":1786302588431,"id":"4","total":1,"ms":36.6761}
 {"_e":"metro:bundling:failed","_t":1786303891094,"id":null,"message":"SyntaxError: C:\\Users\\marbotte\\Downloads\\petit-panier\\components\\Calendrier.js: JSX value should be either an expression or a quoted JSX text. (315:2)\n\n  313 |           dayComponent={JourAvecPatte}\n  314 | const estSelectionne =\n> 315 |   marking?.estSelectionne === true;\n      |   ^\n  316 |           hideExtraDays={false}\n  317 |\n  318 |           theme={{","importStack":null,"filename":"components\\Calendrier.js","targetModuleName":null,"originModulePath":null}
 {"_e":"metro:bundling:failed","_t":1786303891290,"id":null,"message":"SyntaxError: C:\\Users\\marbotte\\Downloads\\petit-panier\\components\\Calendrier.js: JSX value should be either an expression or a quoted JSX text. (315:2)\n\n  313 |           dayComponent={JourAvecPatte}\n  314 | const estSelectionne =\n> 315 |   marking?.estSelectionne === true;\n      |   ^\n  316 |           hideExtraDays={false}\n  317 |\n  318 |           theme={{","importStack":null,"filename":"components\\Calendrier.js","targetModuleName":null,"originModulePath":null}
+{"_e":"metro:bundling:started","_t":1786306858839,"id":"7","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1786306858839,"id":"7","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1786306858841,"id":"7","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1786306858941,"id":"7","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1786306859041,"id":"7","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1786306859141,"id":"7","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1786306859277,"id":"7","total":1,"ms":437.5683}
+{"_e":"metro:bundling:started","_t":1786308171193,"id":"9","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1786308171194,"id":"9","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1786308171227,"id":"9","total":1,"ms":33.9591}
+{"_e":"metro:client_log","_t":1786308709985,"level":"warn","data":["SafeAreaView has been deprecated and will be removed in a future release. Please use 'react-native-safe-area-context' instead. See https://github.com/AppAndFlow/react-native-safe-area-context"]}
+{"_e":"root:init","_t":1786795535978,"format":"v0-jsonl","version":"57.0.11"}
+{"_e":"env:mode","_t":1786795535985,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1786795536047,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1786795544831,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1786795550777,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1786795560351,"plugins":[]}
+{"_e":"metro:instantiate","_t":1786795584560,"atlas":false,"workers":10,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1786795594162,"id":"1","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1786795594163,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1786795594167,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1786795594274,"id":"1","progress":0.0625,"total":12,"current":3}
+{"_e":"metro:bundling:progress","_t":1786795594442,"id":"1","progress":0.0625,"total":137,"current":12}
+{"_e":"metro:bundling:progress","_t":1786795595184,"id":"1","progress":0.0625,"total":137,"current":13}
+{"_e":"metro:bundling:progress","_t":1786795595286,"id":"1","progress":0.1844592373438527,"total":312,"current":134}
+{"_e":"metro:bundling:progress","_t":1786795595937,"id":"1","progress":0.1872226331360947,"total":312,"current":135}
+{"_e":"metro:bundling:progress","_t":1786795596042,"id":"1","progress":0.32293430751116914,"total":498,"current":283}
+{"_e":"metro:bundling:progress","_t":1786795596116,"id":"1","progress":0.32522056095869417,"total":498,"current":284}
+{"_e":"metro:bundling:progress","_t":1786795596218,"id":"1","progress":0.32522056095869417,"total":581,"current":310}
+{"_e":"metro:bundling:progress","_t":1786795596888,"id":"1","progress":0.32522056095869417,"total":581,"current":311}
+{"_e":"metro:bundling:progress","_t":1786795596993,"id":"1","progress":0.546313799621928,"total":667,"current":493}
+{"_e":"metro:bundling:progress","_t":1786795597100,"id":"1","progress":0.5513284807630248,"total":668,"current":496}
+{"_e":"metro:bundling:progress","_t":1786795597216,"id":"1","progress":0.5535538205027071,"total":668,"current":497}
+{"_e":"metro:bundling:progress","_t":1786795597319,"id":"1","progress":0.5535538205027071,"total":788,"current":578}
+{"_e":"metro:bundling:progress","_t":1786795597614,"id":"1","progress":0.5535538205027071,"total":788,"current":579}
+{"_e":"metro:bundling:progress","_t":1786795597714,"id":"1","progress":0.636538987866387,"total":831,"current":663}
+{"_e":"metro:bundling:progress","_t":1786795597790,"id":"1","progress":0.6384606139066643,"total":831,"current":664}
+{"_e":"metro:bundling:progress","_t":1786795598346,"id":"1","progress":0.640385136142933,"total":831,"current":665}
+{"_e":"metro:bundling:progress","_t":1786795598448,"id":"1","progress":0.6915050003590921,"total":944,"current":785}
+{"_e":"metro:bundling:progress","_t":1786795598554,"id":"1","progress":0.6932679187015226,"total":944,"current":786}
+{"_e":"metro:bundling:progress","_t":1786795598655,"id":"1","progress":0.7316610887234479,"total":968,"current":828}
+{"_e":"metro:bundling:progress","_t":1786795599067,"id":"1","progress":0.733429453247729,"total":968,"current":829}
+{"_e":"metro:bundling:progress","_t":1786795599171,"id":"1","progress":0.733429453247729,"total":1118,"current":941}
+{"_e":"metro:bundling:progress","_t":1786795599295,"id":"1","progress":0.733429453247729,"total":1129,"current":966}
+{"_e":"metro:bundling:progress","_t":1786795599834,"id":"1","progress":0.7336096987308584,"total":1129,"current":967}
+{"_e":"metro:bundling:progress","_t":1786795599938,"id":"1","progress":0.8245644814991118,"total":1229,"current":1116}
+{"_e":"metro:bundling:progress","_t":1786795600070,"id":"1","progress":0.8394078285745685,"total":1229,"current":1126}
+{"_e":"metro:bundling:progress","_t":1786795600174,"id":"1","progress":0.8394078285745685,"total":1230,"current":1126}
+{"_e":"metro:bundling:progress","_t":1786795600323,"id":"1","progress":0.8395326855707581,"total":1230,"current":1127}
+{"_e":"metro:bundling:progress","_t":1786795600424,"id":"1","progress":0.8629469088382813,"total":1323,"current":1229}
+{"_e":"metro:bundling:progress","_t":1786795600645,"id":"1","progress":0.864351787578221,"total":1323,"current":1230}
+{"_e":"metro:bundling:progress","_t":1786795600752,"id":"1","progress":0.8979365085091131,"total":1393,"current":1320}
+{"_e":"metro:bundling:progress","_t":1786795600834,"id":"1","progress":0.8992975337151351,"total":1393,"current":1321}
+{"_e":"metro:bundling:progress","_t":1786795600939,"id":"1","progress":0.9291783449170035,"total":1442,"current":1390}
+{"_e":"metro:bundling:progress","_t":1786795601039,"id":"1","progress":0.999,"total":1474,"current":1474}
+{"_e":"metro:bundling:done","_t":1786795601163,"id":"1","total":1474,"ms":6999.9255}
+{"_e":"metro:client_log","_t":1786797171423,"level":"error","data":["[ReferenceError: Property 'titre' doesn't exist]"]}
+{"_e":"metro:client_log","_t":1786797369164,"level":"error","data":["[ReferenceError: Property 'titre' doesn't exist]"]}
+{"_e":"metro:client_log","_t":1786797725134,"level":"error","data":["[ReferenceError: Property 'titre' doesn't exist]"]}
+{"_e":"metro:bundling:started","_t":1786798085693,"id":"6","platform":"android","environment":null,"entry":"node_modules\\expo\\AppEntry.js"}
+{"_e":"metro:bundling:progress","_t":1786798085693,"id":"6","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1786798085694,"id":"6","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1786798085730,"id":"6","total":1,"ms":36.4944}
