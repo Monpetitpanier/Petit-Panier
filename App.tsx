@@ -6,6 +6,7 @@ import { BienEtreProvider } from "./contexts/BienEtreContext";
 import { MaisonProvider } from "./contexts/MaisonContext";
 
 import AppNavigation from "./navigation/AppNavigation";
+import RecapSortieModal from "./components/maison/RecapSortieModal";
 
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
             <BienEtreProvider>
 
               <AppNavigation />
+              <RecapSortieModal />
 
             </BienEtreProvider>
 

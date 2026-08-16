@@ -5,12 +5,13 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
 } from "react-native";
-
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import CarteSection from "../components/CarteSection";
+
 import { Colors } from "../theme/colors";
 import { Spacing } from "../theme/spacing";
 
@@ -23,299 +24,126 @@ export default function Maison() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
+      <View style={styles.entete}>
+        <TouchableOpacity
+          style={styles.boutonReglages}
+          onPress={() => navigation.navigate("ReglagesRappelsMaison")}
+        >
+          <MaterialCommunityIcons name="cog-outline" size={26} color={Colors.subtitle} />
+        </TouchableOpacity>
 
-      {/* ===================================== */}
-      {/* SCÈNE MAISON : DÉCOR + FIFI */}
-      {/* ===================================== */}
-
-      <View style={styles.scene}>
-
-        {/* Décor de la pièce */}
-
-        <Image
-          source={require("../assets/environment/onglet_maison_fifi.png")}
-          style={styles.decor}
-          resizeMode="contain"
-        />
-
-        {/* Léger voile pour garder le texte lisible */}
-
-        <View style={styles.voile} />
-
-
-        {/* Bouton paramètres */}
-
-        <View style={styles.boutonParametres}>
+        <View style={styles.ligneTitre}>
           <MaterialCommunityIcons
-            name="cog-outline"
-            size={27}
-            color={Colors.subtitle}
+            name="home-outline"
+            size={38}
+            color={Colors.text}
           />
+          <Text style={styles.titre}>Maison</Text>
         </View>
 
-
-        {/* Titre */}
-
-        <View style={styles.titreBloc}>
-
-          <View style={styles.ligneTitre}>
-
-            <MaterialCommunityIcons
-              name="home-outline"
-              size={38}
-              color={Colors.text}
-            />
-
-          </View>
-
-          <Text style={styles.accroche}>
-            Tout pour la maison,{"\n"}
-            bien rangé avec Fifi.
-          </Text>
-
-        </View>
-
-
-        {/* Fifi */}
+        <Text style={styles.accroche}>
+          Tout pour la maison, bien rangé avec Fifi.
+        </Text>
 
         <Image
-          source={require(
-            "../assets/characters/Fifi/poses/maison_fifi.png"
-          )}
-          style={styles.fifi}
+          source={require("../assets/characters/Fifi/poses/maison_fifi.png")}
+          style={styles.imageFifi}
           resizeMode="contain"
         />
-
       </View>
 
+      <CarteSection
+        icone="🛒"
+        titre="Liste de courses"
+        sousTitre="Les essentiels à ne pas oublier"
+        onPress={() => navigation.navigate("ListeCoursesMaison")}
+        afficherChevron
+      />
 
-      {/* ===================================== */}
-      {/* CATÉGORIES */}
-      {/* ===================================== */}
+      <CarteSection
+        icone="🧹"
+        titre="Ménage"
+        sousTitre="Planifier mes tâches"
+        onPress={() => navigation.navigate("MenageMaison")}
+        afficherChevron
+      />
 
-      <View style={styles.categories}>
+      <CarteSection
+        icone="🛠️"
+        titre="Entretien"
+        sousTitre="Petits travaux, entretien annuel"
+        onPress={() => navigation.navigate("EntretienMaison")}
+        afficherChevron
+      />
 
-        <CarteSection
-          icone="🛒"
-          titre="Liste de courses"
-          sousTitre="Les essentiels à ne pas oublier"
-          onPress={() =>
-            navigation.navigate("ListeCoursesMaison")
-          }
-          afficherChevron
-        />
+      <CarteSection
+        icone="📄"
+        titre="Garanties"
+        sousTitre="Documents et garanties"
+        onPress={() => navigation.navigate("GarantiesMaison")}
+        afficherChevron
+      />
 
-        <CarteSection
-          icone="🛍️"
-          titre="Produits à racheter"
-          sousTitre="Les achats à renouveler"
-          onPress={() =>
-            navigation.navigate("ProduitsARacheterMaison")
-          }
-          afficherChevron
-        />
-
-        <CarteSection
-          icone="🧹"
-          titre="Ménage"
-          sousTitre="Planifier mes tâches"
-          onPress={() =>
-            navigation.navigate("MenageMaison")
-          }
-          afficherChevron
-        />
-
-        <CarteSection
-          icone="🛠️"
-          titre="Entretien"
-          sousTitre="Petits travaux, entretien"
-          onPress={() =>
-            navigation.navigate("EntretienMaison")
-          }
-          afficherChevron
-        />
-
-        <CarteSection
-          icone="📄"
-          titre="Garanties"
-          sousTitre="Documents et garanties"
-          onPress={() =>
-            navigation.navigate("GarantiesMaison")
-          }
-          afficherChevron
-        />
-
-        <CarteSection
-          icone="📌"
-          titre="To-do"
-          sousTitre="À prévoir sur l'année (cadeaux, vacances...)"
-          onPress={() =>
-            navigation.navigate("ToDoMaison")
-          }
-          afficherChevron
-        />
-
-      </View>
-
+      <CarteSection
+        icone="📌"
+        titre="To-do"
+        sousTitre="À prévoir sur l'année (cadeaux, vacances...)"
+        onPress={() => navigation.navigate("ToDoMaison")}
+        afficherChevron
+      />
     </ScrollView>
   );
 }
 
-
 const styles = StyleSheet.create({
-
-  // =====================================
-  // ÉCRAN
-  // =====================================
-
   container: {
     flex: 1,
     backgroundColor: Colors.background,
   },
 
   content: {
-    paddingBottom: 30,
+    padding: Spacing.lg,
+    paddingTop: Spacing.xxl,
+    paddingBottom: 50,
   },
 
-
-  // =====================================
-  // SCÈNE
-  // =====================================
-
-  scene: {
-    height: 410,
-    position: "relative",
-    overflow: "hidden",
-    backgroundColor: Colors.background,
-  },
-
-
-  decor: {
-    position: "absolute",
-
-    top: 10,
-    left: 0,
-
-    width: "105%",
-    height: "105%",
-  },
-
-
-  voile: {
-    position: "absolute",
-
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-
-    backgroundColor:
-      "rgba(248, 245, 239, 0.12)",
-  },
-
-
-  // =====================================
-  // PARAMÈTRES
-  // =====================================
-
-  boutonParametres: {
-    position: "absolute",
-
-    top: 25,
-    right: 18,
-
-    width: 58,
-    height: 58,
-
-    borderRadius: 29,
-
+  entete: {
     alignItems: "center",
-    justifyContent: "center",
-
-    backgroundColor:
-      "rgba(255,255,255,0.82)",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-
-    elevation: 3,
-
-    zIndex: 10,
+    marginBottom: Spacing.sm,
   },
 
-
-  // =====================================
-  // TITRE
-  // =====================================
-
-  titreBloc: {
+  boutonReglages: {
     position: "absolute",
-
-    top: 90,
-    left: 50,
-
-    zIndex: 6,
+    top: 0,
+    right: 0,
+    padding: Spacing.xs,
+    zIndex: 1,
   },
-
 
   ligneTitre: {
     flexDirection: "row",
     alignItems: "center",
   },
 
-
   titre: {
     fontSize: 30,
-    fontWeight: "700",
-
+    fontWeight: "bold",
     marginLeft: Spacing.sm,
-
     color: Colors.text,
   },
-
 
   accroche: {
     marginTop: Spacing.md,
-
-    color: Colors.text,
-
-    fontSize: 17,
-    lineHeight: 25,
-
-    textAlign: "left",
+    color: Colors.subtitle,
+    fontSize: 18,
+    lineHeight: 26,
+    textAlign: "center",
   },
 
-
-  // =====================================
-  // FIFI
-  // =====================================
-
-  fifi: {
-    position: "absolute",
-
-    width: 230,
+  imageFifi: {
+    width: 240,
     height: 220,
-
-    right: 90,
-    bottom: 5,
-
-    zIndex: 5,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
-
-
-  // =====================================
-  // CATÉGORIES
-  // =====================================
-
-  categories: {
-    paddingHorizontal: Spacing.lg,
-
-    marginTop: -10,
-  },
-
 });

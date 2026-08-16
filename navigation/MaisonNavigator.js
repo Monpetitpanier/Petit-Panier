@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Maison from "../screens/Maison";
 import EcranCategorieMaison from "../screens/maison/EcranCategorieMaison";
+import ReglagesRappelsMaison from "../screens/maison/ReglagesRappelsMaison";
+import LieuxGeolocalisationMaison from "../screens/maison/LieuxGeolocalisationMaison";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,11 +17,6 @@ export default function MaisonNavigator() {
         name="ListeCoursesMaison"
         component={EcranCategorieMaison}
         initialParams={{ categorie: "courses" }}
-      />
-      <Stack.Screen
-        name="ProduitsARacheterMaison"
-        component={EcranCategorieMaison}
-        initialParams={{ categorie: "produitsARacheter" }}
       />
       <Stack.Screen
         name="MenageMaison"
@@ -41,6 +38,9 @@ export default function MaisonNavigator() {
         component={EcranCategorieMaison}
         initialParams={{ categorie: "todo" }}
       />
+
+      <Stack.Screen name="ReglagesRappelsMaison" component={ReglagesRappelsMaison} />
+      <Stack.Screen name="LieuxGeolocalisationMaison" component={LieuxGeolocalisationMaison} />
     </Stack.Navigator>
   );
 }

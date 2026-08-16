@@ -22,7 +22,7 @@ export function PanierProvider({ children }) {
   const [chargementTermine, setChargementTermine] = useState(false);
   const [enAnalyse, setEnAnalyse] = useState(false);
   const { ajouterRendezVous } = useAgenda();
-  const { ajouter: ajouterDansMaison } = useMaison();
+  const { ajouter: ajouterDansMaison, ouvrirRecap } = useMaison();
 
   useEffect(() => {
     chargerNotes().then((notesChargees) => {
@@ -72,6 +72,10 @@ export function PanierProvider({ children }) {
 
   }
 }
+
+    if (analyse?.destination === "recapSortie") {
+      ouvrirRecap();
+    }
 
     if (analyse?.destination === "maison") {
       ajouterDansMaison(analyse.categorie, analyse.texte || contenu, "fifi");

@@ -20,7 +20,19 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker",
-      "expo-video"
-    ]
+      "expo-video",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permet à Fifi de te prévenir quand tu passes près d'un lieu enregistré, même app fermée.",
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2e8ab694-a6e4-48d2-a35c-9cc322ea6a87"
+      }
+    }
   }
 }
