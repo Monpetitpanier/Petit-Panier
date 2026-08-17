@@ -10,8 +10,11 @@ import {
   TacheMenage,
   TypeProduitCourse,
   FrequenceMenage,
+  CategorieRayon,
   LISTES_VIDES,
 } from '../types/maison';
+
+import { devinerRayon } from './rayonCourses';
 
 
 // =======================================
@@ -20,6 +23,8 @@ import {
 
 const STORAGE_KEY =
   '@petit_panier_maison';
+  const VERSION_MAISON =
+  2;
 
 // =======================================
 // COURSES : PRODUITS ESSENTIELS PAR DÉFAUT
@@ -66,6 +71,13 @@ const COURSES_ESSENTIELLES = [
   'Sacs poubelle',
   'Produit vaisselle',
   'Lessive',
+
+  'Couches',
+  'Lingettes',
+  'Biberons',
+  'Lait infantile',
+  'Petits pots',
+  'Compotes bébé',
 ];
 
 // =======================================
@@ -272,6 +284,8 @@ export async function chargerListes(): Promise<MaisonListes> {
 
           typeProduit: 'essentiel',
 
+          rayon: devinerRayon(texte),
+
           selectionne: false,
 
           achete: false,
@@ -307,82 +321,103 @@ export async function chargerListes(): Promise<MaisonListes> {
     };
 
 
-    // ===================================
-    // COURSES
-    // ===================================
+   // ===================================
+// COURSES
+// ===================================
 
-    if (
-      Array.isArray(donnees.courses) &&
-      donnees.courses.length > 0
-    ) {
+if (Array.isArray(donnees.courses)) {
 
-      listes.courses =
-        donnees.courses.map(
-          (item: any): ProduitCourse => ({
+  listes.courses =
+    donnees.courses.map(
+      (item: any): ProduitCourse => ({
 
-            ...item,
+        ...item,
 
-            categorie: 'courses',
+        categorie: 'courses',
 
-            typeProduit:
-              item.typeProduit === 'ponctuel'
-                ? 'ponctuel'
-                : 'essentiel',
+        typeProduit:
+          item.typeProduit === 'ponctuel'
+            ? 'ponctuel'
+            : 'essentiel',
 
-            selectionne:
-              typeof item.selectionne === 'boolean'
-                ? item.selectionne
-                : false,
+        selectionne:
+          typeof item.selectionne === 'boolean'
+            ? item.selectionne
+            : false,
 
-            achete:
-              typeof item.achete === 'boolean'
-                ? item.achete
-                : false,
+        achete:
+          typeof item.achete === 'boolean'
+            ? item.achete
+            : false,
 
-          })
-        );
+        rayon:
+          item.rayon ||
+          devinerRayon(item.texte),
 
-    }
+      })
+    );
 
-    else {
 
-      /*
-       * Une ancienne installation peut déjà
-       * posséder des données Maison mais avoir
-       * une liste de courses vide.
-       *
-       * Dans ce cas, on initialise les essentiels.
-       */
+  // ===================================
+  // AJOUT DES ESSENTIELS MANQUANTS
+  // ===================================
 
-      listes.courses =
-        COURSES_ESSENTIELLES.map(
-          (texte): ProduitCourse => ({
+  const textesExistants =
+    listes.courses.map(
+      (item) =>
+        item.texte.trim().toLowerCase()
+    );
 
-            id: `${Date.now()}-${Math.random()
+
+  const essentielsManquants =
+    COURSES_ESSENTIELLES.filter(
+      (texte) =>
+        !textesExistants.includes(
+          texte.trim().toLowerCase()
+        )
+    );
+
+
+  const nouveauxEssentiels:
+    ProduitCourse[] =
+      essentielsManquants.map(
+        (texte) => ({
+
+          id:
+            `${Date.now()}-${Math.random()
               .toString(36)
               .slice(2, 8)}-${texte}`,
 
-            texte,
+          texte,
 
-            fait: false,
+          fait: false,
 
-            categorie: 'courses',
+          categorie: 'courses',
 
-            dateCreation:
-              new Date().toISOString(),
+          dateCreation:
+            new Date().toISOString(),
 
-            source: 'manuel',
+          source: 'manuel',
 
-            typeProduit: 'essentiel',
+          typeProduit: 'essentiel',
 
-            selectionne: false,
+          rayon:
+            devinerRayon(texte),
 
-            achete: false,
+          selectionne: false,
 
-          })
-        );
+          achete: false,
 
-    }
+        })
+      );
+
+
+  listes.courses = [
+    ...listes.courses,
+    ...nouveauxEssentiels,
+  ];
+
+}
 
 
     // ===================================
@@ -719,7 +754,8 @@ export function ajouterItem(
   texte: string,
   source: 'manuel' | 'fifi' = 'manuel',
   typeProduit?: TypeProduitCourse,
-  frequence?: FrequenceMenage
+  frequence?: FrequenceMenage,
+  rayon?: CategorieRayon
 ): MaisonListes {
 
   const nouvelId =
@@ -751,6 +787,9 @@ export function ajouterItem(
 
       typeProduit:
         typeProduit ?? 'ponctuel',
+
+      rayon:
+        rayon ?? devinerRayon(texte),
 
       /*
        * Lorsqu'un produit est ajouté à la
@@ -1077,6 +1116,32 @@ export function basculerSelectionCourse(
           };
 
         }
+      ),
+
+  };
+
+}
+
+
+// =======================================
+// MODIFIER LE RAYON D'UN PRODUIT
+// =======================================
+
+export function modifierRayon(
+  listes: MaisonListes,
+  id: string,
+  nouveauRayon: CategorieRayon
+): MaisonListes {
+
+  return {
+
+    ...listes,
+
+    courses:
+      listes.courses.map((item) =>
+        item.id === id
+          ? { ...item, rayon: nouveauRayon }
+          : item
       ),
 
   };

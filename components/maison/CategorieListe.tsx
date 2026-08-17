@@ -18,9 +18,13 @@ import {
   MaisonItem,
   ProduitCourse,
   TacheMenage,
+  CategorieRayon,
+  RAYONS_INFO,
 } from '../../types/maison';
 
 import { useMaison } from '../../contexts/MaisonContext';
+
+import SelecteurRayon from './SelecteurRayon';
 
 import { Colors } from '../../theme/colors';
 import { Spacing } from '../../theme/spacing';
@@ -42,6 +46,7 @@ export default function CategorieListe({
     basculerSelectionCourse,
     supprimer,
     terminerCourses,
+    modifierRayon,
   } = useMaison();
 
 
@@ -50,6 +55,38 @@ export default function CategorieListe({
 
   const [modeCourses, setModeCourses] =
     useState(false);
+
+  // Rayons actuellement dépliés (menu déroulant)
+  const [rayonsOuverts, setRayonsOuverts] =
+    useState<Set<CategorieRayon>>(new Set());
+
+  // Produit dont on est en train de corriger le rayon
+  const [produitEnEdition, setProduitEnEdition] =
+    useState<ProduitCourse | null>(null);
+
+  const basculerRayonOuvert = (rayon: CategorieRayon) => {
+    setRayonsOuverts((prev) => {
+      const nouveau = new Set(prev);
+      if (nouveau.has(rayon)) {
+        nouveau.delete(rayon);
+      } else {
+        nouveau.add(rayon);
+      }
+      return nouveau;
+    });
+  };
+
+  const ORDRE_RAYONS = (Object.keys(RAYONS_INFO) as CategorieRayon[]).sort(
+    (a, b) => RAYONS_INFO[a].ordre - RAYONS_INFO[b].ordre
+  );
+
+  const grouperParRayon = (produits: ProduitCourse[]) => {
+    const groupes = ORDRE_RAYONS.map((rayon) => ({
+      rayon,
+      produits: produits.filter((p) => p.rayon === rayon),
+    }));
+    return groupes;
+  };
 
 
   const items =
@@ -303,14 +340,24 @@ const tachesAnnuelles =
         </TouchableOpacity>
 
 
-        <Text
-          style={[
-            styles.texteItem,
-            pris && styles.texteAchete,
-          ]}
-        >
-          {item.texte}
-        </Text>
+      <TouchableOpacity
+  style={{ flex: 1 }}
+  onLongPress={() => {
+    if (!modeCourses) {
+      setProduitEnEdition(item);
+    }
+  }}
+  delayLongPress={500}
+>
+  <Text
+    style={[
+      styles.texteItem,
+      pris && styles.texteAchete,
+    ]}
+  >
+    {item.texte}
+  </Text>
+</TouchableOpacity>
 
 
         {!modeCourses && (
@@ -618,26 +665,43 @@ if (categorie === 'menage') {
             </Text>
 
 
-            <FlatList
-              data={listeAffichee}
-              keyExtractor={(item) =>
-                item.id
-              }
-              renderItem={
-                renderProduitCourse
-              }
-              ListEmptyComponent={
+            {produitsCourses.length === 0 && (
+  <Text style={styles.vide}>
+    Ta liste est vide pour l'instant 🌿
+  </Text>
+)}
 
-                <Text
-                  style={styles.vide}
-                >
-                  Ta liste est vide pour
-                  l'instant 🌿
-                </Text>
+            {grouperParRayon(listeAffichee).map(({rayon, produits }) => {
+              const info = RAYONS_INFO[rayon];
+              const ouvert = rayonsOuverts.has(rayon);
 
-              }
-              scrollEnabled={false}
-            />
+              return (
+                <View key={rayon} style={styles.sectionRayon}>
+                  <TouchableOpacity
+                    style={styles.enteteRayon}
+                    onPress={() => basculerRayonOuvert(rayon)}
+                  >
+                    <Text style={styles.icone}>{info.icone}</Text>
+                    <Text style={styles.titreRayon}>{info.label}</Text>
+                    <View style={styles.badgeNombre}>
+                      <Text style={styles.texteBadgeNombre}>{produits.length}</Text>
+                    </View>
+                    <MaterialCommunityIcons
+                      name={ouvert ? 'chevron-up' : 'chevron-down'}
+                      size={22}
+                      color={Colors.subtitle}
+                    />
+                  </TouchableOpacity>
+
+                  {ouvert &&
+                    produits.map((produit) => (
+                      <View key={produit.id}>
+                        {renderProduitCourse({ item: produit })}
+                      </View>
+                    ))}
+                </View>
+              );
+            })}
 
 
             {/* Ajouter un produit */}
@@ -744,27 +808,43 @@ if (categorie === 'menage') {
             </Text>
 
 
-            <FlatList
-              data={
-                produitsSelectionnes
-              }
-              keyExtractor={(item) =>
-                item.id
-              }
-              renderItem={
-                renderProduitCourse
-              }
-              ListEmptyComponent={
+            {grouperParRayon(produitsSelectionnes).length === 0 && (
+              <Text style={styles.vide}>
+                Tout est pris ! 🎉
+              </Text>
+            )}
 
-                <Text
-                  style={styles.vide}
-                >
-                  Tout est pris ! 🎉
-                </Text>
+            {grouperParRayon(produitsSelectionnes).map(({ rayon, produits }) => {
+              const info = RAYONS_INFO[rayon];
+              const ouvert = rayonsOuverts.has(rayon);
 
-              }
-              scrollEnabled={false}
-            />
+              return (
+                <View key={rayon} style={styles.sectionRayon}>
+                  <TouchableOpacity
+                    style={styles.enteteRayon}
+                    onPress={() => basculerRayonOuvert(rayon)}
+                  >
+                    <Text style={styles.icone}>{info.icone}</Text>
+                    <Text style={styles.titreRayon}>{info.label}</Text>
+                    <View style={styles.badgeNombre}>
+                      <Text style={styles.texteBadgeNombre}>{produits.length}</Text>
+                    </View>
+                    <MaterialCommunityIcons
+                      name={ouvert ? 'chevron-up' : 'chevron-down'}
+                      size={22}
+                      color={Colors.subtitle}
+                    />
+                  </TouchableOpacity>
+
+                  {ouvert &&
+                    produits.map((produit) => (
+                      <View key={produit.id}>
+                        {renderProduitCourse({ item: produit })}
+                      </View>
+                    ))}
+                </View>
+              );
+            })}
 
 
             <TouchableOpacity
@@ -815,6 +895,18 @@ if (categorie === 'menage') {
           </>
 
         )}
+
+        <SelecteurRayon
+          visible={produitEnEdition !== null}
+          rayonActuel={produitEnEdition?.rayon ?? null}
+          onChoisir={(nouveauRayon) => {
+            if (produitEnEdition) {
+              modifierRayon(produitEnEdition.id, nouveauRayon);
+            }
+            setProduitEnEdition(null);
+          }}
+          onFermer={() => setProduitEnEdition(null)}
+        />
 
       </View>
 
@@ -904,6 +996,51 @@ if (categorie === 'menage') {
 
 const styles =
   StyleSheet.create({
+
+    sectionRayon: {
+      marginBottom: Spacing.sm,
+    },
+
+    enteteRayon: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: Spacing.sm + 2,
+      gap: Spacing.sm,
+      borderBottomWidth: 1,
+      borderBottomColor: Colors.border,
+    },
+
+    icone: {
+      fontSize: 18,
+    },
+
+    titreRayon: {
+      flex: 1,
+      fontSize: 15,
+      fontWeight: '700',
+      color: Colors.text,
+    },
+
+    badgeNombre: {
+      backgroundColor: Colors.background,
+      borderRadius: 10,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+    },
+
+    texteBadgeNombre: {
+      fontSize: 12,
+      color: Colors.subtitle,
+      fontWeight: '600',
+    },
+
+    badgeRayon: {
+      paddingHorizontal: 4,
+    },
+
+    texteBadgeRayon: {
+      fontSize: 16,
+    },
 
     titreMode: {
       fontSize: 18,

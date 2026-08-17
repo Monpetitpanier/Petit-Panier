@@ -14,6 +14,7 @@ import {
   LISTES_VIDES,
   TypeProduitCourse,
   FrequenceMenage,
+  CategorieRayon,
 } from '../types/maison';
 
 import {
@@ -24,6 +25,7 @@ import {
   basculerSelectionCourse,
   supprimerItem,
   terminerCourses,
+  modifierRayon,
 } from '../utils/storageMaison';
 
 import {
@@ -44,12 +46,6 @@ import {
   annulerRappelTodo,
   annulerRappelPain,
 } from '../services/notificationsMaison';
-
-import {
-  demanderPermissionLocalisation,
-  demarrerGeofencing,
-  arreterGeofencing,
-} from '../navigation/geofencingMaison';
 
 
 // =======================================
@@ -77,6 +73,11 @@ interface MaisonContextType {
 
   basculerSelectionCourse: (
     id: string
+  ) => void;
+
+  modifierRayon: (
+    id: string,
+    nouveauRayon: CategorieRayon
   ) => void;
 
   supprimer: (
@@ -342,35 +343,6 @@ useEffect(() => {
 
 
   // =======================================
-  // GÉOFENCING (lieux favoris)
-  // =======================================
-
-  useEffect(() => {
-
-    if (chargement) return;
-
-    if (planning.geolocalisationActive) {
-
-      demarrerGeofencing(
-        planning.magasinsHabituels,
-        planning.boulangeriesHabituelles
-      );
-
-    } else {
-
-      arreterGeofencing();
-
-    }
-
-  }, [
-    chargement,
-    planning.geolocalisationActive,
-    planning.magasinsHabituels,
-    planning.boulangeriesHabituelles,
-  ]);
-
-
-  // =======================================
   // AJOUTER UN ÉLÉMENT
   // =======================================
 
@@ -438,6 +410,26 @@ useEffect(() => {
         basculerSelectionCourse(
           prev,
           id
+        )
+      );
+
+    },
+    []
+  );
+
+
+  // =======================================
+  // MODIFIER LE RAYON D'UN PRODUIT
+  // =======================================
+
+  const modifierRayonCourse = useCallback(
+    (id: string, nouveauRayon: CategorieRayon) => {
+
+      setListes((prev) =>
+        modifierRayon(
+          prev,
+          id,
+          nouveauRayon
         )
       );
 
@@ -523,22 +515,6 @@ useEffect(() => {
 
         }
 
-        if (nouveau.geolocalisationActive) {
-
-          const accorde =
-            await demanderPermissionLocalisation();
-
-          if (!accorde) {
-
-            nouveau = {
-              ...nouveau,
-              geolocalisationActive: false,
-            };
-
-          }
-
-        }
-
 
         setPlanning((prev) => {
 
@@ -581,6 +557,9 @@ useEffect(() => {
 
         basculerSelectionCourse:
           selectionnerCourse,
+
+        modifierRayon:
+          modifierRayonCourse,
 
         supprimer,
 

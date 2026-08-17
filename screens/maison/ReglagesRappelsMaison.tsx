@@ -130,7 +130,11 @@ export default function ReglagesRappelsMaison() {
 {/* Géolocalisation */}
 <TouchableOpacity
   style={styles.carte}
-  onPress={() => navigation.navigate('LieuxGeolocalisationMaison')}
+  onPress={() =>
+  navigation.navigate(
+    'LieuxGeolocalisationMaison' as never
+  )
+}
 >
   <View style={styles.ligneSwitch}>
     <View style={{ flex: 1 }}>

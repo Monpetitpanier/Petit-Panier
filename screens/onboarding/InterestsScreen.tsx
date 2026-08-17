@@ -49,7 +49,7 @@ export default function InterestsScreen() {
               onPress={() => basculer(item.id)}
               activeOpacity={0.7}
             >
-              <MaterialCommunityIcons name={item.icone} size={20} color={item.couleur} style={styles.icone} />
+              <MaterialCommunityIcons name={item.icone} size={20} color="#e6a7c4" style={styles.icone} />
 <Text style={styles.label}>{item.label}</Text>
 <MaterialCommunityIcons
   name={coche ? "check-circle" : "circle-outline"}

@@ -308,15 +308,7 @@ export async function programmerRappelMenage(
           'Petit rappel ménage 🧹',
 
         body:
-          `Tu as ${nbEnAttente} tâche${
-            nbEnAttente > 1
-              ? 's'
-              : ''
-          } ménagère${
-            nbEnAttente > 1
-              ? 's'
-              : ''
-          } en attente.`,
+          'Des tâches sont en attente. Reviens quand tu veux. 🌿',
 
         data: {
           destination: 'menage',

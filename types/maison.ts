@@ -31,6 +31,35 @@ export type TypeProduitCourse =
 
 
 // =======================================
+// RAYON DU PRODUIT
+// =======================================
+
+export type CategorieRayon =
+  | 'frais'
+  | 'epicerie'
+  | 'conserves'
+  | 'epices'
+  | 'fruits'
+  | 'legumes'
+  | 'entretien'
+  | 'bebe';
+
+export const RAYONS_INFO: Record<
+  CategorieRayon,
+  { label: string; icone: string; ordre: number }
+> = {
+  frais: { label: 'Frais', icone: '🧀', ordre: 1 },
+  fruits: { label: 'Fruits', icone: '🍎', ordre: 2 },
+  legumes: { label: 'Légumes', icone: '🥕', ordre: 3 },
+  epicerie: { label: 'Épicerie', icone: '🍞', ordre: 4 },
+  conserves: { label: 'Conserves', icone: '🥫', ordre: 5 },
+  epices: { label: 'Épices', icone: '🧂', ordre: 6 },
+  entretien: { label: 'Entretien', icone: '🧴', ordre: 7 },
+  bebe: { label: 'Bébé', icone: '🍼', ordre: 8 },
+};
+
+
+// =======================================
 // FRÉQUENCE MÉNAGE
 // =======================================
 
@@ -64,6 +93,8 @@ export interface ProduitCourse extends MaisonItem {
   categorie: 'courses';
 
   typeProduit: TypeProduitCourse;
+
+  rayon: CategorieRayon;
 
   /*
    * Étape 1 :
@@ -147,7 +178,7 @@ export const CATEGORIES_INFO: Record<
 
   entretien: {
     label: 'Entretien',
-    sousTitre: 'Petits travaux, entretien',
+    sousTitre: 'Petits travaux, entretien annuel',
     icone: '🛠️',
   },
 
@@ -160,7 +191,7 @@ export const CATEGORIES_INFO: Record<
   todo: {
     label: 'To-do',
     sousTitre:
-      'À prévoir sur l’année (entretien, cadeaux, vacances...)',
+      'À prévoir sur l’année (cadeaux, vacances, travaux...)',
     icone: '📌',
   },
 
