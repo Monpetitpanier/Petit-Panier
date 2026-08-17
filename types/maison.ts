@@ -124,6 +124,27 @@ export interface TacheMenage extends MaisonItem {
   prochaineOccurrence?: string;
 }
 
+// =======================================
+// GARANTIE
+// =======================================
+
+export interface Garantie {
+  id: string;
+
+  produit: string;
+
+  dateAchat: string;
+
+  dateFin: string;
+
+  magasin?: string;
+
+  reference?: string;
+
+  note?: string;
+
+  dateCreation: string;
+}
 
 // =======================================
 // LISTES MAISON
@@ -133,7 +154,7 @@ export interface MaisonListes {
   courses: ProduitCourse[];
   menage: TacheMenage[];
   entretien: MaisonItem[];
-  garanties: MaisonItem[];
+  garanties: Garantie[];
   todo: MaisonItem[];
 }
 

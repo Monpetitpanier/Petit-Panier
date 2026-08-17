@@ -10,6 +10,7 @@ import {
   TacheMenage,
   TypeProduitCourse,
   FrequenceMenage,
+  Garantie,
   CategorieRayon,
   LISTES_VIDES,
 } from '../types/maison';
@@ -23,8 +24,8 @@ import { devinerRayon } from './rayonCourses';
 
 const STORAGE_KEY =
   '@petit_panier_maison';
-  const VERSION_MAISON =
-  2;
+const STORAGE_KEY_GARANTIES =
+  '@petit_panier_garanties';  
 
 // =======================================
 // COURSES : PRODUITS ESSENTIELS PAR DÉFAUT
@@ -419,11 +420,6 @@ if (Array.isArray(donnees.courses)) {
 
 }
 
-
-    // ===================================
-    // MÉNAGE
-    // ===================================
-
 // ===================================
 // MÉNAGE
 // ===================================
@@ -671,7 +667,7 @@ function creerMenageBase(): TacheMenage[] {
 
       listes.garanties =
         donnees.garanties.map(
-          (item: any): MaisonItem => ({
+          (item: any): Garantie => ({
 
             ...item,
 
@@ -1047,6 +1043,14 @@ export function basculerItem(
 
   }
 
+// ===================================
+// GARANTIES
+// ===================================
+
+if (categorie === 'garanties') {
+  return listes;
+}
+
   // ===================================
   // AUTRES CATÉGORIES
   // ===================================
@@ -1319,12 +1323,10 @@ export function itemsEnAttente(
         break;
 
 
-      case 'garanties':
-        resultat.garanties =
-          listes.garanties.filter(
-            (item) => !item.fait
-          );
-        break;
+     case 'garanties':
+  resultat.garanties =
+    listes.garanties;
+  break;
 
 
       case 'todo':
