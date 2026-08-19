@@ -1,6 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
+import GarantiesMaison from "../screens/maison/GarantiesMaison";
+import EntretienMaison from "../screens/maison/EntretienMaison";
 import Maison from "../screens/Maison";
 import EcranCategorieMaison from "../screens/maison/EcranCategorieMaison";
 import ReglagesRappelsMaison from "../screens/maison/ReglagesRappelsMaison";
@@ -25,13 +26,13 @@ export default function MaisonNavigator() {
       />
       <Stack.Screen
         name="EntretienMaison"
-        component={EcranCategorieMaison}
-        initialParams={{ categorie: "entretien" }}
+        component={EntretienMaison}
+    
       />
       <Stack.Screen
         name="GarantiesMaison"
-        component={EcranCategorieMaison}
-        initialParams={{ categorie: "garanties" }}
+        component={GarantiesMaison}
+        
       />
       <Stack.Screen
         name="ToDoMaison"

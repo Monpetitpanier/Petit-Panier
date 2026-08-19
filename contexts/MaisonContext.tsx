@@ -15,6 +15,7 @@ import {
   TypeProduitCourse,
   FrequenceMenage,
   CategorieRayon,
+  EntretienMaison,
 } from '../types/maison';
 
 import {
@@ -66,6 +67,12 @@ interface MaisonContextType {
     frequence?: FrequenceMenage
   ) => void;
 
+  ajouterEntretien: (
+  texte: string,
+  frequenceMois: number,
+  rappelActif?: boolean
+) => void;
+
   basculer: (
     categorie: MaisonCategorie,
     id: string
@@ -100,6 +107,7 @@ interface MaisonContextType {
   ) => Promise<void>;
 
 }
+
 
 
 // =======================================
@@ -147,6 +155,70 @@ export function MaisonProvider({
       PLANNING_PAR_DEFAUT
     );
 
+    // =======================================
+// AJOUTER UN ENTRETIEN
+// =======================================
+
+const ajouterEntretien = useCallback(
+  (
+    texte: string,
+    frequenceMois: number,
+    rappelActif: boolean = true
+  ) => {
+
+    if (!texte.trim()) {
+      return;
+    }
+
+    const maintenant =
+      new Date();
+
+    const prochaineOccurrence =
+      new Date(maintenant);
+
+    prochaineOccurrence.setMonth(
+      prochaineOccurrence.getMonth() +
+      frequenceMois
+    );
+
+
+    const nouvelEntretien: EntretienMaison = {
+      id:
+        `${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 8)}`,
+
+      texte: texte.trim(),
+
+      categorie: 'entretien',
+
+      dateCreation:
+        maintenant.toISOString(),
+
+      dateDernierEntretien:
+        maintenant.toISOString(),
+
+      frequenceMois,
+
+      prochaineOccurrence:
+        prochaineOccurrence.toISOString(),
+
+      rappelActif,
+    };
+
+
+    setListes((prev) => ({
+      ...prev,
+
+      entretien: [
+        ...prev.entretien,
+        nouvelEntretien,
+      ],
+    }));
+
+  },
+  []
+);
 
   // =======================================
   // CHARGEMENT INITIAL
@@ -552,6 +624,8 @@ useEffect(() => {
         chargement,
 
         ajouter,
+
+        ajouterEntretien,
 
         basculer,
 

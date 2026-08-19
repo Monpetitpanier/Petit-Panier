@@ -7,6 +7,7 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -22,7 +23,26 @@ export default function EcranCategorieMaison() {
   // La catégorie est passée en initialParams depuis MaisonNavigator.js
   const categorie = (route.params as { categorie: MaisonCategorie })?.categorie;
   const info = CATEGORIES_INFO[categorie];
+  const illustrations: Partial<
+  Record<MaisonCategorie, any>
+> = {
+  courses: require(
+    '../../assets/images/panier_courses.png'
+  ),
 
+  entretien: require(
+    '../../assets/images/entretien_maison.png'
+  ),
+
+   menage: require(
+    '../../assets/images/seau_menage.png'
+  ),
+   todo: require(
+    '../../assets/images/todo_liste.png'
+   )
+};
+const illustration =
+  illustrations[categorie];
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.contenu}>
@@ -30,7 +50,21 @@ export default function EcranCategorieMaison() {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.retour}>
             <MaterialCommunityIcons name="chevron-left" size={28} color={Colors.text} />
           </TouchableOpacity>
-          <Text style={styles.icone}>{info.icone}</Text>
+         {illustration ? (
+
+  <Image
+    source={illustration}
+    style={styles.illustration}
+    resizeMode="contain"
+  />
+
+) : (
+
+  <Text style={styles.icone}>
+    {info.icone}
+  </Text>
+
+)}
           <Text style={styles.titre}>{info.label}</Text>
           <Text style={styles.sousTitre}>{info.sousTitre}</Text>
         </View>
@@ -48,13 +82,9 @@ const styles = StyleSheet.create({
   contenu: { padding: Spacing.lg, paddingBottom: 50 },
   entete: { alignItems: 'center', marginBottom: Spacing.md },
   retour: { alignSelf: 'flex-start', padding: Spacing.xs },
+  illustration: {width: 105,height: 105,marginTop: Spacing.xs, marginBottom: Spacing.xs},
   icone: { fontSize: 40, marginTop: Spacing.xs },
-  titre: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: Colors.text,
-    marginTop: Spacing.xs,
-  },
+  titre: { fontSize: 24, fontWeight: '700', color: Colors.text,marginTop: Spacing.xs},
   sousTitre: {
     fontSize: 15,
     color: Colors.subtitle,

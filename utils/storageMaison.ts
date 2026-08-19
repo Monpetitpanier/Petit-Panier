@@ -11,6 +11,7 @@ import {
   TypeProduitCourse,
   FrequenceMenage,
   Garantie,
+  EntretienMaison,
   CategorieRayon,
   LISTES_VIDES,
 } from '../types/maison';
@@ -639,24 +640,34 @@ function creerMenageBase(): TacheMenage[] {
 
 }
 
-    // ===================================
-    // ENTRETIEN
-    // ===================================
+ // ===================================
+// ENTRETIEN
+// ===================================
 
-    if (Array.isArray(donnees.entretien)) {
+if (Array.isArray(donnees.entretien)) {
 
-      listes.entretien =
-        donnees.entretien.map(
-          (item: any): MaisonItem => ({
+  listes.entretien =
+    donnees.entretien.map(
+      (item: any): EntretienMaison => ({
 
-            ...item,
+        ...item,
 
-            categorie: 'entretien',
+        categorie: 'entretien',
 
-          })
-        );
+        frequenceMois:
+          typeof item.frequenceMois === 'number'
+            ? item.frequenceMois
+            : 12,
 
-    }
+        rappelActif:
+          typeof item.rappelActif === 'boolean'
+            ? item.rappelActif
+            : true,
+
+      })
+    );
+
+}
 
 
     // ===================================
@@ -1054,7 +1065,14 @@ if (categorie === 'garanties') {
   // ===================================
   // AUTRES CATÉGORIES
   // ===================================
+// ===================================
+// ENTRETIEN ET GARANTIES
+// ===================================
 
+if (
+  categorie === 'entretien') {
+  return listes;
+}
   return {
 
     ...listes,
@@ -1315,12 +1333,12 @@ export function itemsEnAttente(
         break;
 
 
-      case 'entretien':
-        resultat.entretien =
-          listes.entretien.filter(
-            (item) => !item.fait
-          );
-        break;
+     case 'entretien':
+
+  resultat.entretien =
+    listes.entretien;
+
+  break;
 
 
      case 'garanties':

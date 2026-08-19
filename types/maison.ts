@@ -125,6 +125,47 @@ export interface TacheMenage extends MaisonItem {
 }
 
 // =======================================
+// ENTRETIEN MAISON
+// =======================================
+
+export interface EntretienMaison {
+  id: string;
+
+  texte: string;
+
+  categorie: 'entretien';
+
+  dateCreation: string;
+
+  /*
+   * Date à laquelle l'entretien
+   * a été effectué pour la dernière fois.
+   */
+  dateDernierEntretien?: string;
+
+  /*
+   * Fréquence exprimée en mois.
+   *
+   * Exemples :
+   * 12 = 1 an
+   * 24 = 2 ans
+   * 60 = 5 ans
+   */
+  frequenceMois: number;
+
+  /*
+   * Date calculée de la prochaine échéance.
+   */
+  prochaineOccurrence?: string;
+
+  /*
+   * Permet de savoir si l'utilisateur
+   * souhaite recevoir un rappel.
+   */
+  rappelActif: boolean;
+}
+
+// =======================================
 // GARANTIE
 // =======================================
 
@@ -153,7 +194,7 @@ export interface Garantie {
 export interface MaisonListes {
   courses: ProduitCourse[];
   menage: TacheMenage[];
-  entretien: MaisonItem[];
+  entretien: EntretienMaison[];
   garanties: Garantie[];
   todo: MaisonItem[];
 }
