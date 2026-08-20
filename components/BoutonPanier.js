@@ -18,7 +18,6 @@ import {
   choisirDansGalerie,
 } from "../services/imageService";
 
-import BoutonPrincipal from "./BoutonPrincipal";
  
 export default function BoutonPanier() {
   const [ouvert, setOuvert] = useState(false);
@@ -91,14 +90,28 @@ export default function BoutonPanier() {
     setOuvert(false);
   }
 
-  if (!ouvert) {
-    return (
-      <BoutonPrincipal
-        titre="🧺 Dépose dans mon Petit Panier"
-        onPress={() => setOuvert(true)}
+ if (!ouvert) {
+  return (
+    <TouchableOpacity
+      style={styles.carteDepot}
+      activeOpacity={0.85}
+      onPress={() => setOuvert(true)}
+    >
+
+      <View style={styles.texteDepot}>
+        <Text style={styles.titreDepot}>
+          C'est par ici pour déposer ton petit mot!
+        </Text>
+      </View>
+
+      <MaterialCommunityIcons
+        name="chevron-right"
+        size={30}
+        color="#B58A9A"
       />
-    );
-  }
+    </TouchableOpacity>
+  );
+}
 
   return (
     <View style={styles.postIt}>
@@ -201,7 +214,7 @@ export default function BoutonPanier() {
             size={30}
             color={
               texte.trim() || pieceJointe
-                ? "#8B6B4A"
+                ? "#eb8899"
                 : "#D4C7BB"
             }
           />
@@ -278,4 +291,28 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF9F1",
     borderRadius: 12,
   },
+  carteDepot: {
+  flexDirection: "row",
+  alignItems: "center",
+  backgroundColor: "#f5c0c9",
+  borderRadius: 24,
+  paddingVertical: 16,
+  paddingHorizontal: 18,
+  marginTop: -60,
+  marginBottom: 10,
+  borderWidth: 1,
+  borderColor: "#d4b5bf",
+},
+
+
+texteDepot: {
+  flex: 1,
+},
+
+titreDepot: {
+  fontSize: 14,
+  fontWeight: "700",
+  color: "#5A4A42",
+},
+
 });

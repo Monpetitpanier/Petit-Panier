@@ -27,7 +27,7 @@ export default function NameScreen() {
         value={prenom}
         onChangeText={setPrenom}
       />
-      <Text style={styles.exemple}>ex. Mylittle Nest, Marie, Maman...</Text>
+      <Text style={styles.exemple}>ex. Jules, Marie, Maman...</Text>
     </GabaritOnboarding>
   );
 }

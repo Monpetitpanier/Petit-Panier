@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 import { PanierProvider } from "./contexts/PanierContext";
@@ -10,6 +12,8 @@ import RecapSortieModal from "./components/maison/RecapSortieModal";
 
 
 export default function App() {
+
+
   return (
     <ActionSheetProvider>
 

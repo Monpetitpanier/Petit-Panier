@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   TextInput,
+  Alert,
 } from "react-native";
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -20,7 +21,7 @@ import { Spacing } from "../../theme/spacing";
 export default function EntretienMaison() {
 
 const navigation = useNavigation();
-const { ajouterEntretien, listes } = useMaison();
+const { ajouterEntretien, terminerEntretien, supprimer, listes } = useMaison();
 
 const [formulaireVisible, setFormulaireVisible] =
   useState(false);
@@ -137,43 +138,111 @@ const [frequenceMois, setFrequenceMois] =
           ? "Tous les 5 ans"
           : `Tous les ${entretien.frequenceMois} mois`;
 
-      return (
+return (
 
-        <View
-          key={entretien.id}
-          style={styles.carteEntretien}
-        >
+  <View
+    key={entretien.id}
+    style={styles.carteEntretien}
+  >
 
-          <View style={styles.iconeEntretien}>
+    {/* =================================== */}
+    {/* LIGNE PRINCIPALE */}
+    {/* =================================== */}
 
-            <MaterialCommunityIcons
-              name="tools"
-              size={24}
-              color={Colors.secondary}
-            />
+   <View style={styles.lignePrincipale}>
 
-          </View>
+  <View style={styles.contenuEntretien}>
 
-          <View style={styles.contenuEntretien}>
+        <Text style={styles.nomEntretien}>
+          {entretien.texte}
+        </Text>
 
-            <Text style={styles.nomEntretien}>
-              {entretien.texte}
-            </Text>
+        <Text style={styles.frequenceEntretien}>
+          {frequence}
+        </Text>
 
-            <Text style={styles.frequenceEntretien}>
-              {frequence}
-            </Text>
+        <Text style={styles.echeanceEntretien}>
+          Prochain entretien :{" "}
+          {prochaineDate}
+        </Text>
 
-            <Text style={styles.echeanceEntretien}>
-              Prochain entretien : {prochaineDate}
-            </Text>
+      </View>
 
-          </View>
+    </View>
 
-        </View>
 
-      );
+    {/* =================================== */}
+    {/* ACTIONS */}
+    {/* =================================== */}
 
+    <View style={styles.actionsEntretien}>
+
+      <TouchableOpacity
+        style={styles.boutonSupprimer}
+        activeOpacity={0.7}
+        onPress={() => {
+
+          Alert.alert(
+            "Supprimer cet entretien ?",
+            `Voulez-vous vraiment supprimer « ${entretien.texte} » ?`,
+            [
+              {
+                text: "Annuler",
+                style: "cancel",
+              },
+              {
+                text: "Supprimer",
+                style: "destructive",
+                onPress: () =>
+                  supprimer(
+                    "entretien",
+                    entretien.id
+                  ),
+              },
+            ]
+          );
+
+        }}
+      >
+
+        <MaterialCommunityIcons
+          name="trash-can-outline"
+          size={21}
+          color={Colors.subtitle}
+        />
+
+        <Text style={styles.texteSupprimer}>
+          Supprimer
+        </Text>
+
+      </TouchableOpacity>
+
+
+      <TouchableOpacity
+        style={styles.boutonEffectue}
+        activeOpacity={0.8}
+        onPress={() =>
+          terminerEntretien(entretien.id)
+        }
+      >
+
+        <MaterialCommunityIcons
+          name="check"
+          size={20}
+          color="#FFFFFF"
+        />
+
+        <Text style={styles.texteEffectue}>
+          Effectué
+        </Text>
+
+      </TouchableOpacity>
+
+    </View>
+
+  </View>
+
+);
     })}
 
   </View>
@@ -377,6 +446,43 @@ boutonEnregistrer: {
   alignItems: "center",
 },
 
+carteEntretien: {
+  backgroundColor: Colors.card,
+
+  borderRadius: 20,
+
+  padding: Spacing.md,
+
+  shadowColor: "#000",
+  shadowOpacity: 0.05,
+  shadowRadius: 6,
+  shadowOffset: {
+    width: 0,
+    height: 2,
+  },
+
+  elevation: 2,
+},
+
+lignePrincipale: {
+  flexDirection: "row",
+  alignItems: "center",
+},
+
+actionsEntretien: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+
+  marginTop: Spacing.md,
+},
+
+texteEffectue: {
+  color: "#FFFFFF",
+  fontSize: 13,
+  fontWeight: "700",
+},
+
   // =====================================
   // EN-TÊTE
   // =====================================
@@ -486,27 +592,6 @@ listeEntretiens: {
   marginBottom: Spacing.lg,
 },
 
-carteEntretien: {
-  flexDirection: "row",
-  alignItems: "center",
-
-  backgroundColor: Colors.card,
-
-  borderRadius: 20,
-
-  padding: Spacing.md,
-
-  shadowColor: "#000",
-  shadowOpacity: 0.05,
-  shadowRadius: 6,
-  shadowOffset: {
-    width: 0,
-    height: 2,
-  },
-
-  elevation: 2,
-},
-
 iconeEntretien: {
   width: 48,
   height: 48,
@@ -542,6 +627,36 @@ echeanceEntretien: {
   fontSize: 14,
   fontWeight: "600",
   color: Colors.secondary,
+},
+
+boutonEffectue: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+
+  backgroundColor: Colors.secondary,
+
+  paddingHorizontal: 16,
+  paddingVertical: 10,
+
+  borderRadius: 14,
+
+  gap: 6,
+},
+
+boutonSupprimer: {
+  flexDirection: "row",
+  alignItems: "center",
+
+  paddingHorizontal: 8,
+  paddingVertical: 8,
+
+  gap: 5,
+},
+
+texteSupprimer: {
+  fontSize: 13,
+  color: Colors.subtitle,
 },
 
   // =====================================

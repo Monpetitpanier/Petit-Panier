@@ -9,7 +9,7 @@ import CarteFifi from "../components/CarteFifi";
 import BoutonPanier from "../components/BoutonPanier";
 import CarteCitation from "../components/CarteCitation";
 import CarteJournee from "../components/CarteJournee";
-
+import CarteCoupDOeil from "../components/CarteCoupDOeil";
 import { Colors } from "../theme/colors";
 import { Spacing } from "../theme/spacing";
 
@@ -26,8 +26,13 @@ export default function Accueil() {
 
 <View style={styles.contenuAvecMarges}>
   <BoutonPanier />
+
+  <View style={styles.ligneCartes}>
+    <CarteJournee />
+    <CarteCoupDOeil />
+  </View>
+
   <CarteCitation />
-  <CarteJournee />
 </View>
     </ScrollView>
   );
@@ -42,6 +47,11 @@ const styles = StyleSheet.create({
  content: {
   paddingTop: 20,
   paddingBottom: 50,
+},
+
+ligneCartes: {
+  flexDirection: "row",
+  gap: 12,
 },
 
 contenuAvecMarges: {

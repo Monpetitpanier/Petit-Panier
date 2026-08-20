@@ -5,7 +5,7 @@ import BienEtre from "../screens/bienetre/BienEtre";
 import Respiration from "../screens/bienetre/Respiration";
 import Gratitude from "../screens/bienetre/Gratitude";
 import Priere from "../screens/bienetre/Prière";
-
+import PenseesPositives from "../screens/bienetre/PenseesPositives";
 const Stack = createNativeStackNavigator();
 
 export default function BienEtreNavigator() {
@@ -25,6 +25,11 @@ export default function BienEtreNavigator() {
         name="Gratitude"
         component={Gratitude}
       />
+
+      <Stack.Screen
+  name="PenseesPositives"
+  component={PenseesPositives}
+/>
 
       <Stack.Screen
         name="Priere"

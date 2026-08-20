@@ -5,7 +5,6 @@ import { Platform } from 'react-native';
 
 import { JourSemaine } from '../utils/planningMaison';
 
-
 // =======================================
 // CONFIGURATION DES NOTIFICATIONS
 // =======================================
@@ -83,12 +82,14 @@ const ID_MENAGE =
 const ID_MENAGE_DU =
   'rappel-menage-taches-dues';
 
+const ID_ENTRETIEN =
+  'rappel-entretien-maison';
+
 const ID_TODO =
   'rappel-todo-maison';
 
 const ID_PAIN =
   'rappel-pain-maison';
-
 
 // =======================================
 // OUTIL HEURE
@@ -144,6 +145,87 @@ export async function annulerRappelMenage() {
       .catch(() => {});
 
   }
+
+}
+
+// =======================================
+// ANNULER RAPPEL ENTRETIEN
+// =======================================
+
+export async function annulerRappelEntretien() {
+
+  await Notifications
+    .cancelScheduledNotificationAsync(
+      ID_ENTRETIEN
+    )
+    .catch(() => {});
+
+}
+
+// =======================================
+// RAPPEL DES ENTRETIENS À VENIR
+// =======================================
+
+export async function programmerRappelEntretien(
+  nbEntretiens: number
+) {
+
+  // On annule l'ancien rappel
+  await annulerRappelEntretien();
+
+
+  /*
+   * Aucun entretien à prévoir :
+   * aucune notification.
+   */
+
+  if (nbEntretiens === 0) {
+    return;
+  }
+
+
+  /*
+   * Fifi prévient chaque matin à 09h00.
+   *
+   * La notification regroupe les entretiens
+   * proches ou arrivés à échéance.
+   */
+
+  await Notifications.scheduleNotificationAsync({
+
+    identifier:
+      ID_ENTRETIEN,
+
+    content: {
+
+      title:
+        'Petit rappel entretien 🔧',
+
+      body:
+        `Tu as ${nbEntretiens} entretien${
+          nbEntretiens > 1
+            ? 's'
+            : ''
+        } à prévoir prochainement. 🌿`,
+
+      data: {
+        destination: 'entretien',
+      },
+
+    },
+
+    trigger: {
+
+      type:
+        Notifications.SchedulableTriggerInputTypes.DAILY,
+
+      hour: 9,
+
+      minute: 0,
+
+    },
+
+  });
 
 }
 

@@ -24,6 +24,20 @@ export default function Plus() {
         <Text style={styles.titre}>Plus</Text>
 
         <CarteSection
+  icone="🏡"
+  titre="Maison"
+  sousTitre="Organiser et prendre soin de son chez-soi."
+  onPress={() => navigation.navigate("Maison")}
+/>
+
+<CarteSection
+  icone="❤️"
+  titre="Santé"
+  sousTitre="Prendre soin de sa santé au quotidien."
+  onPress={() => navigation.navigate("Sante")}
+/>
+
+        <CarteSection
           icone="🌿"
           titre="Bien-être"
           sousTitre="Prendre soin de soi, en douceur."
@@ -35,18 +49,6 @@ export default function Plus() {
           titre="Univers"
           sousTitre="Retrouver ses espaces de vie."
           onPress={() => navigation.navigate("Univers")}
-        />
-
-        <CarteSection
-          icone="⚙️"
-          titre="Paramètres"
-          sousTitre="Personnaliser Petit Panier."
-          onPress={() =>
-            Alert.alert(
-              "Paramètres",
-              "Cette section sera bientôt disponible."
-            )
-          }
         />
       </ScrollView>
     </SafeAreaView>

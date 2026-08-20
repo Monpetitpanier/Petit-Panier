@@ -1101,6 +1101,55 @@ if (
 
 }
 
+// =======================================
+// TERMINER UN ENTRETIEN
+// =======================================
+
+export function terminerEntretien(
+  listes: MaisonListes,
+  id: string
+): MaisonListes {
+
+  const maintenant = new Date();
+
+  return {
+
+    ...listes,
+
+    entretien:
+      listes.entretien.map(
+        (entretien) => {
+
+          if (entretien.id !== id) {
+            return entretien;
+          }
+
+          const prochaineOccurrence =
+            new Date(maintenant);
+
+          prochaineOccurrence.setMonth(
+            prochaineOccurrence.getMonth() +
+              entretien.frequenceMois
+          );
+
+          return {
+
+            ...entretien,
+
+            derniereRealisation:
+              maintenant.toISOString(),
+
+            prochaineOccurrence:
+              prochaineOccurrence.toISOString(),
+
+          };
+
+        }
+      ),
+
+  };
+
+}
 
 // =======================================
 // SÉLECTIONNER / DÉSÉLECTIONNER UN PRODUIT

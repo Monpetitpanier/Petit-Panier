@@ -27,6 +27,7 @@ import {
   supprimerItem,
   terminerCourses,
   modifierRayon,
+  terminerEntretien,
 } from '../utils/storageMaison';
 
 import {
@@ -46,6 +47,8 @@ import {
   annulerRappelMenage,
   annulerRappelTodo,
   annulerRappelPain,
+  programmerRappelEntretien,
+  annulerRappelEntretien,
 } from '../services/notificationsMaison';
 
 
@@ -93,6 +96,10 @@ interface MaisonContextType {
   ) => void;
 
   terminerCourses: () => void;
+
+  terminerEntretien: (
+  id: string
+) => void;
 
   recapVisible: boolean;
 
@@ -303,6 +310,70 @@ const ajouterEntretien = useCallback(
     planning.menageJours,
     planning.menageHeure,
   ]);
+
+  // =======================================
+// RAPPEL DES ENTRETIENS À VENIR
+// =======================================
+
+useEffect(() => {
+
+  if (chargement) {
+    return;
+  }
+
+
+  const maintenant =
+    new Date();
+
+  const dans30Jours =
+    new Date();
+
+  dans30Jours.setDate(
+    maintenant.getDate() + 30
+  );
+
+
+  const entretiensAvenir =
+    listes.entretien.filter(
+      (entretien) => {
+
+        if (
+          !entretien.prochaineOccurrence
+        ) {
+          return false;
+        }
+
+
+        const prochaineDate =
+          new Date(
+            entretien.prochaineOccurrence
+          );
+
+
+        return (
+          prochaineDate <= dans30Jours
+        );
+
+      }
+    );
+
+
+  if (entretiensAvenir.length > 0) {
+
+    programmerRappelEntretien(
+      entretiensAvenir.length
+    );
+
+  } else {
+
+    annulerRappelEntretien();
+
+  }
+
+}, [
+  chargement,
+  listes.entretien,
+]);
 
 // =======================================
 // RAPPEL INTELLIGENT DES TÂCHES DUES
@@ -546,6 +617,24 @@ useEffect(() => {
 
     }, []);
 
+   // =======================================
+// TERMINER UN ENTRETIEN
+// =======================================
+
+const terminerUnEntretien =
+  useCallback(
+    (id: string) => {
+
+      setListes((prev) =>
+        terminerEntretien(
+          prev,
+          id
+        )
+      );
+
+    },
+    []
+  ); 
 
   // =======================================
   // RÉCAPITULATIF
@@ -639,6 +728,9 @@ useEffect(() => {
 
         terminerCourses:
           terminerLesCourses,
+
+        terminerEntretien:
+          terminerUnEntretien,
 
         recapVisible,
 

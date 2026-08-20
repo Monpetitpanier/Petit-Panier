@@ -1,5 +1,9 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+} from "react-native";
 
 import { useAgenda } from "../contexts/AgendaContext";
 
@@ -8,136 +12,132 @@ import { Radius } from "../theme/radius";
 import { Shadow } from "../theme/shadow";
 import { Spacing } from "../theme/spacing";
 
-
 export default function CarteJournee() {
-
   const { rendezVous } = useAgenda();
 
-
-  // --------------------------------------------------
-  // RENDEZ-VOUS D'AUJOURD'HUI
-  // --------------------------------------------------
+  // ----------------------------------------
+  // DATE D'AUJOURD'HUI
+  // ----------------------------------------
 
   const aujourdHui =
-    new Date()
-      .toLocaleDateString("fr-CA");
+    new Date().toLocaleDateString("fr-CA");
 
+  // ----------------------------------------
+  // RENDEZ-VOUS DU JOUR
+  // ----------------------------------------
 
   const rendezVousAujourdhui =
     rendezVous
-      .filter((rdv) =>
-        rdv.date === aujourdHui
-      )
+      .filter((rdv) => rdv.date === aujourdHui)
       .sort((a, b) =>
-        (a.heure || "")
-          .localeCompare(
-            b.heure || ""
-          )
+        (a.heure || "").localeCompare(
+          b.heure || ""
+        )
       );
 
-
-  // --------------------------------------------------
-  // TEXTE RENDEZ-VOUS
-  // --------------------------------------------------
-
-  let texteRendezVous;
-
-  if (rendezVousAujourdhui.length === 0) {
-
-    texteRendezVous =
-      "📅 Aucun rendez-vous aujourd'hui";
-
-  } else if (
-    rendezVousAujourdhui.length === 1
-  ) {
-
-    const rdv =
-      rendezVousAujourdhui[0];
-
-    texteRendezVous =
-      `📅 ${rdv.heure && rdv.heure !== "--:--"
-        ? rdv.heure + " — "
-        : ""
-      }${rdv.titre}`;
-
-  } else {
-
-    texteRendezVous =
-      `📅 ${rendezVousAujourdhui.length} rendez-vous aujourd'hui`;
-
-  }
-
-
   return (
-
     <View style={styles.carte}>
 
-      <Text style={styles.titre}>
-        🌿 Aujourd'hui
-      </Text>
+      <View style={styles.entete}>
+        <Text style={styles.titre}>
+          Aujourd'hui
+        </Text>
 
+        <Text style={styles.icone}>
+          📅
+        </Text>
+      </View>
 
-      <Text style={styles.ligne}>
-        {texteRendezVous}
-      </Text>
+      {rendezVousAujourdhui.length === 0 ? (
 
+        <Text style={styles.vide}>
+          Rien de prévu aujourd'hui.
+        </Text>
 
-      <Text style={styles.ligne}>
-        🏡 Quelques courses
-      </Text>
+      ) : (
 
+        <View style={styles.liste}>
+          {rendezVousAujourdhui.map((rdv) => (
+            <View
+              key={rdv.id}
+              style={styles.rendezVous}
+            >
+              {rdv.heure &&
+                rdv.heure !== "--:--" && (
+                  <Text style={styles.heure}>
+                    {rdv.heure}
+                  </Text>
+                )}
 
-      <Text style={styles.ligne}>
-        ❤️ Rien à signaler
-      </Text>
+              <Text
+                style={styles.nomRendezVous}
+                numberOfLines={2}
+              >
+                {rdv.titre}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+      )}
 
     </View>
-
   );
 }
 
-
 const styles = StyleSheet.create({
-
   carte: {
-
-    backgroundColor:
-      Colors.card,
-
-    borderRadius:
-      Radius.large,
-
-    padding:
-      Spacing.lg,
-
-    marginTop:
-      Spacing.lg,
-
+    flex: 1,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.large,
+    padding: Spacing.lg,
+    marginTop: Spacing.lg,
     ...Shadow.card,
   },
 
+  entete: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: Spacing.md,
+  },
 
   titre: {
-
-    fontSize: 22,
-
+    fontSize: 20,
     fontWeight: "700",
-
-    color:
-      Colors.text,
-
-    marginBottom: 15,
+    color: Colors.text,
   },
 
-
-  ligne: {
-
-    fontSize: 16,
-
-    color:
-      Colors.subtitle,
-
-    marginBottom: 10,
+  icone: {
+    fontSize: 22,
   },
 
+  liste: {
+    gap: Spacing.sm,
+  },
+
+  rendezVous: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
+
+  heure: {
+    width: 48,
+    fontSize: 14,
+    fontWeight: "700",
+    color: Colors.secondary,
+  },
+
+  nomRendezVous: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 21,
+    color: Colors.subtitle,
+  },
+
+  vide: {
+    fontSize: 15,
+    lineHeight: 21,
+    color: Colors.subtitle,
+  },
 });

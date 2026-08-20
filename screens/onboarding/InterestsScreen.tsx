@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { useOnboarding } from "../../contexts/OnboardingContext";
 import GabaritOnboarding from "../../components/onboarding/GabaritOnboarding";
 
 const CENTRES_INTERET = [
@@ -19,15 +19,25 @@ const MINIMUM_SELECTION = 3;
 
 export default function InterestsScreen() {
   const navigation = useNavigation();
-  const [selection, setSelection] = useState<string[]>([]);
+
+  const {
+    centresInteret,
+    setCentresInteret,
+  } = useOnboarding();
+
+  const [selection, setSelection] =
+    useState<string[]>(centresInteret);
 
   const basculer = (id: string) => {
     setSelection((actuelle) =>
-      actuelle.includes(id) ? actuelle.filter((item) => item !== id) : [...actuelle, id]
+      actuelle.includes(id)
+        ? actuelle.filter((item) => item !== id)
+        : [...actuelle, id]
     );
   };
 
-  const peutContinuer = selection.length >= MINIMUM_SELECTION;
+  const peutContinuer =
+    selection.length >= MINIMUM_SELECTION;
 
   return (
     <GabaritOnboarding
@@ -36,8 +46,20 @@ export default function InterestsScreen() {
       sousTitre="Choisis ce qui t'intéresse. Tu pourras toujours en ajouter plus tard."
       texteBouton="Suivant"
       onSuivant={() => {
-        if (peutContinuer) navigation.navigate("Privacy" as never);
-      }}
+  if (!peutContinuer) return;
+
+  setCentresInteret(selection as any);
+
+  if (selection.includes("bienetre")) {
+    navigation.navigate(
+      "ChoixBienEtre" as never
+    );
+  } else {
+    navigation.navigate(
+      "Privacy" as never
+    );
+  }
+}}
     >
       <View>
         {CENTRES_INTERET.map((item) => {
