@@ -16,4 +16,10 @@ export const Citations = [
 
   "Tu n'as pas besoin d'aller vite pour avancer.",
 
+  "Même les journées difficiles finissent par passer.",
+
+  "Tu n'as pas besoin de tout faire aujourd'hui.",
+
+  "Tu fais de ton mieux, et c'est déjà beaucoup.",
+
 ];

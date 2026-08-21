@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -8,27 +8,10 @@ import {
 
 import { Colors } from "../theme/colors";
 import { Spacing } from "../theme/spacing";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { usePreferences } from "../contexts/PreferencesContext";
 export default function FifiAccueil() {
 
-    const [prenom, setPrenom] = useState("");
-
-  useEffect(() => {
-    const chargerPrenom = async () => {
-      try {
-        const prenomEnregistre =
-          await AsyncStorage.getItem("prenom_utilisateur");
-
-        if (prenomEnregistre) {
-          setPrenom(prenomEnregistre);
-        }
-      } catch (erreur) {
-        console.error(erreur);
-      }
-    };
-
-    chargerPrenom();
-  }, []);
+  const { prenom } = usePreferences();
 
   return (
     <View style={styles.container}>

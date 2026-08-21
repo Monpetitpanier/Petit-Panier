@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import GabaritOnboarding from "../../components/onboarding/GabaritOnboarding";
 import { useOnboarding } from "../../contexts/OnboardingContext";
+import { usePreferences } from "../../contexts/PreferencesContext";
 
 type Props = {
   onOnboardingTermine: () => void;
@@ -13,21 +14,53 @@ type Props = {
 export default function BackupScreen({
   onOnboardingTermine,
 }: Props) {
-  const { prenom } = useOnboarding();
+ const {
+  prenom,
+  centresInteret,
+  contenuBienEtre,
+} = useOnboarding();
 
- const terminer = async () => {
+const {
+  modifierContenuBienEtre,
+} = usePreferences();
+
+const terminer = async () => {
   try {
-    await AsyncStorage.setItem("prenom_utilisateur", prenom.trim());
-    await AsyncStorage.setItem("onboarding_termine", "true");
 
-    console.log("✅ Prénom et onboarding enregistrés");
+    await AsyncStorage.multiSet([
+      [
+        "prenom_utilisateur",
+        prenom.trim(),
+      ],
+      [
+        "centres_interet",
+        JSON.stringify(centresInteret),
+      ],
+      [
+        "onboarding_termine",
+        "true",
+      ],
+    ]);
+
+    if (contenuBienEtre) {
+      await modifierContenuBienEtre(
+        contenuBienEtre
+      );
+    }
+
+    console.log(
+      "✅ Préférences et onboarding enregistrés"
+    );
 
     onOnboardingTermine();
+
   } catch (erreur) {
+
     console.error(
       "Erreur lors de l'enregistrement de l'onboarding :",
       erreur
     );
+
   }
 };
 

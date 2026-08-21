@@ -4,7 +4,10 @@ import {
   StyleSheet,
   Text,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useBienEtre } from "../../contexts/BienEtreContext";
 
@@ -15,6 +18,7 @@ import { Spacing } from "../../theme/spacing";
 
 export default function Gratitude() {
 
+  const navigation = useNavigation();
 
 const {
   gratitudes,
@@ -24,6 +28,17 @@ const {
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity
+        style={styles.boutonRetour}
+        onPress={() => navigation.goBack()}
+      >
+        <MaterialCommunityIcons
+          name="arrow-left"
+          size={28}
+          color={Colors.text}
+        />
+      </TouchableOpacity>
+
       <Text style={styles.titre}>
         Mes gratitudes
       </Text>
@@ -54,6 +69,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
     padding: Spacing.lg,
+  },
+
+  boutonRetour: {
+    alignSelf: "flex-start",
+    padding: Spacing.xs,
+    marginBottom: Spacing.sm,
   },
 
   titre: {

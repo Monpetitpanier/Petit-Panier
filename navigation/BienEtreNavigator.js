@@ -4,8 +4,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import BienEtre from "../screens/bienetre/BienEtre";
 import Respiration from "../screens/bienetre/Respiration";
 import Gratitude from "../screens/bienetre/Gratitude";
-import Priere from "../screens/bienetre/Prière";
+import Paroles from "../screens/bienetre/Paroles";
 import PenseesPositives from "../screens/bienetre/PenseesPositives";
+import ChoixLivreParoles from "../screens/bienetre/ChoixLivreParoles";
 const Stack = createNativeStackNavigator();
 
 export default function BienEtreNavigator() {
@@ -32,9 +33,15 @@ export default function BienEtreNavigator() {
 />
 
       <Stack.Screen
-        name="Priere"
-        component={Priere}
+        name="Paroles"
+        component={Paroles}
       />
+
+<Stack.Screen
+  name="ChoixLivreParoles"
+  component={ChoixLivreParoles}
+/>
+
     </Stack.Navigator>
   );
 }

@@ -63,6 +63,17 @@ const cartes = [
       <View style={styles.entete}>
 
         <TouchableOpacity
+          style={styles.boutonRetour}
+          onPress={() => navigation.goBack()}
+        >
+          <MaterialCommunityIcons
+            name="chevron-left"
+            size={25}
+            color={Colors.subtitle}
+          />
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={styles.boutonReglages}
           onPress={() =>
             navigation.navigate("ReglagesRappelsMaison")
@@ -206,6 +217,35 @@ const styles = StyleSheet.create({
   entete: {
     alignItems: "center",
     marginBottom: Spacing.md,
+  },
+
+
+  boutonRetour: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+
+    width: 48,
+    height: 48,
+
+    borderRadius: 24,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: Colors.card,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 7,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 2,
+
+    zIndex: 5,
   },
 
 
