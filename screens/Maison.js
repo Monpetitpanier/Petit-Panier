@@ -20,31 +20,31 @@ const cartes = [
   {
     titre: "Liste de courses",
     sousTitre: "Les essentiels à ne pas oublier",
-    image: require("../assets/images/panier_courses.png"),
+    image: require("../assets/illustrations/maison/panier_courses.png"),
     destination: "ListeCoursesMaison",
   },
   {
     titre: "Ménage",
     sousTitre: "Planifier mes tâches",
-    image: require("../assets/images/seau_menage.png"),
+    image: require("../assets/illustrations/maison/seau_menage.png"),
     destination: "MenageMaison",
   },
   {
     titre: "Entretien",
     sousTitre: "Petits travaux, entretien annuel",
-    image: require("../assets/images/entretien_maison.png"),
+    image: require("../assets/illustrations/maison/entetien_maison.png"),
     destination: "EntretienMaison",
   },
   {
     titre: "Garanties",
     sousTitre: "Documents et garanties",
-    image: require("../assets/images/garanties.png"),
+    image: require("../assets/illustrations/maison/garanties.png"),
     destination: "GarantiesMaison",
   },
   {
     titre: "To-do",
     sousTitre: "À prévoir sur l'année (cadeaux, vacances...)",
-    image: require("../assets/images/todo_liste.png"),
+    image: require("../assets/illustrations/maison/todo_listes.png"),
     destination: "ToDoMaison",
   },
 ];

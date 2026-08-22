@@ -26,7 +26,7 @@ export default function FifiAccueil() {
   </View>
 
   <Image
-    source={require("../assets/characters/Fifi/poses/curieuse_pattes_panier.png")}
+    source={require("../assets/illustrations/accueil/curieuse_pattes_panier.png")}
     style={styles.fifi}
   />
 </View>

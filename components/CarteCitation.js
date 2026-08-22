@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Image,
 } from "react-native";
 
 import { usePreferences } from "../contexts/PreferencesContext";
@@ -40,31 +41,45 @@ export default function CarteCitation() {
     : null;
 
   // Un index aléatoire tiré une seule fois à l'affichage de la carte
-  const [indexPensee] = useState(() => indexAleatoire(Pensees.length));
+  const [indexPensee] = useState(() =>
+    indexAleatoire(Pensees.length)
+  );
+
   const [indexParole] = useState(() =>
     paroles ? indexAleatoire(paroles.length) : 0
   );
 
-  const titre = estParoles ? "Une parole pour toi" : "Une pensée pour toi";
-  const illustration = estParoles ? "📖" : "🌷";
+  const titre = estParoles
+    ? "Une parole pour toi"
+    : "Une pensée pour toi";
+
+  const illustration = require(
+    "../assets/furniture/livre_lampe.png"
+  );
 
   const citation = estParoles
     ? paroles[indexParole].texte
     : Pensees[indexPensee];
 
-  const reference = estParoles ? paroles[indexParole].reference : null;
+  const reference = estParoles
+    ? paroles[indexParole].reference
+    : null;
 
   return (
     <View style={styles.carte}>
 
       <View style={styles.entete}>
+
         <Text style={styles.titre}>
           {titre}
         </Text>
 
-        <Text style={styles.illustration}>
-          {illustration}
-        </Text>
+        <Image
+          source={illustration}
+          style={styles.illustration}
+          resizeMode="contain"
+        />
+
       </View>
 
       <Text style={styles.citation}>
@@ -95,34 +110,38 @@ const styles = StyleSheet.create({
     ...Shadow.card,
   },
 
-  entete: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+entete: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
 
-    marginBottom: Spacing.md,
-  },
+  height: 25,
+  marginBottom: 0,
+},
 
-  titre: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.text,
-  },
+titre: {
+  flex: 1,
+  fontSize: 18,
+  fontWeight: "700",
+  color: Colors.text,
+  marginRight: 10,
+},
 
-  illustration: {
-    fontSize: 28,
-  },
+illustration: {
+  width: 70,
+  height: 70,
+},
 
   citation: {
     fontSize: 15,
-    lineHeight: 25,
+    lineHeight: 35,
     color: Colors.subtitle,
 
     fontStyle: "italic",
   },
 
   reference: {
-    marginTop: Spacing.sm,
+    marginTop: 0,
     fontSize: 13,
     fontWeight: "600",
     color: Colors.subtitle,

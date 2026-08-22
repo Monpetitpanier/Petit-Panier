@@ -60,8 +60,8 @@ export default function BottomTabs() {
               <Image
                 source={
                   focused
-                    ? require("../assets/bottom/bouton_accueil.png")
-                    : require("../assets/bottom/bouton_dort_accueil.png")
+                    ? require("../assets/illustrations/accueil/bouton_accueil.png")
+                    : require("../assets/illustrations/accueil/bouton_dort_accueil.png")
                 }
 
                 style={{
@@ -87,7 +87,7 @@ export default function BottomTabs() {
 
               <Image
                 source={require(
-                  "../assets/bottom/bouton_agenda.png"
+                  "../assets/illustrations/agenda/bouton_agenda.png"
                 )}
 
                 style={{
@@ -112,7 +112,7 @@ export default function BottomTabs() {
 
               <Image
                 source={require(
-                  "../assets/bottom/bouton_budget.png"
+                  "../assets/illustration/budget/bouton_budget.png"
                 )}
 
                 style={{
@@ -137,7 +137,7 @@ export default function BottomTabs() {
 
               <Image
                 source={require(
-                  "../assets/bottom/bouton_plus.png"
+                  "../assets/illustrations/accueil/bouton_plus.png"
                 )}
 
                 style={{

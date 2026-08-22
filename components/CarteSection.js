@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -12,6 +13,8 @@ import { Spacing } from "../theme/spacing";
 
 export default function CarteSection({
   icone,
+  illustration,
+  styleIllustration,
   titre,
   sousTitre,
   onPress,
@@ -27,24 +30,31 @@ export default function CarteSection({
       onPress={onPress}
     >
       <View style={styles.ligne}>
-        <View
-          style={afficherChevron ? styles.pastilleIconeMaison : null}
-        >
-          <Text
+
+        {illustration ? (
+          <Image
+            source={illustration}
             style={[
-              styles.icone,
-              afficherChevron && styles.iconeMaison,
+              styles.illustration,
+              styles[styleIllustration],
             ]}
-          >
+            resizeMode="contain"
+          />
+        ) : (
+          <Text style={styles.icone}>
             {icone}
           </Text>
-        </View>
+        )}
 
         <View style={styles.texte}>
-          <Text style={styles.titre}>{titre}</Text>
+          <Text style={styles.titre}>
+            {titre}
+          </Text>
 
           {sousTitre ? (
-            <Text style={styles.sousTitre}>{sousTitre}</Text>
+            <Text style={styles.sousTitre}>
+              {sousTitre}
+            </Text>
           ) : null}
         </View>
 
@@ -55,12 +65,14 @@ export default function CarteSection({
             color={Colors.subtitle}
           />
         ) : null}
+
       </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
+
   carte: {
     backgroundColor: "#FFFFFF",
     borderRadius: 20,
@@ -83,11 +95,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  carteMaison: {
-    backgroundColor: Colors.card,
-    borderRadius: 28,
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
+  // Taille par défaut
+  illustration: {
+    width: 80,
+    height: 80,
+    marginRight: Spacing.md,
+  },
+
+  // Taille Maison
+  illustrationMaison: {
+    width: 80,
+    height: 80,
+  },
+
+  // Taille Santé
+  illustrationSante: {
+    width: 90,
+    height: 90,
+  },
+
+  // Taille Bien-être
+  illustrationBienEtre: {
+    width: 100,
+    height: 100,
+  },
+
+  // Taille Univers
+  illustrationUnivers: {
+    width: 100,
+    height: 100,
   },
 
   icone: {
@@ -95,19 +131,11 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
 
-  pastilleIconeMaison: {
-    width: 62,
-    height: 62,
-    marginRight: Spacing.md,
-    borderRadius: 31,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FDF1E3",
-  },
-
-  iconeMaison: {
-    marginRight: 0,
-    fontSize: 28,
+  carteMaison: {
+    backgroundColor: Colors.card,
+    borderRadius: 28,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
   },
 
   texte: {
@@ -125,4 +153,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.subtitle,
   },
+
 });

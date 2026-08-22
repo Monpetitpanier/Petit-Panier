@@ -352,7 +352,7 @@ const datesAvecRendezVous =
 
         <Image
           source={require(
-            "../assets/characters/Fifi/poses/fifi_agenda.png"
+            "../assets/illustrations/agenda/fifi_agenda.png"
           )}
           style={styles.fifiAgenda}
           resizeMode="contain"

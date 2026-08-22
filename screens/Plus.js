@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  Illustration,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -27,7 +27,8 @@ export default function Plus() {
 
         {onglets.maison && (
           <CarteSection
-            icone="🏡"
+            illustration={require("../assets/illustrations/maison/entretien_maison")}
+            styleIllustration="illustrationMaison"
             titre="Maison"
             sousTitre="Organiser et prendre soin de son chez-soi."
             onPress={() => navigation.navigate("Maison")}
@@ -36,7 +37,8 @@ export default function Plus() {
 
         {onglets.sante && (
           <CarteSection
-            icone="❤️"
+            illustration={require("../assets/illustrations/sante/bouton_sante.png")}
+            styleIllustration="illustrationSante"
             titre="Santé"
             sousTitre="Prendre soin de sa santé au quotidien."
             onPress={() => navigation.navigate("Sante")}
@@ -45,7 +47,8 @@ export default function Plus() {
 
         {onglets.bienEtre && (
           <CarteSection
-            icone="🌿"
+            illustration={require("../assets/illustrations/bienetre/")}
+            styleIllustration="illustrationBienEtre"
             titre="Bien-être"
             sousTitre="Prendre soin de soi, en douceur."
             onPress={() => navigation.navigate("BienEtre")}
@@ -54,12 +57,14 @@ export default function Plus() {
 
         {onglets.univers && (
           <CarteSection
-            icone="🌍"
+            illustration={require("../assets/illustrations/univers/bouton_univers.png")}
+            styleIllustration="illustrationUnivers"
             titre="Univers"
             sousTitre="Retrouver ses espaces de vie."
             onPress={() => navigation.navigate("Univers")}
           />
         )}
+
       </ScrollView>
     </SafeAreaView>
   );

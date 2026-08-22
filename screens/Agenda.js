@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Image,
 } from "react-native";
 
 import Calendrier from "../components/Calendrier";
@@ -13,7 +14,10 @@ export default function Agenda() {
 
       {/* En-tête */}
       <View style={styles.entete}>
-        <Text style={styles.icone}>🗓️</Text>
+        <Image
+  source={require("../assets/illustrations/agenda/bouton_agenda.png")}
+  style={styles.icone}
+/>
 
         <Text style={styles.titre}>
           Agenda
@@ -46,10 +50,12 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
 
-  icone: {
-    fontSize: 25,
-    marginRight: 10,
-  },
+ icone: {
+  width: 50,
+  height: 50,
+  marginRight: 10,
+  resizeMode: "contain",
+},
 
   titre: {
     fontSize: 24,

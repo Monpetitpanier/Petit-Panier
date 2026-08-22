@@ -3,6 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
+  Image,
 } from "react-native";
 
 import { useAgenda } from "../contexts/AgendaContext";
@@ -43,9 +44,10 @@ export default function CarteJournee() {
           Aujourd'hui
         </Text>
 
-        <Text style={styles.icone}>
-          📅
-        </Text>
+        <Image
+  source={require("../assets/illustrations/agenda/bouton_agenda.png")}
+  style={styles.icone}
+/>
       </View>
 
       {rendezVousAujourdhui.length === 0 ? (
@@ -108,9 +110,11 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
 
-  icone: {
-    fontSize: 22,
-  },
+ icone: {
+  width: 34,
+  height: 34,
+  resizeMode: "contain",
+},
 
   liste: {
     gap: Spacing.sm,

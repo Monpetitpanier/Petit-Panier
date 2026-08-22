@@ -4,6 +4,7 @@ import { PanierProvider } from "./contexts/PanierContext";
 import { AgendaProvider } from "./contexts/AgendaContext";
 import { BienEtreProvider } from "./contexts/BienEtreContext";
 import { MaisonProvider } from "./contexts/MaisonContext";
+import { SanteProvider } from "./contexts/SanteContext";
 import { PreferencesProvider } from "./contexts/PreferencesContext";
 
 import AppNavigation from "./navigation/AppNavigation";
@@ -15,6 +16,7 @@ export default function App() {
       <PreferencesProvider>
         <AgendaProvider>
           <MaisonProvider>
+            <SanteProvider>
             <PanierProvider>
               <BienEtreProvider>
 

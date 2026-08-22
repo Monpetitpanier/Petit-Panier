@@ -34,12 +34,12 @@ const OPTIONS_VERROUILLAGE = [
 ];
 
 const ONGLETS_CONFIGURABLES = [
-  { id: "agenda", label: "Agenda", description: "Onglet du bas" },
-  { id: "budget", label: "Budget", description: "Onglet du bas" },
-  { id: "maison", label: "Maison", description: "Catégorie de l'onglet Plus" },
-  { id: "bienEtre", label: "Bien-être", description: "Catégorie de l'onglet Plus" },
-  { id: "sante", label: "Santé", description: "Catégorie de l'onglet Plus" },
-  { id: "univers", label: "Univers", description: "Catégorie de l'onglet Plus" },
+  { id: "agenda", label: "Agenda" },
+  { id: "budget", label: "Budget" },
+  { id: "maison", label: "Maison" },
+  { id: "bienEtre", label: "Bien-être" },
+  { id: "sante", label: "Santé" },
+  { id: "univers", label: "Univers" },
 ];
 
 
