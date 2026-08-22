@@ -17,7 +17,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { NavigationBar } from "expo-navigation-bar";
-import BottomTabs from "./BottomTabs";
+import RootStack from "./RootStack";
 import OnboardingNavigator from "./OnboardingNavigator";
 
 
@@ -305,7 +305,7 @@ const naviguerDepuisNotification = (
 
       ) : (
 
-        <BottomTabs />
+        <RootStack />
 
       )}
 

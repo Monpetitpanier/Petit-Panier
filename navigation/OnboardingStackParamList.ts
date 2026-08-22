@@ -4,7 +4,8 @@ export type OnboardingStackParamList = {
   Name: undefined;
   Birthday: undefined;
   Interests: undefined;
-  ChoixBienEtre: undefined
+  ChoixUnivers: undefined;
+  ChoixBienEtre: undefined;
   Privacy: undefined;
   PinSetup: undefined;
   Backup: undefined;

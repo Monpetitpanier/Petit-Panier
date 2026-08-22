@@ -8,11 +8,14 @@ import Agenda from "../screens/Agenda";
 import Budget from "../screens/Budget";
 import PlusStack from "./PlusStack";
 
+import { usePreferences } from "../contexts/PreferencesContext";
 import { Colors } from "../theme/colors";
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs() {
+
+  const { onglets } = usePreferences();
 
   return (
 
@@ -159,15 +162,19 @@ export default function BottomTabs() {
         component={Accueil}
       />
 
-      <Tab.Screen
-        name="Agenda"
-        component={Agenda}
-      />
+      {onglets.agenda && (
+        <Tab.Screen
+          name="Agenda"
+          component={Agenda}
+        />
+      )}
 
-      <Tab.Screen
-        name="Budget"
-        component={Budget}
-      />
+      {onglets.budget && (
+        <Tab.Screen
+          name="Budget"
+          component={Budget}
+        />
+      )}
 
       <Tab.Screen
         name="Plus"

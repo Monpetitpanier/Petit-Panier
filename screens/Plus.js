@@ -9,11 +9,13 @@ import {
 import { useNavigation } from "@react-navigation/native";
 
 import CarteSection from "../components/CarteSection";
+import { usePreferences } from "../contexts/PreferencesContext";
 import { Colors } from "../theme/colors";
 import { Spacing } from "../theme/spacing";
 
 export default function Plus() {
   const navigation = useNavigation();
+  const { onglets } = usePreferences();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -23,33 +25,41 @@ export default function Plus() {
       >
         <Text style={styles.titre}>Plus</Text>
 
-        <CarteSection
-  icone="🏡"
-  titre="Maison"
-  sousTitre="Organiser et prendre soin de son chez-soi."
-  onPress={() => navigation.navigate("Maison")}
-/>
+        {onglets.maison && (
+          <CarteSection
+            icone="🏡"
+            titre="Maison"
+            sousTitre="Organiser et prendre soin de son chez-soi."
+            onPress={() => navigation.navigate("Maison")}
+          />
+        )}
 
-<CarteSection
-  icone="❤️"
-  titre="Santé"
-  sousTitre="Prendre soin de sa santé au quotidien."
-  onPress={() => navigation.navigate("Sante")}
-/>
+        {onglets.sante && (
+          <CarteSection
+            icone="❤️"
+            titre="Santé"
+            sousTitre="Prendre soin de sa santé au quotidien."
+            onPress={() => navigation.navigate("Sante")}
+          />
+        )}
 
-        <CarteSection
-          icone="🌿"
-          titre="Bien-être"
-          sousTitre="Prendre soin de soi, en douceur."
-          onPress={() => navigation.navigate("BienEtre")}
-        />
+        {onglets.bienEtre && (
+          <CarteSection
+            icone="🌿"
+            titre="Bien-être"
+            sousTitre="Prendre soin de soi, en douceur."
+            onPress={() => navigation.navigate("BienEtre")}
+          />
+        )}
 
-        <CarteSection
-          icone="🌍"
-          titre="Univers"
-          sousTitre="Retrouver ses espaces de vie."
-          onPress={() => navigation.navigate("Univers")}
-        />
+        {onglets.univers && (
+          <CarteSection
+            icone="🌍"
+            titre="Univers"
+            sousTitre="Retrouver ses espaces de vie."
+            onPress={() => navigation.navigate("Univers")}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

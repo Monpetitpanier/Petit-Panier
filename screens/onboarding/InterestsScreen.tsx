@@ -1,32 +1,67 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 import { useOnboarding } from "../../contexts/OnboardingContext";
 import GabaritOnboarding from "../../components/onboarding/GabaritOnboarding";
 
-const CENTRES_INTERET = [
-  { id: "agenda", label: "Agenda & Rappels", icone: "calendar-heart" as const },
-  { id: "budget", label: "Budget & Dépenses", icone: "piggy-bank-outline" as const },
-  { id: "ecriture", label: "Écriture & Projets", icone: "notebook-outline" as const },
-  { id: "bienetre", label: "Bien-être & Émotions", icone: "flower-outline" as const },
-  { id: "sante", label: "Santé", icone: "heart-pulse" as const },
-  { id: "voyages", label: "Voyages & Vacances", icone: "airplane" as const },
-  { id: "maison", label: "Maison & Organisation", icone: "home-heart" as const },
+const ESPACES = [
+  {
+    id: "agenda",
+    label: "Agenda",
+    description: "Pour garder tes rendez-vous et les moments importants.",
+    icone: "calendar-outline",
+  },
+  {
+    id: "budget",
+    label: "Budget",
+    description: "Pour suivre simplement tes dépenses et ton budget.",
+    icone: "wallet-outline",
+  },
+  {
+    id: "bienEtre",
+    label: "Bien-être",
+    description: "Un espace pour prendre soin de toi et souffler un peu.",
+    icone: "leaf",
+  },
+  {
+    id: "sante",
+    label: "Santé",
+    description: "Pour garder une trace de ce qui concerne ta santé.",
+    icone: "heart-outline",
+  },
+  {
+    id: "maison",
+    label: "Maison",
+    description: "Pour t'aider à organiser ton chez-toi.",
+    icone: "home-outline",
+  },
+  {
+    id: "univers",
+    label: "Univers",
+    description:
+      "Pour organiser un voyage, suivre tes lectures ou avancer dans un projet.",
+    icone: "star-outline",
+  },
 ];
-
-const MINIMUM_SELECTION = 3;
 
 export default function InterestsScreen() {
   const navigation = useNavigation();
 
   const {
-    centresInteret,
-    setCentresInteret,
+    espaces,
+    setEspaces,
   } = useOnboarding();
 
   const [selection, setSelection] =
-    useState<string[]>(centresInteret);
+    useState<string[]>(espaces);
 
   const basculer = (id: string) => {
     setSelection((actuelle) =>
@@ -36,82 +71,108 @@ export default function InterestsScreen() {
     );
   };
 
-  const peutContinuer =
-    selection.length >= MINIMUM_SELECTION;
+  const continuer = () => {
+    setEspaces(selection as any);
+
+    if (selection.includes("univers")) {
+      navigation.navigate("ChoixUnivers" as never);
+      return;
+    }
+
+    if (selection.includes("bienEtre")) {
+      navigation.navigate("ChoixBienEtre" as never);
+      return;
+    }
+
+    navigation.navigate("Privacy" as never);
+  };
 
   return (
     <GabaritOnboarding
       etape={3}
-      titre="Qu'aimerais-tu trouver ici ?"
-      sousTitre="Choisis ce qui t'intéresse. Tu pourras toujours en ajouter plus tard."
+      titre="Quels espaces souhaites-tu utiliser ?"
+      sousTitre="Choisis uniquement ce qui te sera utile. Tu pourras toujours modifier tes choix plus tard."
       texteBouton="Suivant"
-      onSuivant={() => {
-  if (!peutContinuer) return;
-
-  setCentresInteret(selection as any);
-
-  if (selection.includes("bienetre")) {
-    navigation.navigate(
-      "ChoixBienEtre" as never
-    );
-  } else {
-    navigation.navigate(
-      "Privacy" as never
-    );
-  }
-}}
+      onSuivant={continuer}
     >
       <View>
-        {CENTRES_INTERET.map((item) => {
+        {ESPACES.map((item) => {
           const coche = selection.includes(item.id);
+
           return (
             <TouchableOpacity
               key={item.id}
-              style={styles.ligne}
+              style={styles.carte}
               onPress={() => basculer(item.id)}
               activeOpacity={0.7}
             >
-              <MaterialCommunityIcons name={item.icone} size={20} color="#e6a7c4" style={styles.icone} />
-<Text style={styles.label}>{item.label}</Text>
-<MaterialCommunityIcons
-  name={coche ? "check-circle" : "circle-outline"}
-  size={22}
-  color={coche ? "#e6a7c4" : "#D8CFC2"}
-/>
+              <MaterialCommunityIcons
+                name={item.icone as any}
+                size={24}
+                color="#e6a7c4"
+                style={styles.icone}
+              />
+
+              <View style={styles.contenu}>
+                <Text style={styles.label}>
+                  {item.label}
+                </Text>
+
+                <Text style={styles.description}>
+                  {item.description}
+                </Text>
+              </View>
+
+              <MaterialCommunityIcons
+                name={
+                  coche
+                    ? "check-circle"
+                    : "circle-outline"
+                }
+                size={24}
+                color={
+                  coche
+                    ? "#e6a7c4"
+                    : "#D8CFC2"
+                }
+              />
             </TouchableOpacity>
           );
         })}
       </View>
-
-      {!peutContinuer && (
-        <Text style={styles.aide}>
-          Choisis au moins {MINIMUM_SELECTION} centres d'intérêt ({selection.length}/{MINIMUM_SELECTION})
-        </Text>
-      )}
     </GabaritOnboarding>
   );
 }
 
 const styles = StyleSheet.create({
-  ligne: {
+  carte: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#EFE7DA",
   },
+
   icone: {
     marginRight: 12,
   },
-  label: {
+
+  contenu: {
     flex: 1,
-    fontSize: 15,
-    color: "#4B4036",
+    paddingRight: 10,
   },
-  aide: {
-    marginTop: 14,
+
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#4B4036",
+    marginBottom: 3,
+  },
+
+  description: {
     fontSize: 13,
+    lineHeight: 18,
     color: "#9C8C7E",
-    textAlign: "center",
   },
 });

@@ -1,4 +1,4 @@
-export const Citations = [
+export const Pensees = [
 
   "Chaque petit pas te rapproche de ton objectif.",
 

@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -7,64 +13,115 @@ import GabaritOnboarding from "../../components/onboarding/GabaritOnboarding";
 import { useOnboarding } from "../../contexts/OnboardingContext";
 import { usePreferences } from "../../contexts/PreferencesContext";
 
+
 type Props = {
   onOnboardingTermine: () => void;
 };
 
+
 export default function BackupScreen({
   onOnboardingTermine,
 }: Props) {
- const {
-  prenom,
-  centresInteret,
-  contenuBienEtre,
-} = useOnboarding();
 
-const {
-  modifierContenuBienEtre,
-} = usePreferences();
+  const {
+    prenom,
+    espaces,
+    contenuUnivers,
+    contenuBienEtre,
+  } = useOnboarding();
 
-const terminer = async () => {
-  try {
 
-    await AsyncStorage.multiSet([
-      [
-        "prenom_utilisateur",
-        prenom.trim(),
-      ],
-      [
-        "centres_interet",
-        JSON.stringify(centresInteret),
-      ],
-      [
-        "onboarding_termine",
-        "true",
-      ],
-    ]);
+  const {
+    modifierContenuBienEtre,
+    modifierOnglets,
+  } = usePreferences();
 
-    if (contenuBienEtre) {
-      await modifierContenuBienEtre(
-        contenuBienEtre
-      );
-    }
 
-    console.log(
-      "✅ Préférences et onboarding enregistrés"
-    );
+  const terminer = async () => {
 
-    onOnboardingTermine();
+    try {
 
-  } catch (erreur) {
+      // ==========================================
+      // TRANSFORMATION DES CHOIX EN ONGLETS
+      // ==========================================
 
-    console.error(
-      "Erreur lors de l'enregistrement de l'onboarding :",
-      erreur
-    );
-
-  }
+     const nouveauxOnglets = {
+  agenda: espaces.includes("agenda"),
+  budget: espaces.includes("budget"),
+  maison: espaces.includes("maison"),
+  bienEtre: espaces.includes("bienEtre"),
+  sante: espaces.includes("sante"),
+  univers: espaces.includes("univers"),
 };
 
+
+      // ==========================================
+      // SAUVEGARDE DES DONNÉES DE L'ONBOARDING
+      // ==========================================
+
+      await AsyncStorage.multiSet([
+        [
+          "prenom_utilisateur",
+          prenom.trim(),
+        ],
+        [
+          "contenu_univers",
+          JSON.stringify(contenuUnivers),
+        ],
+        [
+          "onboarding_termine",
+          "true",
+        ],
+      ]);
+
+
+      // ==========================================
+      // SAUVEGARDE DES ONGLETS CHOISIS
+      // ==========================================
+
+      await modifierOnglets(
+        nouveauxOnglets
+      );
+
+
+      // ==========================================
+      // SAUVEGARDE DU CONTENU BIEN-ÊTRE
+      // ==========================================
+
+      if (contenuBienEtre) {
+
+        await modifierContenuBienEtre(
+          contenuBienEtre
+        );
+
+      }
+
+
+      console.log(
+        "✅ Préférences et onboarding enregistrés"
+      );
+
+
+      // ==========================================
+      // FIN DE L'ONBOARDING
+      // ==========================================
+
+      onOnboardingTermine();
+
+    } catch (erreur) {
+
+      console.error(
+        "Erreur lors de l'enregistrement de l'onboarding :",
+        erreur
+      );
+
+    }
+
+  };
+
+
   return (
+
     <GabaritOnboarding
       etape={5}
       imageFifi={require("../../assets/characters/Fifi/poses/fifi_ecriteau.png")}
@@ -80,7 +137,11 @@ const terminer = async () => {
       texteBouton="Terminer"
       onSuivant={terminer}
     >
-      <TouchableOpacity style={styles.option} activeOpacity={0.7}>
+
+      <TouchableOpacity
+        style={styles.option}
+        activeOpacity={0.7}
+      >
         <MaterialCommunityIcons
           name="cloud-outline"
           size={22}
@@ -89,10 +150,15 @@ const terminer = async () => {
         />
 
         <View style={{ flex: 1 }}>
-          <Text style={styles.label}>Sauvegarder plus tard</Text>
+
+          <Text style={styles.label}>
+            Sauvegarder plus tard
+          </Text>
+
           <Text style={styles.description}>
             Je m'en occupe plus tard
           </Text>
+
         </View>
 
         <MaterialCommunityIcons
@@ -100,9 +166,14 @@ const terminer = async () => {
           size={22}
           color="#e6a7c4"
         />
+
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.option} activeOpacity={0.7}>
+
+      <TouchableOpacity
+        style={styles.option}
+        activeOpacity={0.7}
+      >
         <MaterialCommunityIcons
           name="email-outline"
           size={22}
@@ -111,12 +182,15 @@ const terminer = async () => {
         />
 
         <View style={{ flex: 1 }}>
+
           <Text style={styles.label}>
             Créer un compte (facultatif)
           </Text>
+
           <Text style={styles.description}>
             Pour sauvegarder et retrouver ton panier sur un autre appareil
           </Text>
+
         </View>
 
         <MaterialCommunityIcons
@@ -124,16 +198,24 @@ const terminer = async () => {
           size={22}
           color="#D8CFC2"
         />
+
       </TouchableOpacity>
 
+
       <Text style={styles.aide}>
-        Aucune adresse e-mail n'est obligatoire pour commencer. Ton panier, ton choix !
+        Aucune adresse e-mail n'est obligatoire pour commencer.
+        Ton panier, ton choix !
       </Text>
+
     </GabaritOnboarding>
+
   );
+
 }
 
+
 const styles = StyleSheet.create({
+
   texteEcriteau: {
     position: "absolute",
     top: "2%",
@@ -143,7 +225,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#3D2F26",
-    transform: [{ translateX: -50 }, { rotate: "-3deg" }],
+    transform: [
+      { translateX: -50 },
+      { rotate: "-3deg" },
+    ],
   },
 
   option: {
@@ -178,4 +263,5 @@ const styles = StyleSheet.create({
     color: "#9C8C7E",
     textAlign: "center",
   },
+
 });

@@ -8,6 +8,7 @@ import IntroScreen from "../screens/onboarding/IntroScreen";
 import NameScreen from "../screens/onboarding/NameScreen";
 import BirthdayScreen from "../screens/onboarding/BirthdayScreen";
 import InterestsScreen from "../screens/onboarding/InterestsScreen";
+import ChoixUnivers from "../screens/onboarding/ChoixUnivers";
 import ChoixBienEtre from "../screens/onboarding/ChoixBienEtre";
 import PrivacyScreen from "../screens/onboarding/PrivacyScreen";
 import BackupScreen from "../screens/onboarding/BackupScreen";
@@ -59,6 +60,11 @@ export default function OnboardingNavigator({
         <Stack.Screen
           name="Interests"
           component={InterestsScreen}
+        />
+
+        <Stack.Screen
+          name="ChoixUnivers"
+          component={ChoixUnivers}
         />
 
         <Stack.Screen

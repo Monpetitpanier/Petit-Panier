@@ -1,25 +1,46 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+} from "react";
 
-type Verrouillage = "aucun" | "pin" | "empreinte" | "visage";
-type CentreInteret =
+type Verrouillage =
+  | "aucun"
+  | "pin"
+  | "empreinte"
+  | "visage";
+
+type Espace =
   | "agenda"
   | "budget"
-  | "ecriture"
-  | "bienetre"
+  | "bienEtre"
   | "sante"
-  | "voyages"
-  | "maison";
+  | "maison"
+  | "univers";
+
+type ContenuUnivers = {
+  voyages: boolean;
+  lectures: boolean;
+  projets: boolean;
+};
 
 type ContenuBienEtre =
   | "pensees"
   | "paroles";
+
 type OnboardingContextType = {
   prenom: string;
   setPrenom: (nom: string) => void;
 
-  centresInteret: CentreInteret[];
-  setCentresInteret: (
-    centres: CentreInteret[]
+  espaces: Espace[];
+  setEspaces: (
+    espaces: Espace[]
+  ) => void;
+
+  contenuUnivers: ContenuUnivers;
+  setContenuUnivers: (
+    contenu: ContenuUnivers
   ) => void;
 
   contenuBienEtre: ContenuBienEtre | null;
@@ -36,46 +57,84 @@ type OnboardingContextType = {
   setCodePin: (code: string) => void;
 };
 
-const OnboardingContext = createContext<OnboardingContextType | undefined>(undefined);
+const OnboardingContext =
+  createContext<
+    OnboardingContextType | undefined
+  >(undefined);
 
-export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const [prenom, setPrenom] = useState("");
-  const [centresInteret, setCentresInteret] =
-  useState<CentreInteret[]>([]);
+export function OnboardingProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const [prenom, setPrenom] =
+    useState("");
 
-const [contenuBienEtre, setContenuBienEtre] =
-  useState<ContenuBienEtre | null>(null);
-  const [verrouillage, setVerrouillage] = useState<Verrouillage>("aucun");
-  const [codePin, setCodePin] = useState("");
+  const [espaces, setEspaces] =
+    useState<Espace[]>([]);
+
+  const [
+    contenuUnivers,
+    setContenuUnivers,
+  ] = useState<ContenuUnivers>({
+    voyages: false,
+    lectures: false,
+    projets: false,
+  });
+
+  const [
+    contenuBienEtre,
+    setContenuBienEtre,
+  ] = useState<ContenuBienEtre | null>(
+    null
+  );
+
+  const [
+    verrouillage,
+    setVerrouillage,
+  ] = useState<Verrouillage>(
+    "aucun"
+  );
+
+  const [codePin, setCodePin] =
+    useState("");
 
   return (
     <OnboardingContext.Provider
-  value={{
-    prenom,
-    setPrenom,
+      value={{
+        prenom,
+        setPrenom,
 
-    centresInteret,
-    setCentresInteret,
+        espaces,
+        setEspaces,
 
-    contenuBienEtre,
-    setContenuBienEtre,
+        contenuUnivers,
+        setContenuUnivers,
 
-    verrouillage,
-    setVerrouillage,
+        contenuBienEtre,
+        setContenuBienEtre,
 
-    codePin,
-    setCodePin,
-  }}
->
-  {children}
-</OnboardingContext.Provider>
+        verrouillage,
+        setVerrouillage,
+
+        codePin,
+        setCodePin,
+      }}
+    >
+      {children}
+    </OnboardingContext.Provider>
   );
 }
 
 export function useOnboarding() {
-  const context = useContext(OnboardingContext);
+  const context =
+    useContext(OnboardingContext);
+
   if (!context) {
-    throw new Error("useOnboarding doit être utilisé à l'intérieur d'un OnboardingProvider");
+    throw new Error(
+      "useOnboarding doit être utilisé à l'intérieur d'un OnboardingProvider"
+    );
   }
+
   return context;
 }

@@ -3,7 +3,11 @@ import {
   ScrollView,
   View,
   StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import CarteFifi from "../components/CarteFifi";
 import BoutonPanier from "../components/BoutonPanier";
@@ -14,27 +18,43 @@ import { Colors } from "../theme/colors";
 import { Spacing } from "../theme/spacing";
 
 export default function Accueil() {
+  const navigation = useNavigation();
+
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      showsVerticalScrollIndicator={false}
-    >
-    
+    <SafeAreaView style={styles.container}>
 
-     <CarteFifi />
+      <TouchableOpacity
+        style={styles.boutonReglages}
+        onPress={() => navigation.navigate("Parametres")}
+      >
+        <MaterialCommunityIcons
+          name="cog-outline"
+          size={25}
+          color={Colors.subtitle}
+        />
+      </TouchableOpacity>
 
-<View style={styles.contenuAvecMarges}>
-  <BoutonPanier />
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
 
-  <View style={styles.ligneCartes}>
-    <CarteJournee />
-    <CarteCoupDOeil />
+
+       <CarteFifi />
+
+  <View style={styles.contenuAvecMarges}>
+    <BoutonPanier />
+
+    <View style={styles.ligneCartes}>
+      <CarteJournee />
+      <CarteCoupDOeil />
+    </View>
+
+    <CarteCitation />
   </View>
-
-  <CarteCitation />
-</View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -42,6 +62,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+
+  scroll: {
+    flex: 1,
   },
 
  content: {
@@ -57,4 +81,32 @@ ligneCartes: {
 contenuAvecMarges: {
   paddingHorizontal: Spacing.lg,
 },
+
+  boutonReglages: {
+    position: "absolute",
+    top: Spacing.md,
+    right: Spacing.lg,
+
+    width: 44,
+    height: 44,
+
+    borderRadius: 22,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: Colors.card,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 7,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 2,
+
+    zIndex: 10,
+  },
 });
