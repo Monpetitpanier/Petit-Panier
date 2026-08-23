@@ -13,6 +13,11 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useSante } from "../contexts/SanteContext";
 
+import {
+  calculerJoursRestants,
+  doitPrevenirRenouvellement,
+} from "../utils/traitementsUtils";
+
 import { Colors } from "../theme/colors";
 import { Radius } from "../theme/radius";
 import { Shadow } from "../theme/shadow";
@@ -29,7 +34,6 @@ export default function Traitements() {
 
   return (
     <SafeAreaView style={styles.container}>
-
       <TouchableOpacity
         style={styles.boutonRetour}
         onPress={() => navigation.goBack()}
@@ -45,7 +49,6 @@ export default function Traitements() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
-
         <Text style={styles.titre}>
           Traitements
         </Text>
@@ -66,7 +69,6 @@ export default function Traitements() {
         </View>
 
         {traitementsEnCours.length === 0 ? (
-
           <View style={styles.carteVide}>
             <Text style={styles.emoji}>
               💊
@@ -81,51 +83,68 @@ export default function Traitements() {
               à suivre vos prises et anticiper les renouvellements.
             </Text>
           </View>
-
         ) : (
+        
+     traitementsEnCours.map((traitement) => {
+  const joursRestants =
+    calculerJoursRestants(traitement);
 
-          traitementsEnCours.map((traitement) => (
+  const renouvellementBientot =
+    doitPrevenirRenouvellement(traitement);
 
-            <View
-              key={traitement.id}
-              style={styles.carteTraitement}
-            >
+  return (
+    <TouchableOpacity
+      key={traitement.id}
+      style={[
+        styles.carteTraitement,
+        renouvellementBientot
+          ? styles.renouvellementBientot
+          : null,
+      ]}
+      onPress={() =>
+        navigation.navigate("DetailsTraitement", {
+          traitementId: traitement.id,
+        })
+      }
+    >
+      <View style={styles.iconeTraitement}>
+        <Text style={styles.emojiCarte}>
+          💊
+        </Text>
+      </View>
 
-              <View style={styles.iconeTraitement}>
-                <Text style={styles.emojiCarte}>
-                  💊
-                </Text>
-              </View>
+      <View style={styles.texteTraitement}>
+        <Text style={styles.nomTraitement}>
+          {traitement.nom}
+        </Text>
 
-              <View style={styles.texteTraitement}>
+        <Text style={styles.details}>
+          {traitement.unitesParJour || 0} par jour
+        </Text>
 
-                <Text style={styles.nomTraitement}>
-                  {traitement.nom}
-                </Text>
-
-                <Text style={styles.details}>
-                  {traitement.prisesParJour || 0} prise
-                  {(traitement.prisesParJour || 0) > 1
-                    ? "s"
-                    : ""} par jour
-                </Text>
-
-              </View>
-
-            </View>
-
-          ))
-
+        {joursRestants !== null && (
+          <Text style={styles.joursRestants}>
+            Il reste environ {joursRestants} jour
+            {joursRestants > 1 ? "s" : ""}
+          </Text>
         )}
 
+        {renouvellementBientot && (
+          <Text style={styles.renouvellement}>
+            Renouvellement bientôt
+          </Text>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+})
+)}
       </ScrollView>
-
     </SafeAreaView>
   );
-}
+}     
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -227,7 +246,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
 
     backgroundColor: Colors.card,
-
     borderRadius: Radius.large,
 
     padding: Spacing.md,
@@ -272,4 +290,21 @@ const styles = StyleSheet.create({
     color: Colors.subtitle,
   },
 
+  joursRestants: {
+    marginTop: 3,
+    fontSize: 14,
+    color: Colors.subtitle,
+  },
+
+  renouvellement: {
+    marginTop: 4,
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.text,
+  },
+
+  renouvellementBientot: {
+  borderWidth: 2,
+  borderColor: Colors.text,
+},
 });

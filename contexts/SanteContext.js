@@ -91,6 +91,21 @@ export function SanteProvider({ children }) {
       )
     );
   }
+  function renouvelerTraitement(id, nouveauStock, unitesParJour) {
+  setTraitements((anciensTraitements) =>
+    anciensTraitements.map((traitement) =>
+      traitement.id === id
+        ? {
+            ...traitement,
+            stock: nouveauStock,
+            unitesParJour: unitesParJour ?? traitement.unitesParJour,
+            dateMiseAJour: new Date().toISOString(),
+            actif: true,
+          }
+        : traitement
+    )
+  );
+}
 
   function supprimerTraitement(id) {
     setTraitements((anciensTraitements) =>
@@ -170,6 +185,7 @@ export function SanteProvider({ children }) {
         ajouterTraitement,
         modifierTraitement,
         supprimerTraitement,
+        renouvelerTraitement,
 
         ajouterMedicament,
         modifierMedicament,

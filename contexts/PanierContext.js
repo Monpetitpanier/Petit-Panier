@@ -10,6 +10,7 @@ import {
 import { analyserPensee } from "../services/analyseurPanier";
 import { useAgenda } from "./AgendaContext";
 import { useMaison } from "./MaisonContext";
+import { useSante } from "./SanteContext";
 
 const PanierContext = createContext(null);
 
@@ -23,6 +24,7 @@ export function PanierProvider({ children }) {
   const [enAnalyse, setEnAnalyse] = useState(false);
   const { ajouterRendezVous } = useAgenda();
   const { ajouter: ajouterDansMaison, ouvrirRecap } = useMaison();
+  const { traitements, ajouterTraitement, renouvelerTraitement,} = useSante();
 
   useEffect(() => {
     chargerNotes().then((notesChargees) => {
@@ -80,6 +82,52 @@ export function PanierProvider({ children }) {
     if (analyse?.destination === "maison") {
       ajouterDansMaison(analyse.categorie, analyse.texte || contenu, "fifi");
     }
+
+   // =======================================
+// SANTÉ — TRAITEMENTS
+// =======================================
+
+if (
+  analyse?.destination === "traitements" &&
+  analyse.type === "nouveau_traitement"
+) {
+  ajouterTraitement({
+    id: uuidv4(),
+
+    nom: analyse.nom,
+    dosage: null,
+
+    stock: analyse.stock,
+    unitesParJour: analyse.unitesParJour,
+
+    dateMiseAJour: new Date().toISOString(),
+
+    actif: true,
+  });
+} 
+
+// =======================================
+// SANTÉ — RENOUVELLEMENT
+// =======================================
+
+if (
+  analyse?.destination === "traitements" &&
+  analyse.type === "renouvellement"
+) {
+  const traitementExistant = traitements.find(
+    (traitement) =>
+      traitement.nom?.toLowerCase() ===
+      analyse.nom?.toLowerCase()
+  );
+
+  if (traitementExistant) {
+    renouvelerTraitement(
+      traitementExistant.id,
+      analyse.stock,
+      analyse.unitesParJour
+    );
+  }
+}
 
     const nouvelleNote = {
       id: uuidv4(),

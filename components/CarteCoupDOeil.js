@@ -9,8 +9,19 @@ import { Colors } from "../theme/colors";
 import { Radius } from "../theme/radius";
 import { Shadow } from "../theme/shadow";
 import { Spacing } from "../theme/spacing";
+import { useSante } from "../contexts/SanteContext";
+
+import {doitPrevenirRenouvellement,} from "../utils/traitementsUtils";
 
 export default function CarteCoupDOeil() {
+  const { traitements } = useSante();
+
+  const traitementsARenouveler = traitements.filter(
+    (traitement) =>
+      traitement.actif !== false &&
+      doitPrevenirRenouvellement(traitement)
+  );
+
   return (
     <View style={styles.carte}>
       <View style={styles.entete}>
@@ -36,16 +47,21 @@ export default function CarteCoupDOeil() {
           </Text>
         </View>
 
-        <View style={styles.ligne}>
-          <Text style={styles.emoji}>💊</Text>
+        {traitementsARenouveler.map((traitement) => (
+  <View
+    key={traitement.id}
+    style={styles.ligne}
+  >
+    <Text style={styles.emoji}>💊</Text>
 
-          <Text
-            style={styles.texte}
-            numberOfLines={2}
-          >
-            Médicament à prendre
-          </Text>
-        </View>
+    <Text
+      style={styles.texte}
+      numberOfLines={2}
+    >
+      Pense à renouveler {traitement.nom}
+    </Text>
+  </View>
+))}
 
         <View style={styles.ligne}>
           <Text style={styles.emoji}>🧹</Text>
