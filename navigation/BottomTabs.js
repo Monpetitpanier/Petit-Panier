@@ -112,7 +112,7 @@ export default function BottomTabs() {
 
               <Image
                 source={require(
-                  "../assets/illustration/budget/bouton_budget.png"
+                  "../assets/illustrations/budget/bouton_budget.png"
                 )}
 
                 style={{
@@ -137,12 +137,12 @@ export default function BottomTabs() {
 
               <Image
                 source={require(
-                  "../assets/illustrations/accueil/bouton_plus.png"
+                  "../assets/illustrations/accueil/plus.png"
                 )}
 
                 style={{
-                  width: 65,
-                  height: 65,
+                  width: 60,
+                  height: 60,
                   resizeMode: "contain",
                 }}
               />

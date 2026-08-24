@@ -27,7 +27,7 @@ export default function Plus() {
 
         {onglets.maison && (
           <CarteSection
-            illustration={require("../assets/illustrations/maison/entretien_maison")}
+            illustration={require("../assets/illustrations/maison/bouton_maison.png")}
             styleIllustration="illustrationMaison"
             titre="Maison"
             sousTitre="Organiser et prendre soin de son chez-soi."
@@ -47,7 +47,7 @@ export default function Plus() {
 
         {onglets.bienEtre && (
           <CarteSection
-            illustration={require("../assets/illustrations/bienetre/")}
+            illustration={require("../assets/illustrations/bienetre/bouton_bienetre.png")}
             styleIllustration="illustrationBienEtre"
             titre="Bien-être"
             sousTitre="Prendre soin de soi, en douceur."

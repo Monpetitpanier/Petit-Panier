@@ -16,41 +16,36 @@ import {
 
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { Colors } from "../theme/colors";
-import { Spacing } from "../theme/spacing";
 import { useSante } from "../contexts/SanteContext";
-import { calculerJoursRestants } from "../utils/traitementsUtils";
+
+import { Colors } from "../theme/colors";
 import { Radius } from "../theme/radius";
 import { Shadow } from "../theme/shadow";
+import { Spacing } from "../theme/spacing";
 
-export default function DetailsTraitement() {
+export default function DetailsPharmacie() {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const { traitementId } = route.params;
+  const { produitId } = route.params;
 
   const {
-    traitements,
-    arreterTraitement,
+    pharmacie,
+    supprimerProduitPharmacie,
   } = useSante();
 
-  const traitement = traitements.find(
-    (item) => item.id === traitementId
+  const produit = pharmacie.find(
+    (item) => item.id === produitId
   );
 
-  // Sécurité si le traitement n'existe plus
-  if (!traitement) {
-    return null;
+  function retirerProduit() {
+    supprimerProduitPharmacie(produit.id);
+
+    navigation.goBack();
   }
 
-  const joursRestants =
-    calculerJoursRestants(traitement);
-
-  function handleArreterTraitement() {
-    arreterTraitement(traitementId);
-
-    // Retour à la liste des traitements
-    navigation.goBack();
+  if (!produit) {
+    return null;
   }
 
   return (
@@ -73,71 +68,56 @@ export default function DetailsTraitement() {
       >
 
         <Text style={styles.titre}>
-          {traitement.nom}
+          {produit.nom}
         </Text>
 
         <Text style={styles.sousTitre}>
-          Détails de votre traitement
+          Détails du produit
         </Text>
 
-        {/* STOCK */}
-
         <View style={styles.carte}>
+
           <Text style={styles.label}>
-            Stock actuel
+            Quantité
           </Text>
 
           <Text style={styles.valeur}>
-            {traitement.stock || 0} unités
+            {produit.quantite !== undefined
+              ? produit.quantite
+              : "Non renseignée"}
           </Text>
+
         </View>
 
-        {/* PRISES PAR JOUR */}
-
         <View style={styles.carte}>
+
           <Text style={styles.label}>
-            Prises par jour
+            Date de péremption
           </Text>
 
           <Text style={styles.valeur}>
-            {traitement.unitesParJour || 0}
+            {produit.datePeremption ||
+              "Non renseignée"}
           </Text>
+
         </View>
 
-        {/* JOURS RESTANTS */}
+        <TouchableOpacity
+          style={styles.boutonRetirer}
+          onPress={retirerProduit}
+        >
 
-        <View style={styles.carte}>
-          <Text style={styles.label}>
-            Jours restants
+          <MaterialCommunityIcons
+            name="trash-can-outline"
+            size={20}
+            color={Colors.text}
+          />
+
+          <Text style={styles.texteBoutonRetirer}>
+            Retirer de la pharmacie
           </Text>
 
-          <Text style={styles.valeur}>
-            {joursRestants !== null
-              ? `Environ ${joursRestants} jour${
-                  joursRestants > 1 ? "s" : ""
-                }`
-              : "Information indisponible"}
-          </Text>
-        </View>
-
-        {/* ARRÊTER LE TRAITEMENT */}
-
-  
-          <TouchableOpacity
-            style={styles.boutonArreter}
-            onPress={handleArreterTraitement}
-          >
-            <MaterialCommunityIcons
-              name="stop-circle-outline"
-              size={22}
-              color={Colors.text}
-            />
-
-            <Text style={styles.texteBoutonArreter}>
-              Arrêter ce traitement
-            </Text>
-          </TouchableOpacity>
-        
+        </TouchableOpacity>
 
       </ScrollView>
 
@@ -158,11 +138,16 @@ const styles = StyleSheet.create({
   },
 
   boutonRetour: {
-    alignSelf: "flex-start",
     marginLeft: Spacing.md,
     marginTop: Spacing.sm,
 
-    padding: Spacing.xs,
+    width: 44,
+    height: 44,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    borderRadius: 22,
   },
 
   titre: {
@@ -179,7 +164,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xl,
 
     fontSize: 16,
-
     color: Colors.subtitle,
   },
 
@@ -196,7 +180,6 @@ const styles = StyleSheet.create({
 
   label: {
     fontSize: 14,
-
     color: Colors.subtitle,
   },
 
@@ -209,13 +192,14 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
 
-  boutonArreter: {
+  boutonRetirer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
 
     marginTop: Spacing.lg,
-    padding: Spacing.md,
+
+    paddingVertical: Spacing.md,
 
     borderRadius: Radius.large,
 
@@ -224,7 +208,7 @@ const styles = StyleSheet.create({
     ...Shadow.card,
   },
 
-  texteBoutonArreter: {
+  texteBoutonRetirer: {
     marginLeft: Spacing.sm,
 
     fontSize: 16,

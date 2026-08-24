@@ -83,7 +83,7 @@ const [frequenceMois, setFrequenceMois] =
 
         <Image
           source={require(
-            "../../assets/images/entretien_maison.png"
+            "../../assets/illustrations/maison/entretien_maison.png"
           )}
           style={styles.illustration}
           resizeMode="contain"

@@ -1,5 +1,7 @@
 import React from "react";
+
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -15,7 +17,6 @@ import { useSante } from "../contexts/SanteContext";
 
 import {
   calculerJoursRestants,
-  doitPrevenirRenouvellement,
 } from "../utils/traitementsUtils";
 
 import { Colors } from "../theme/colors";
@@ -26,14 +27,57 @@ import { Spacing } from "../theme/spacing";
 export default function Traitements() {
   const navigation = useNavigation();
 
-  const { traitements } = useSante();
+  const {
+    traitements,
+    supprimerTraitement,
+    renouvelerTraitement,
+  } = useSante();
 
-  const traitementsEnCours = traitements.filter(
-    (traitement) => traitement.actif !== false
-  );
+  // =======================================
+  // TRAITEMENTS EN COURS UNIQUEMENT
+  // =======================================
+
+  const traitementsEnCours = traitements;
+
+  // =======================================
+  // ARRÊTER UN TRAITEMENT
+  // =======================================
+
+  function handleSupprimerTraitement(id, nom) {
+    Alert.alert(
+      "Supprimer le traitement ?",
+      `Voulez-vous arrêter le traitement "${nom}" ?`,
+      [
+        {
+          text: "Annuler",
+          style: "cancel",
+        },
+        {
+          text: "Arrêter",
+          style: "destructive",
+          onPress: () => {
+            supprimerTraitement(id);
+          },
+        },
+      ]
+    );
+  }
+
+  // =======================================
+  // RENOUVELER UN TRAITEMENT
+  // =======================================
+
+  function handleRenouvelerTraitement(traitement) {
+    renouvelerTraitement(
+      traitement.id,
+      traitement.stock,
+      traitement.unitesParJour
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
+
       <TouchableOpacity
         style={styles.boutonRetour}
         onPress={() => navigation.goBack()}
@@ -49,6 +93,7 @@ export default function Traitements() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
+
         <Text style={styles.titre}>
           Traitements
         </Text>
@@ -57,7 +102,12 @@ export default function Traitements() {
           Suivre vos traitements et anticiper les renouvellements.
         </Text>
 
+        {/* =================================== */}
+        {/* COMPTEUR */}
+        {/* =================================== */}
+
         <View style={styles.resume}>
+
           <Text style={styles.nombre}>
             {traitementsEnCours.length}
           </Text>
@@ -66,10 +116,17 @@ export default function Traitements() {
             traitement
             {traitementsEnCours.length > 1 ? "s" : ""} en cours
           </Text>
+
         </View>
 
+        {/* =================================== */}
+        {/* AUCUN TRAITEMENT */}
+        {/* =================================== */}
+
         {traitementsEnCours.length === 0 ? (
+
           <View style={styles.carteVide}>
+
             <Text style={styles.emoji}>
               💊
             </Text>
@@ -82,69 +139,119 @@ export default function Traitements() {
               Vos traitements apparaîtront ici pour vous aider
               à suivre vos prises et anticiper les renouvellements.
             </Text>
+
           </View>
+
         ) : (
-        
-     traitementsEnCours.map((traitement) => {
-  const joursRestants =
-    calculerJoursRestants(traitement);
 
-  const renouvellementBientot =
-    doitPrevenirRenouvellement(traitement);
+          traitementsEnCours.map((traitement, index) => {
 
-  return (
-    <TouchableOpacity
-      key={traitement.id}
-      style={[
-        styles.carteTraitement,
-        renouvellementBientot
-          ? styles.renouvellementBientot
-          : null,
-      ]}
-      onPress={() =>
-        navigation.navigate("DetailsTraitement", {
-          traitementId: traitement.id,
-        })
-      }
-    >
-      <View style={styles.iconeTraitement}>
-        <Text style={styles.emojiCarte}>
-          💊
-        </Text>
-      </View>
+            const joursRestants =
+              calculerJoursRestants(traitement);
 
-      <View style={styles.texteTraitement}>
-        <Text style={styles.nomTraitement}>
-          {traitement.nom}
-        </Text>
+            return (
 
-        <Text style={styles.details}>
-          {traitement.unitesParJour || 0} par jour
-        </Text>
+              <View
+                key={traitement.id}
+                style={styles.carteTraitement}
+              >
 
-        {joursRestants !== null && (
-          <Text style={styles.joursRestants}>
-            Il reste environ {joursRestants} jour
-            {joursRestants > 1 ? "s" : ""}
-          </Text>
+                {/* =========================== */}
+                {/* HAUT DE LA CARTE */}
+                {/* =========================== */}
+
+                <View style={styles.enteteCarte}>
+
+                  <Text style={styles.numeroTraitement}>
+                    Traitement {index + 1}
+                  </Text>
+
+                  <TouchableOpacity
+                    style={styles.boutonIcone}
+                    onPress={() =>
+                      handleSupprimerTraitement(
+                        traitement.id,
+                        traitement.nom
+                      )
+                    }
+                  >
+                    <MaterialCommunityIcons
+                      name="trash-can-outline"
+                      size={21}
+                      color={Colors.subtitle}
+                    />
+                  </TouchableOpacity>
+
+                </View>
+
+                {/* =========================== */}
+                {/* NOM DU MÉDICAMENT */}
+                {/* =========================== */}
+
+                <Text style={styles.nomTraitement}>
+                  {traitement.nom || "Traitement sans nom"}
+                </Text>
+
+                {/* =========================== */}
+                {/* PRISES PAR JOUR */}
+                {/* =========================== */}
+
+                <Text style={styles.details}>
+                  {traitement.unitesParJour || 0} prise
+                  {traitement.unitesParJour > 1 ? "s" : ""} par jour
+                </Text>
+
+                {/* =========================== */}
+                {/* BAS DE LA CARTE */}
+                {/* =========================== */}
+
+                <View style={styles.basCarte}>
+
+                  <Text style={styles.joursRestants}>
+                    {joursRestants !== null
+                      ? `À renouveler dans ${joursRestants} jour${
+                          joursRestants > 1 ? "s" : ""
+                        }`
+                      : "Renouvellement à prévoir"}
+                  </Text>
+
+                  <TouchableOpacity
+                    style={styles.boutonRenouveler}
+                    onPress={() =>
+                      handleRenouvelerTraitement(
+                        traitement
+                      )
+                    }
+                  >
+                    <MaterialCommunityIcons
+                      name="refresh"
+                      size={20}
+                      color={Colors.text}
+                    />
+
+                    <Text style={styles.texteRenouveler}>
+                      Renouveler
+                    </Text>
+
+                  </TouchableOpacity>
+
+                </View>
+
+              </View>
+
+            );
+          })
+
         )}
 
-        {renouvellementBientot && (
-          <Text style={styles.renouvellement}>
-            Renouvellement bientôt
-          </Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-})
-)}
       </ScrollView>
+
     </SafeAreaView>
   );
-}     
+}
 
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -187,6 +294,10 @@ const styles = StyleSheet.create({
     color: Colors.subtitle,
   },
 
+  /* =================================== */
+  /* COMPTEUR */
+  /* =================================== */
+
   resume: {
     flexDirection: "row",
     alignItems: "baseline",
@@ -205,13 +316,19 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
 
     fontSize: 16,
+
     color: Colors.subtitle,
   },
+
+  /* =================================== */
+  /* CARTE VIDE */
+  /* =================================== */
 
   carteVide: {
     alignItems: "center",
 
     backgroundColor: Colors.card,
+
     borderRadius: Radius.large,
 
     padding: Spacing.xl,
@@ -221,6 +338,7 @@ const styles = StyleSheet.create({
 
   emoji: {
     fontSize: 42,
+
     marginBottom: Spacing.md,
   },
 
@@ -236,75 +354,114 @@ const styles = StyleSheet.create({
 
     fontSize: 15,
     lineHeight: 22,
+
     textAlign: "center",
 
     color: Colors.subtitle,
   },
 
-  carteTraitement: {
-    flexDirection: "row",
-    alignItems: "center",
+  /* =================================== */
+  /* CARTE TRAITEMENT */
+  /* =================================== */
 
+  carteTraitement: {
     backgroundColor: Colors.card,
+
     borderRadius: Radius.large,
 
-    padding: Spacing.md,
+    padding: Spacing.lg,
+
     marginBottom: Spacing.md,
 
     ...Shadow.card,
   },
 
-  iconeTraitement: {
-    width: 52,
-    height: 52,
+  enteteCarte: {
+    flexDirection: "row",
 
-    borderRadius: 26,
+    alignItems: "center",
+
+    justifyContent: "space-between",
+  },
+
+  numeroTraitement: {
+    fontSize: 14,
+
+    fontWeight: "600",
+
+    color: Colors.subtitle,
+  },
+
+  boutonIcone: {
+    width: 34,
+    height: 34,
 
     alignItems: "center",
     justifyContent: "center",
-
-    backgroundColor: Colors.background,
-
-    marginRight: Spacing.md,
-  },
-
-  emojiCarte: {
-    fontSize: 25,
-  },
-
-  texteTraitement: {
-    flex: 1,
   },
 
   nomTraitement: {
-    fontSize: 17,
+    marginTop: Spacing.xs,
+
+    fontSize: 22,
+
     fontWeight: "700",
 
     color: Colors.text,
   },
 
   details: {
-    marginTop: 3,
+    marginTop: 4,
 
-    fontSize: 14,
+    fontSize: 15,
+
     color: Colors.subtitle,
+  },
+
+  basCarte: {
+    flexDirection: "row",
+
+    alignItems: "center",
+
+    justifyContent: "space-between",
+
+    marginTop: Spacing.md,
   },
 
   joursRestants: {
-    marginTop: 3,
+    flex: 1,
+
     fontSize: 14,
+
     color: Colors.subtitle,
   },
 
-  renouvellement: {
-    marginTop: 4,
-    fontSize: 14,
+  /* =================================== */
+  /* BOUTON RENOUVELER */
+  /* =================================== */
+
+  boutonRenouveler: {
+    flexDirection: "row",
+
+    alignItems: "center",
+
+    marginLeft: Spacing.sm,
+
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 7,
+
+    borderRadius: Radius.large,
+
+    backgroundColor: Colors.background,
+  },
+
+  texteRenouveler: {
+    marginLeft: 5,
+
+    fontSize: 13,
     fontWeight: "600",
+
     color: Colors.text,
   },
 
-  renouvellementBientot: {
-  borderWidth: 2,
-  borderColor: Colors.text,
-},
 });

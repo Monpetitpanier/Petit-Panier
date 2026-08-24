@@ -24,7 +24,7 @@ export function PanierProvider({ children }) {
   const [enAnalyse, setEnAnalyse] = useState(false);
   const { ajouterRendezVous } = useAgenda();
   const { ajouter: ajouterDansMaison, ouvrirRecap } = useMaison();
-  const { traitements, ajouterTraitement, renouvelerTraitement,} = useSante();
+  const {traitements, ajouterTraitement,renouvelerTraitement,ajouterMedicament,ajouterProduitPharmacie,} = useSante();
 
   useEffect(() => {
     chargerNotes().then((notesChargees) => {
@@ -62,6 +62,20 @@ export function PanierProvider({ children }) {
 
   }
 
+  // =======================================
+// SANTÉ — PHARMACIE
+// =======================================
+
+if (analyse?.destination === "pharmacie") {
+  ajouterProduitPharmacie({
+    id: uuidv4(),
+
+    nom: analyse.nom,
+    quantite: analyse.quantite,
+    datePeremption: analyse.datePeremption,
+  });
+}
+
   // Un seul rendez-vous
   else {
 
@@ -82,6 +96,16 @@ export function PanierProvider({ children }) {
     if (analyse?.destination === "maison") {
       ajouterDansMaison(analyse.categorie, analyse.texte || contenu, "fifi");
     }
+
+    if (analyse?.destination === "medicaments") {
+  ajouterMedicament({
+    id: uuidv4(),
+
+    nom: analyse.nom,
+    quantite: analyse.quantite,
+    datePeremption: analyse.datePeremption,
+  });
+}
 
    // =======================================
 // SANTÉ — TRAITEMENTS

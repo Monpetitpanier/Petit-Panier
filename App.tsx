@@ -25,6 +25,7 @@ export default function App() {
 
               </BienEtreProvider>
             </PanierProvider>
+            </SanteProvider>
           </MaisonProvider>
         </AgendaProvider>
       </PreferencesProvider>

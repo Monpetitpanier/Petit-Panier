@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   SafeAreaView,
   ScrollView,
@@ -12,6 +13,10 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useSante } from "../contexts/SanteContext";
+
+import {
+  obtenirStatutPeremption,
+} from "../utils/medicamentUtils";
 
 import { Colors } from "../theme/colors";
 import { Radius } from "../theme/radius";
@@ -81,42 +86,60 @@ export default function Medicaments() {
 
         ) : (
 
-          medicaments.map((medicament) => (
+          medicaments.map((medicament) => {
+            const statutPeremption =
+              obtenirStatutPeremption(
+                medicament.datePeremption
+              );
 
-            <View
-              key={medicament.id}
-              style={styles.carteMedicament}
-            >
+            return (
+              <TouchableOpacity
+                key={medicament.id}
+               style={[
+  styles.carteMedicament,
 
-              <View style={styles.iconeMedicament}>
-                <Text style={styles.emojiCarte}>
-                  💊
-                </Text>
-              </View>
+  statutPeremption === "bientot_perime" &&
+    styles.carteBientotPerime,
 
-              <View style={styles.texteMedicament}>
+  statutPeremption === "perime" &&
+    styles.cartePerime,
+]} 
+                onPress={() =>
+                  navigation.navigate("DetailsMedicament", {
+                    medicamentId: medicament.id,
+                  })
+                }
+              >
 
-                <Text style={styles.nomMedicament}>
-                  {medicament.nom}
-                </Text>
-
-                {medicament.quantite !== undefined && (
-                  <Text style={styles.details}>
-                    Quantité : {medicament.quantite}
+                <View style={styles.iconeMedicament}>
+                  <Text style={styles.emojiCarte}>
+                    💊
                   </Text>
-                )}
+                </View>
 
-                {medicament.datePeremption && (
-                  <Text style={styles.peremption}>
-                    Péremption : {medicament.datePeremption}
+                <View style={styles.texteMedicament}>
+
+                  <Text style={styles.nomMedicament}>
+                    {medicament.nom}
                   </Text>
-                )}
 
-              </View>
+                  {medicament.quantite !== undefined && (
+                    <Text style={styles.details}>
+                      Quantité : {medicament.quantite}
+                    </Text>
+                  )}
 
-            </View>
+                  {medicament.datePeremption && (
+                    <Text style={styles.peremption}>
+                      Péremption : {medicament.datePeremption}
+                    </Text>
+                  )}
 
-          ))
+                </View>
+
+              </TouchableOpacity>
+            );
+          })
 
         )}
 
@@ -219,6 +242,16 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
     ...Shadow.card,
   },
+
+  carteBientotPerime: {
+  borderWidth: 2,
+  borderColor: "orange",
+},
+
+cartePerime: {
+  borderWidth: 2,
+  borderColor: "red",
+},
 
   iconeMedicament: {
     width: 52,

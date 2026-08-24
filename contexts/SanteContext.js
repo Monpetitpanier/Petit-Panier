@@ -8,6 +8,8 @@ import React, {
 import {
   chargerTraitements,
   sauvegarderTraitements,
+  arreterTraitement,
+  supprimerTraitement,
   chargerMedicaments,
   sauvegarderMedicaments,
   chargerPharmacie,
@@ -107,6 +109,20 @@ export function SanteProvider({ children }) {
   );
 }
 
+function arreterTraitement(id) {
+  setTraitements((anciensTraitements) =>
+    anciensTraitements.map((traitement) =>
+      traitement.id === id
+        ? {
+            ...traitement,
+            actif: false,
+            dateMiseAJour: new Date().toISOString(),
+          }
+        : traitement
+    )
+  );
+}
+
   function supprimerTraitement(id) {
     setTraitements((anciensTraitements) =>
       anciensTraitements.filter(
@@ -175,26 +191,27 @@ export function SanteProvider({ children }) {
 
   return (
     <SanteContext.Provider
-      value={{
-        traitements,
-        medicaments,
-        pharmacie,
+     value={{
+  traitements,
+  medicaments,
+  pharmacie,
 
-        chargement,
+  chargement,
 
-        ajouterTraitement,
-        modifierTraitement,
-        supprimerTraitement,
-        renouvelerTraitement,
+  ajouterTraitement,
+  modifierTraitement,
+  supprimerTraitement,
+  renouvelerTraitement,
+  arreterTraitement,
 
-        ajouterMedicament,
-        modifierMedicament,
-        supprimerMedicament,
+  ajouterMedicament,
+  modifierMedicament,
+  supprimerMedicament,
 
-        ajouterProduitPharmacie,
-        modifierProduitPharmacie,
-        supprimerProduitPharmacie,
-      }}
+  ajouterProduitPharmacie,
+  modifierProduitPharmacie,
+  supprimerProduitPharmacie,
+}}
     >
       {children}
     </SanteContext.Provider>

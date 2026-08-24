@@ -32,7 +32,7 @@ const cartes = [
   {
     titre: "Entretien",
     sousTitre: "Petits travaux, entretien annuel",
-    image: require("../assets/illustrations/maison/entetien_maison.png"),
+    image: require("../assets/illustrations/maison/entretien_maison.png"),
     destination: "EntretienMaison",
   },
   {
@@ -44,7 +44,7 @@ const cartes = [
   {
     titre: "To-do",
     sousTitre: "À prévoir sur l'année (cadeaux, vacances...)",
-    image: require("../assets/illustrations/maison/todo_listes.png"),
+    image: require("../assets/illustrations/maison/todo_liste.png"),
     destination: "ToDoMaison",
   },
 ];
@@ -107,27 +107,6 @@ const cartes = [
           {"\n"}
           bien rangé avec Fifi.
         </Text>
-
-
-        {/* =================================== */}
-        {/* DÉCOR + FIFI */}
-        {/* =================================== */}
-
-       <View style={styles.sceneFifi}>
-
-  <Image
-    source={require("../assets/environment/onglet_maison_fifi.png")}
-    style={styles.imageDecor}
-    resizeMode="cover"
-  />
-
-  <Image
-    source={require("../assets/characters/Fifi/poses/maison_fifi.png")}
-    style={styles.imageFifi}
-    resizeMode="contain"
-  />
-
-</View>
 
 </View>
 

@@ -72,7 +72,7 @@ export default function GarantiesMaison() {
 
         <Image
           source={require(
-            "../../assets/images/garanties.png"
+            "../../assets/illustrations/maison/garanties.png"
           )}
           style={styles.illustration}
           resizeMode="contain"

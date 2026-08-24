@@ -75,37 +75,43 @@ export default function Pharmacie() {
             </Text>
           </View>
         ) : (
-          pharmacie.map((produit) => (
-            <View
-              key={produit.id}
-              style={styles.carteProduit}
-            >
-              <View style={styles.iconeProduit}>
-                <Text style={styles.emojiCarte}>
-                  🩹
-                </Text>
-              </View>
+     pharmacie.map((produit) => (
+  <TouchableOpacity
+    key={produit.id}
+    style={styles.carteProduit}
+    onPress={() =>
+      navigation.navigate("DetailsPharmacie", {
+        produitId: produit.id,
+      })
+    }
+  >
+    <View style={styles.iconeProduit}>
+      <Text style={styles.emojiCarte}>
+        🩹
+      </Text>
+    </View>
 
-              <View style={styles.texteProduit}>
-                <Text style={styles.nomProduit}>
-                  {produit.nom}
-                </Text>
+    <View style={styles.texteProduit}>
+      <Text style={styles.nomProduit}>
+        {produit.nom}
+      </Text>
 
-                {produit.quantite !== undefined && (
-                  <Text style={styles.details}>
-                    Quantité : {produit.quantite}
-                  </Text>
-                )}
+      {produit.quantite !== undefined && (
+        <Text style={styles.details}>
+          Quantité : {produit.quantite}
+        </Text>
+      )}
 
-                {produit.datePeremption && (
-                  <Text style={styles.peremption}>
-                    Péremption : {produit.datePeremption}
-                  </Text>
-                )}
-              </View>
+      {produit.datePeremption && (
+        <Text style={styles.peremption}>
+          Péremption : {produit.datePeremption}
+        </Text>
+               )}
             </View>
-          ))
-        )}
+          </TouchableOpacity>
+        ))
+      )}
+
       </ScrollView>
     </SafeAreaView>
   );

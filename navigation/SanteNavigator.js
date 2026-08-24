@@ -7,6 +7,8 @@ import Traitements from "../screens/Traitements";
 import Medicaments from "../screens/Medicaments";
 import Pharmacie from "../screens/Pharmacie";
 import DetailsTraitement from "../screens/DetailsTraitement";
+import DetailsMedicament from "../screens/DetailsMedicament";
+import DetailsPharmacie from "../screens/DetailsPharmacie";
 const Stack = createNativeStackNavigator();
 
 export default function SanteNavigator() {
@@ -41,6 +43,17 @@ export default function SanteNavigator() {
     component={DetailsTraitement}
     />
     
+    <Stack.Screen
+    name="DetailsMedicament"
+    component={DetailsMedicament}
+    />
+
+    <Stack.Screen
+    name="DetailsPharmacie"
+    component={DetailsPharmacie}
+    />
+
       </Stack.Navigator>
+
   );
 }

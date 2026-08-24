@@ -54,7 +54,7 @@ export default function CarteCitation() {
     : "Une pensée pour toi";
 
   const illustration = require(
-    "../assets/furniture/livre_lampe.png"
+    "../assets/illustrations/accueil/pensees.png"
   );
 
   const citation = estParoles
@@ -103,9 +103,9 @@ const styles = StyleSheet.create({
 
     borderRadius: Radius.large,
 
-    padding: Spacing.lg,
+    padding: Spacing.md,
 
-    marginTop: Spacing.lg,
+    marginTop: Spacing.md,
 
     ...Shadow.card,
   },
@@ -115,8 +115,7 @@ entete: {
   alignItems: "center",
   justifyContent: "space-between",
 
-  height: 25,
-  marginBottom: 0,
+  marginBottom: Spacing.xxs,
 },
 
 titre: {
@@ -128,17 +127,17 @@ titre: {
 },
 
 illustration: {
-  width: 70,
-  height: 70,
+  width: 80,
+  height: 80,
 },
 
-  citation: {
-    fontSize: 15,
-    lineHeight: 35,
-    color: Colors.subtitle,
+citation: {
+  fontSize: 15,
+  lineHeight: 22,
+  color: Colors.subtitle,
 
-    fontStyle: "italic",
-  },
+  fontStyle: "italic",
+},
 
   reference: {
     marginTop: 0,

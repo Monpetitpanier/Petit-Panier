@@ -40,14 +40,15 @@ export default function CarteJournee() {
     <View style={styles.carte}>
 
       <View style={styles.entete}>
-        <Text style={styles.titre}>
+
+        <Text
+          style={styles.titre}
+          numberOfLines={2}
+        >
           Aujourd'hui
         </Text>
 
-        <Image
-  source={require("../assets/illustrations/agenda/bouton_agenda.png")}
-  style={styles.icone}
-/>
+
       </View>
 
       {rendezVousAujourdhui.length === 0 ? (
@@ -59,26 +60,34 @@ export default function CarteJournee() {
       ) : (
 
         <View style={styles.liste}>
+
           {rendezVousAujourdhui.map((rdv) => (
+
             <View
               key={rdv.id}
               style={styles.rendezVous}
             >
+
               {rdv.heure &&
                 rdv.heure !== "--:--" && (
+
                   <Text style={styles.heure}>
                     {rdv.heure}
                   </Text>
+
                 )}
 
               <Text
                 style={styles.nomRendezVous}
-                numberOfLines={2}
+                numberOfLines={3}
               >
                 {rdv.titre}
               </Text>
+
             </View>
+
           ))}
+
         </View>
 
       )}
@@ -88,33 +97,42 @@ export default function CarteJournee() {
 }
 
 const styles = StyleSheet.create({
+
   carte: {
     flex: 1,
+    minWidth: 0,
+
     backgroundColor: Colors.card,
     borderRadius: Radius.large,
-    padding: Spacing.lg,
+
+    padding: Spacing.md,
+
     marginTop: Spacing.lg,
+
     ...Shadow.card,
   },
 
   entete: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "space-between",
+
     marginBottom: Spacing.md,
   },
 
   titre: {
-    fontSize: 20,
+    flex: 1,
+    minWidth: 0,
+
+    marginRight: Spacing.xs,
+
+    fontSize: 19,
+    lineHeight: 24,
     fontWeight: "700",
+
     color: Colors.text,
   },
 
- icone: {
-  width: 34,
-  height: 34,
-  resizeMode: "contain",
-},
 
   liste: {
     gap: Spacing.sm,
@@ -123,25 +141,37 @@ const styles = StyleSheet.create({
   rendezVous: {
     flexDirection: "row",
     alignItems: "flex-start",
+
+    minWidth: 0,
   },
 
   heure: {
-    width: 48,
+    width: 43,
+
+    marginRight: 4,
+
     fontSize: 14,
     fontWeight: "700",
+
     color: Colors.secondary,
   },
 
   nomRendezVous: {
     flex: 1,
+    flexShrink: 1,
+    minWidth: 0,
+
     fontSize: 15,
     lineHeight: 21,
+
     color: Colors.subtitle,
   },
 
   vide: {
     fontSize: 15,
     lineHeight: 21,
+
     color: Colors.subtitle,
   },
+
 });

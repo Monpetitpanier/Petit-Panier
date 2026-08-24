@@ -27,18 +27,18 @@ export default function EcranCategorieMaison() {
   Record<MaisonCategorie, any>
 > = {
   courses: require(
-    '../../assets/images/panier_courses.png'
+    '../../assets/illustrations/maison/panier_courses.png'
   ),
 
   entretien: require(
-    '../../assets/images/entretien_maison.png'
+    '../../assets/illustrations/maison/entretien_maison.png'
   ),
 
    menage: require(
-    '../../assets/images/seau_menage.png'
+    '../../assets/illustrations/maison/seau_menage.png'
   ),
    todo: require(
-    '../../assets/images/todo_liste.png'
+    '../../assets/illustrations/maison/todo_liste.png'
    )
 };
 const illustration =
