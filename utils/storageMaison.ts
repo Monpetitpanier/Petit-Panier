@@ -1055,6 +1055,30 @@ export function basculerItem(
   }
 
 // ===================================
+// COURSES
+// ===================================
+
+  if (categorie === 'courses') {
+
+    return {
+      ...listes,
+
+      courses:
+        listes.courses.map(
+          (item) =>
+            item.id === id
+              ? {
+                  ...item,
+                  achete: !item.achete,
+                }
+              : item
+        ),
+
+    };
+
+  }
+
+// ===================================
 // GARANTIES
 // ===================================
 

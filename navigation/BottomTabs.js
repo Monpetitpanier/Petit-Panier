@@ -5,7 +5,7 @@ import { Image } from "react-native";
 
 import Accueil from "../screens/Accueil";
 import Agenda from "../screens/Agenda";
-import Budget from "../screens/Budget";
+import BudgetNavigator from "./BudgetNavigator";
 import PlusStack from "./PlusStack";
 
 import { usePreferences } from "../contexts/PreferencesContext";
@@ -172,7 +172,7 @@ export default function BottomTabs() {
       {onglets.budget && (
         <Tab.Screen
           name="Budget"
-          component={Budget}
+          component={BudgetNavigator}
         />
       )}
 

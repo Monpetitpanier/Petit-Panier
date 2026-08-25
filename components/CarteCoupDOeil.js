@@ -9,21 +9,53 @@ import { Colors } from "../theme/colors";
 import { Radius } from "../theme/radius";
 import { Shadow } from "../theme/shadow";
 import { Spacing } from "../theme/spacing";
+
 import { useSante } from "../contexts/SanteContext";
+import { useBudget } from "../contexts/BudgetContext";
 
 import {
   doitPrevenirRenouvellement,
 } from "../utils/traitementsUtils";
 
+import {
+  calculerResteDisponible,
+} from "../utils/budgetUtils";
+
 export default function CarteCoupDOeil() {
 
   const { traitements } = useSante();
+
+  const {
+    revenuMensuel,
+    chargesFixes,
+    chargesVariables,
+    prets,
+  } = useBudget();
+
+
+  // =======================================
+  // CALCUL DU BUDGET DISPONIBLE
+  // =======================================
+
+  const budgetDisponible =
+    calculerResteDisponible({
+      revenuMensuel,
+      chargesFixes,
+      chargesVariables,
+      prets,
+    });
+
+
+  // =======================================
+  // TRAITEMENTS À RENOUVELER
+  // =======================================
 
   const traitementsARenouveler = traitements.filter(
     (traitement) =>
       traitement.actif !== false &&
       doitPrevenirRenouvellement(traitement)
   );
+
 
   return (
 
@@ -40,9 +72,12 @@ export default function CarteCoupDOeil() {
 
       </View>
 
+
       <View style={styles.liste}>
 
+        {/* ============================= */}
         {/* BUDGET */}
+        {/* ============================= */}
 
         <View style={styles.ligne}>
 
@@ -50,17 +85,34 @@ export default function CarteCoupDOeil() {
             💰
           </Text>
 
-          <Text
-            style={styles.texte}
-            numberOfLines={3}
-          >
-            Budget disponible
-          </Text>
+          <View style={styles.texteBudget}>
+
+            <Text
+              style={styles.texte}
+              numberOfLines={1}
+            >
+              Budget dispo
+            </Text>
+
+            <Text
+              style={[
+                styles.montantBudget,
+                budgetDisponible < 0 &&
+                  styles.montantNegatif,
+              ]}
+              numberOfLines={1}
+            >
+              {budgetDisponible.toFixed(2).replace(".", ",")} €
+            </Text>
+
+          </View>
 
         </View>
 
 
+        {/* ============================= */}
         {/* TRAITEMENTS À RENOUVELER */}
+        {/* ============================= */}
 
         {traitementsARenouveler.map((traitement) => (
 
@@ -85,7 +137,9 @@ export default function CarteCoupDOeil() {
         ))}
 
 
+        {/* ============================= */}
         {/* PROCHAINE TÂCHE */}
+        {/* ============================= */}
 
         <View style={styles.ligne}>
 
@@ -103,7 +157,9 @@ export default function CarteCoupDOeil() {
         </View>
 
 
+        {/* ============================= */}
         {/* COURSES */}
+        {/* ============================= */}
 
         <View style={styles.ligne}>
 
@@ -125,6 +181,7 @@ export default function CarteCoupDOeil() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
 
@@ -182,6 +239,11 @@ const styles = StyleSheet.create({
     marginRight: 3,
   },
 
+  texteBudget: {
+    flex: 1,
+    minWidth: 0,
+  },
+
   texte: {
     flex: 1,
     flexShrink: 1,
@@ -191,6 +253,19 @@ const styles = StyleSheet.create({
     lineHeight: 20,
 
     color: Colors.subtitle,
+  },
+
+  montantBudget: {
+    marginTop: 1,
+
+    fontSize: 16,
+    fontWeight: "700",
+
+    color: Colors.text,
+  },
+
+  montantNegatif: {
+    color: Colors.text,
   },
 
 });

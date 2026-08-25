@@ -1,12 +1,15 @@
 import React from "react";
+
 import {
   SafeAreaView,
   ScrollView,
+  Image,
   Text,
   TouchableOpacity,
   View,
   StyleSheet,
 } from "react-native";
+
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -18,6 +21,7 @@ import { Shadow } from "../theme/shadow";
 import { Spacing } from "../theme/spacing";
 
 export default function Sante() {
+
   const navigation = useNavigation();
 
   const {
@@ -26,8 +30,14 @@ export default function Sante() {
     pharmacie,
   } = useSante();
 
+
   return (
+
     <SafeAreaView style={styles.container}>
+
+      {/* ============================= */}
+      {/* RETOUR */}
+      {/* ============================= */}
 
       <TouchableOpacity
         style={styles.boutonRetour}
@@ -40,10 +50,15 @@ export default function Sante() {
         />
       </TouchableOpacity>
 
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
+
+        {/* ============================= */}
+        {/* TITRE */}
+        {/* ============================= */}
 
         <Text style={styles.titre}>
           Santé
@@ -61,14 +76,24 @@ export default function Sante() {
         <TouchableOpacity
           style={styles.carte}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate("Traitements")}
+          onPress={() =>
+            navigation.navigate("Traitements")
+          }
         >
 
-          <View style={styles.icone}>
-            <Text style={styles.emoji}>💊</Text>
-          </View>
+          <Image
+            source={
+              require(
+                "../assets/illustrations/sante/bouton_traitement.png"
+              )
+            }
+            style={styles.illustration}
+            resizeMode="contain"
+          />
+
 
           <View style={styles.texteCarte}>
+
             <Text style={styles.titreCarte}>
               Traitements
             </Text>
@@ -77,10 +102,14 @@ export default function Sante() {
               {traitements.length === 0
                 ? "Aucun traitement en cours."
                 : `${traitements.length} traitement${
-                    traitements.length > 1 ? "s" : ""
+                    traitements.length > 1
+                      ? "s"
+                      : ""
                   } en cours.`}
             </Text>
+
           </View>
+
 
           <MaterialCommunityIcons
             name="chevron-right"
@@ -98,14 +127,24 @@ export default function Sante() {
         <TouchableOpacity
           style={styles.carte}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate("Medicaments")}
+          onPress={() =>
+            navigation.navigate("Medicaments")
+          }
         >
 
-          <View style={styles.icone}>
-            <Text style={styles.emoji}>📦</Text>
-          </View>
+          <Image
+            source={
+              require(
+                "../assets/illustrations/sante/bouton_medicament.png"
+              )
+            }
+            style={styles.illustration}
+            resizeMode="contain"
+          />
+
 
           <View style={styles.texteCarte}>
+
             <Text style={styles.titreCarte}>
               Médicaments
             </Text>
@@ -114,10 +153,14 @@ export default function Sante() {
               {medicaments.length === 0
                 ? "Votre stock est vide."
                 : `${medicaments.length} médicament${
-                    medicaments.length > 1 ? "s" : ""
+                    medicaments.length > 1
+                      ? "s"
+                      : ""
                   } en stock.`}
             </Text>
+
           </View>
+
 
           <MaterialCommunityIcons
             name="chevron-right"
@@ -135,14 +178,24 @@ export default function Sante() {
         <TouchableOpacity
           style={styles.carte}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate("Pharmacie")}
+          onPress={() =>
+            navigation.navigate("Pharmacie")
+          }
         >
 
-          <View style={styles.icone}>
-            <Text style={styles.emoji}>🩹</Text>
-          </View>
+          <Image
+            source={
+              require(
+                "../assets/illustrations/sante/bouton_pharmacie.png"
+              )
+            }
+            style={styles.illustration}
+            resizeMode="contain"
+          />
+
 
           <View style={styles.texteCarte}>
+
             <Text style={styles.titreCarte}>
               Pharmacie
             </Text>
@@ -151,12 +204,18 @@ export default function Sante() {
               {pharmacie.length === 0
                 ? "Aucun produit enregistré."
                 : `${pharmacie.length} produit${
-                    pharmacie.length > 1 ? "s" : ""
+                    pharmacie.length > 1
+                      ? "s"
+                      : ""
                   } enregistré${
-                    pharmacie.length > 1 ? "s" : ""
+                    pharmacie.length > 1
+                      ? "s"
+                      : ""
                   }.`}
             </Text>
+
           </View>
+
 
           <MaterialCommunityIcons
             name="chevron-right"
@@ -167,8 +226,11 @@ export default function Sante() {
         </TouchableOpacity>
 
       </ScrollView>
+
     </SafeAreaView>
+
   );
+
 }
 
 
@@ -179,10 +241,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
+
   content: {
     padding: Spacing.lg,
     paddingBottom: Spacing.xl,
   },
+
 
   boutonRetour: {
     marginLeft: Spacing.md,
@@ -197,6 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
   },
 
+
   titre: {
     marginTop: Spacing.md,
 
@@ -205,6 +270,7 @@ const styles = StyleSheet.create({
 
     color: Colors.text,
   },
+
 
   sousTitre: {
     marginTop: Spacing.xs,
@@ -216,6 +282,11 @@ const styles = StyleSheet.create({
     color: Colors.subtitle,
   },
 
+
+  /* ============================= */
+  /* CARTES */
+  /* ============================= */
+
   carte: {
     flexDirection: "row",
     alignItems: "center",
@@ -224,33 +295,29 @@ const styles = StyleSheet.create({
 
     borderRadius: Radius.large,
 
-    padding: Spacing.lg,
+    padding: Spacing.md,
     marginBottom: Spacing.md,
 
     ...Shadow.card,
   },
 
-  icone: {
-    width: 58,
-    height: 58,
 
-    borderRadius: 29,
+  /* ============================= */
+  /* ILLUSTRATIONS */
+  /* ============================= */
 
-    alignItems: "center",
-    justifyContent: "center",
+  illustration: {
+    width: 78,
+    height: 78,
 
     marginRight: Spacing.md,
-
-    backgroundColor: Colors.background,
   },
 
-  emoji: {
-    fontSize: 28,
-  },
 
   texteCarte: {
     flex: 1,
   },
+
 
   titreCarte: {
     fontSize: 18,
@@ -258,6 +325,7 @@ const styles = StyleSheet.create({
 
     color: Colors.text,
   },
+
 
   description: {
     marginTop: 4,

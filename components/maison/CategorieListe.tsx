@@ -23,22 +23,18 @@ import {
 } from '../../types/maison';
 
 import { useMaison } from '../../contexts/MaisonContext';
-
 import SelecteurRayon from './SelecteurRayon';
 
 import { Colors } from '../../theme/colors';
 import { Spacing } from '../../theme/spacing';
 
-
 interface Props {
   categorie: MaisonCategorie;
 }
 
-
 export default function CategorieListe({
   categorie,
 }: Props) {
-
   const {
     listes,
     ajouter,
@@ -49,49 +45,60 @@ export default function CategorieListe({
     modifierRayon,
   } = useMaison();
 
+  const [texte, setTexte] = useState('');
+  const [modeCourses, setModeCourses] = useState(false);
 
-  const [texte, setTexte] =
-    useState('');
-
-  const [modeCourses, setModeCourses] =
-    useState(false);
-
-  // Rayons actuellement dépliés (menu déroulant)
   const [rayonsOuverts, setRayonsOuverts] =
     useState<Set<CategorieRayon>>(new Set());
 
-  // Produit dont on est en train de corriger le rayon
   const [produitEnEdition, setProduitEnEdition] =
     useState<ProduitCourse | null>(null);
 
-  const basculerRayonOuvert = (rayon: CategorieRayon) => {
+  const basculerRayonOuvert = (
+    rayon: CategorieRayon
+  ) => {
     setRayonsOuverts((prev) => {
       const nouveau = new Set(prev);
+
       if (nouveau.has(rayon)) {
         nouveau.delete(rayon);
       } else {
         nouveau.add(rayon);
       }
+
       return nouveau;
     });
   };
 
-  const ORDRE_RAYONS = (Object.keys(RAYONS_INFO) as CategorieRayon[]).sort(
-    (a, b) => RAYONS_INFO[a].ordre - RAYONS_INFO[b].ordre
-  );
+  const ORDRE_RAYONS =
+    (Object.keys(RAYONS_INFO) as CategorieRayon[])
+      .sort(
+        (a, b) =>
+          RAYONS_INFO[a].ordre -
+          RAYONS_INFO[b].ordre
+      );
 
-  const grouperParRayon = (produits: ProduitCourse[]) => {
-    const groupes = ORDRE_RAYONS.map((rayon) => ({
-      rayon,
-      produits: produits.filter((p) => p.rayon === rayon),
-    }));
-    return groupes;
+  // IMPORTANT :
+  // On ne garde que les rayons qui contiennent
+  // réellement au moins un produit.
+  const grouperParRayon = (
+    produits: ProduitCourse[]
+  ) => {
+    return ORDRE_RAYONS
+      .map((rayon) => ({
+        rayon,
+        produits: produits.filter(
+          (produit) =>
+            produit.rayon === rayon
+        ),
+      }))
+      .filter(
+        (groupe) =>
+          groupe.produits.length > 0
+      );
   };
 
-
-  const items =
-    listes[categorie];
-
+  const items = listes[categorie];
 
   // =======================================
   // PRODUITS DE COURSES
@@ -103,63 +110,57 @@ export default function CategorieListe({
       : [];
 
   // =======================================
-// TÂCHES DE MÉNAGE
-// =======================================
+  // TÂCHES DE MÉNAGE
+  // =======================================
 
-const tachesMenage =
-  categorie === 'menage'
-    ? (items as TacheMenage[])
-    : [];
+  const tachesMenage =
+    categorie === 'menage'
+      ? (items as TacheMenage[])
+      : [];
 
-/*
- * Une tâche n'est affichée que lorsqu'elle
- * est réellement due.
- *
- * Si aucune prochaineOccurrence n'est définie,
- * on la considère comme due immédiatement.
- */
+  const maintenant = new Date();
 
-const maintenant = new Date();
+  const tachesMenageDues =
+    tachesMenage.filter((tache) => {
+      if (!tache.prochaineOccurrence) {
+        return true;
+      }
 
-const tachesMenageDues =
-  tachesMenage.filter((tache) => {
+      return (
+        new Date(
+          tache.prochaineOccurrence
+        ) <= maintenant
+      );
+    });
 
-    if (!tache.prochaineOccurrence) {
-      return true;
-    }
-
-    return (
-      new Date(tache.prochaineOccurrence)
-        <= maintenant
+  const tachesQuotidiennes =
+    tachesMenageDues.filter(
+      (tache) =>
+        tache.frequence === 'quotidien'
     );
 
-  });
+  const tachesHebdomadaires =
+    tachesMenageDues.filter(
+      (tache) =>
+        tache.frequence === 'hebdomadaire'
+    );
 
+  const tachesSemestrielles =
+    tachesMenageDues.filter(
+      (tache) =>
+        tache.frequence === 'semestriel'
+    );
 
-const tachesQuotidiennes =
-  tachesMenageDues.filter(
-    (tache) =>
-      tache.frequence === 'quotidien'
-  );
+  const tachesAnnuelles =
+    tachesMenageDues.filter(
+      (tache) =>
+        tache.frequence === 'annuel'
+    );
 
-const tachesHebdomadaires =
-  tachesMenageDues.filter(
-    (tache) =>
-      tache.frequence === 'hebdomadaire'
-  );
+  // =======================================
+  // PRODUITS SÉLECTIONNÉS
+  // =======================================
 
-const tachesSemestrielles =
-  tachesMenageDues.filter(
-    (tache) =>
-      tache.frequence === 'semestriel'
-  );
-
-const tachesAnnuelles =
-  tachesMenageDues.filter(
-    (tache) =>
-      tache.frequence === 'annuel'
-  );
-  // Produits sélectionnés pour la prochaine course
   const produitsSelectionnes =
     useMemo(
       () =>
@@ -170,47 +171,31 @@ const tachesAnnuelles =
       [produitsCourses]
     );
 
-
   // =======================================
-  // AJOUT
+  // AJOUT GÉNÉRIQUE
   // =======================================
 
   const handleAjouter = () => {
-
     if (texte.trim().length === 0) {
       return;
     }
-
 
     ajouter(
       categorie,
       texte.trim()
     );
 
-
     setTexte('');
-
   };
-
 
   // =======================================
   // AJOUTER UN PRODUIT DE COURSE
   // =======================================
 
   const handleAjouterCourse = () => {
-
     if (texte.trim().length === 0) {
       return;
     }
-
-
-    /*
-     * Un produit ajouté manuellement est
-     * considéré comme ponctuel.
-     *
-     * Il faudra le sélectionner ensuite
-     * pour l'ajouter aux prochaines courses.
-     */
 
     ajouter(
       'courses',
@@ -219,45 +204,34 @@ const tachesAnnuelles =
       'ponctuel'
     );
 
-
     setTexte('');
-
   };
-
 
   // =======================================
   // COMMENCER LES COURSES
   // =======================================
 
   const commencerCourses = () => {
-
     if (
       produitsSelectionnes.length === 0
     ) {
       return;
     }
 
-
     setModeCourses(true);
-
   };
-
 
   // =======================================
   // TERMINER LES COURSES
   // =======================================
 
   const finirCourses = () => {
-
     terminerCourses();
-
     setModeCourses(false);
-
   };
 
-
   // =======================================
-  // RENDU D'UN PRODUIT DE COURSE
+  // RENDU PRODUIT DE COURSE
   // =======================================
 
   const renderProduitCourse = ({
@@ -265,52 +239,30 @@ const tachesAnnuelles =
   }: {
     item: ProduitCourse;
   }) => {
-
-    const pris =
-      item.achete;
-
+    const pris = item.achete;
 
     return (
-
       <View
         style={[
           styles.ligneItem,
           pris && styles.ligneAchetee,
         ]}
       >
-
         <TouchableOpacity
           style={styles.caseCoche}
           onPress={() => {
-
             if (modeCourses) {
-
-              /*
-               * En mode courses :
-               * "Je l'ai pris dans le caddie".
-               */
-
               basculer(
                 'courses',
                 item.id
               );
-
             } else {
-
-              /*
-               * En mode préparation :
-               * "Je veux acheter ce produit".
-               */
-
               basculerSelectionCourse(
                 item.id
               );
-
             }
-
           }}
         >
-
           <MaterialCommunityIcons
             name={
               modeCourses
@@ -336,32 +288,28 @@ const tachesAnnuelles =
                 : Colors.subtitle
             }
           />
-
         </TouchableOpacity>
 
-
-      <TouchableOpacity
-  style={{ flex: 1 }}
-  onLongPress={() => {
-    if (!modeCourses) {
-      setProduitEnEdition(item);
-    }
-  }}
-  delayLongPress={500}
->
-  <Text
-    style={[
-      styles.texteItem,
-      pris && styles.texteAchete,
-    ]}
-  >
-    {item.texte}
-  </Text>
-</TouchableOpacity>
-
+        <TouchableOpacity
+          style={{ flex: 1 }}
+          onLongPress={() => {
+            if (!modeCourses) {
+              setProduitEnEdition(item);
+            }
+          }}
+          delayLongPress={500}
+        >
+          <Text
+            style={[
+              styles.texteItem,
+              pris && styles.texteAchete,
+            ]}
+          >
+            {item.texte}
+          </Text>
+        </TouchableOpacity>
 
         {!modeCourses && (
-
           <TouchableOpacity
             onPress={() =>
               supprimer(
@@ -370,192 +318,150 @@ const tachesAnnuelles =
               )
             }
           >
-
             <MaterialCommunityIcons
               name="close"
               size={20}
               color={Colors.border}
             />
-
           </TouchableOpacity>
-
         )}
-
       </View>
-
     );
-
   };
 
-// =======================================
-// RENDU D'UNE TÂCHE DE MÉNAGE
-// =======================================
+  // =======================================
+  // RENDU TÂCHE DE MÉNAGE
+  // =======================================
 
-const renderTacheMenage = (tache: TacheMenage) => (
-
-  <View
-    key={tache.id}
-    style={styles.ligneItem}
-  >
-
-    <TouchableOpacity
-      style={styles.caseCoche}
-      onPress={() =>
-        basculer(
-          'menage',
-          tache.id
-        )
-      }
+  const renderTacheMenage = (
+    tache: TacheMenage
+  ) => (
+    <View
+      key={tache.id}
+      style={styles.ligneItem}
     >
-
-      <MaterialCommunityIcons
-        name={
-          tache.fait
-            ? 'checkbox-marked'
-            : 'checkbox-blank-outline'
+      <TouchableOpacity
+        style={styles.caseCoche}
+        onPress={() =>
+          basculer(
+            'menage',
+            tache.id
+          )
         }
-        size={24}
-        color={
-          tache.fait
-            ? Colors.secondary
-            : Colors.subtitle
-        }
-      />
-
-    </TouchableOpacity>
-
-
-    <Text
-      style={[
-        styles.texteItem,
-        tache.fait &&
-          styles.texteFait,
-      ]}
-    >
-      {tache.texte}
-    </Text>
-
-
-    <TouchableOpacity
-      onPress={() =>
-        supprimer(
-          'menage',
-          tache.id
-        )
-      }
-    >
-
-      <MaterialCommunityIcons
-        name="close"
-        size={20}
-        color={Colors.border}
-      />
-
-    </TouchableOpacity>
-
-  </View>
-
-);
-
-// =======================================
-// ÉCRAN MÉNAGE
-// =======================================
-
-if (categorie === 'menage') {
-
-  return (
-
-    <View>
-
-      {/* Tous les jours */}
-
-      <Text style={styles.titreMenage}>
-        🟢 Tous les jours
-      </Text>
-
-      {tachesQuotidiennes.map(
-        renderTacheMenage
-      )}
-
-
-      {/* Toutes les semaines */}
-
-      <Text style={styles.titreMenage}>
-        🔵 Toutes les semaines
-      </Text>
-
-      {tachesHebdomadaires.map(
-        renderTacheMenage
-      )}
-
-
-      {/* Tous les 6 mois */}
-
-      <Text style={styles.titreMenage}>
-        🟠 Tous les 6 mois
-      </Text>
-
-      {tachesSemestrielles.map(
-        renderTacheMenage
-      )}
-
-
-      {/* Tous les ans */}
-
-      <Text style={styles.titreMenage}>
-        🟣 Tous les ans
-      </Text>
-
-      {tachesAnnuelles.map(
-        renderTacheMenage
-      )}
-
-
-      {/* Ajouter une tâche */}
-
-      <View style={styles.ajoutConteneur}>
-
-        <TextInput
-          style={styles.champTexte}
-          placeholder="Ajouter une tâche..."
-          placeholderTextColor={
-            Colors.subtitle
+      >
+        <MaterialCommunityIcons
+          name={
+            tache.fait
+              ? 'checkbox-marked'
+              : 'checkbox-blank-outline'
           }
-          value={texte}
-          onChangeText={setTexte}
-          onSubmitEditing={
-            handleAjouter
+          size={24}
+          color={
+            tache.fait
+              ? Colors.secondary
+              : Colors.subtitle
           }
-          returnKeyType="done"
         />
+      </TouchableOpacity>
 
-        <TouchableOpacity
-          style={
-            styles.boutonAjouter
-          }
-          onPress={
-            handleAjouter
-          }
-        >
+      <Text
+        style={[
+          styles.texteItem,
+          tache.fait &&
+            styles.texteFait,
+        ]}
+      >
+        {tache.texte}
+      </Text>
 
-          <MaterialCommunityIcons
-            name="plus"
-            size={22}
-            color={Colors.white}
-          />
-
-        </TouchableOpacity>
-
-      </View>
-
+      <TouchableOpacity
+        onPress={() =>
+          supprimer(
+            'menage',
+            tache.id
+          )
+        }
+      >
+        <MaterialCommunityIcons
+          name="close"
+          size={20}
+          color={Colors.border}
+        />
+      </TouchableOpacity>
     </View>
-
   );
 
-}
+  // =======================================
+  // ÉCRAN MÉNAGE
+  // =======================================
+
+  if (categorie === 'menage') {
+    return (
+      <View>
+        <Text style={styles.titreMenage}>
+          🟢 Tous les jours
+        </Text>
+
+        {tachesQuotidiennes.map(
+          renderTacheMenage
+        )}
+
+        <Text style={styles.titreMenage}>
+          🔵 Toutes les semaines
+        </Text>
+
+        {tachesHebdomadaires.map(
+          renderTacheMenage
+        )}
+
+        <Text style={styles.titreMenage}>
+          🟠 Tous les 6 mois
+        </Text>
+
+        {tachesSemestrielles.map(
+          renderTacheMenage
+        )}
+
+        <Text style={styles.titreMenage}>
+          🟣 Tous les ans
+        </Text>
+
+        {tachesAnnuelles.map(
+          renderTacheMenage
+        )}
+
+        <View style={styles.ajoutConteneur}>
+          <TextInput
+            style={styles.champTexte}
+            placeholder="Ajouter une tâche..."
+            placeholderTextColor={
+              Colors.subtitle
+            }
+            value={texte}
+            onChangeText={setTexte}
+            onSubmitEditing={
+              handleAjouter
+            }
+            returnKeyType="done"
+          />
+
+          <TouchableOpacity
+            style={styles.boutonAjouter}
+            onPress={handleAjouter}
+          >
+            <MaterialCommunityIcons
+              name="plus"
+              size={22}
+              color={Colors.white}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   // =======================================
-  // AUTRES CATÉGORIES
+  // RENDU AUTRES CATÉGORIES
   // =======================================
 
   const renderItem = ({
@@ -563,9 +469,7 @@ if (categorie === 'menage') {
   }: {
     item: MaisonItem;
   }) => (
-
     <View style={styles.ligneItem}>
-
       <TouchableOpacity
         style={styles.caseCoche}
         onPress={() =>
@@ -575,7 +479,6 @@ if (categorie === 'menage') {
           )
         }
       >
-
         <MaterialCommunityIcons
           name={
             item.fait
@@ -589,9 +492,7 @@ if (categorie === 'menage') {
               : Colors.subtitle
           }
         />
-
       </TouchableOpacity>
-
 
       <Text
         style={[
@@ -603,7 +504,6 @@ if (categorie === 'menage') {
         {item.texte}
       </Text>
 
-
       <TouchableOpacity
         onPress={() =>
           supprimer(
@@ -612,49 +512,37 @@ if (categorie === 'menage') {
           )
         }
       >
-
         <MaterialCommunityIcons
           name="close"
           size={20}
           color={Colors.border}
         />
-
       </TouchableOpacity>
-
     </View>
-
   );
-
 
   // =======================================
   // ÉCRAN COURSES
   // =======================================
 
   if (categorie === 'courses') {
+    const groupesPreparation =
+      grouperParRayon(
+        produitsCourses
+      );
 
-    /*
-     * En mode "courses", on ne montre QUE
-     * les produits sélectionnés.
-     */
-
-    const listeAffichee =
-      modeCourses
-        ? produitsSelectionnes
-        : produitsCourses;
-
+    const groupesCourses =
+      grouperParRayon(
+        produitsSelectionnes
+      );
 
     return (
-
       <View>
 
-        {/* ================================= */}
         {/* MODE PRÉPARATION */}
-        {/* ================================= */}
 
         {!modeCourses && (
-
           <>
-
             <Text style={styles.titreMode}>
               📝 Préparer mes courses
             </Text>
@@ -664,72 +552,116 @@ if (categorie === 'menage') {
               acheter.
             </Text>
 
-
             {produitsCourses.length === 0 && (
-  <Text style={styles.vide}>
-    Ta liste est vide pour l'instant 🌿
-  </Text>
-)}
+              <Text style={styles.vide}>
+                Ta liste est vide pour l'instant 🌿
+              </Text>
+            )}
 
-            {grouperParRayon(listeAffichee).map(({rayon, produits }) => {
-              const info = RAYONS_INFO[rayon];
-              const ouvert = rayonsOuverts.has(rayon);
+            {groupesPreparation.map(
+              ({
+                rayon,
+                produits,
+              }) => {
+                const info =
+                  RAYONS_INFO[rayon];
 
-              return (
-                <View key={rayon} style={styles.sectionRayon}>
-                  <TouchableOpacity
-                    style={styles.enteteRayon}
-                    onPress={() => basculerRayonOuvert(rayon)}
+                const ouvert =
+                  rayonsOuverts.has(rayon);
+
+                return (
+                  <View
+                    key={rayon}
+                    style={
+                      styles.sectionRayon
+                    }
                   >
-                    <Text style={styles.icone}>{info.icone}</Text>
-                    <Text style={styles.titreRayon}>{info.label}</Text>
-                    <View style={styles.badgeNombre}>
-                      <Text style={styles.texteBadgeNombre}>{produits.length}</Text>
-                    </View>
-                    <MaterialCommunityIcons
-                      name={ouvert ? 'chevron-up' : 'chevron-down'}
-                      size={22}
-                      color={Colors.subtitle}
-                    />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={
+                        styles.enteteRayon
+                      }
+                      onPress={() =>
+                        basculerRayonOuvert(
+                          rayon
+                        )
+                      }
+                    >
+                      <Text
+                        style={styles.icone}
+                      >
+                        {info.icone}
+                      </Text>
 
-                  {ouvert &&
-                    produits.map((produit) => (
-                      <View key={produit.id}>
-                        {renderProduitCourse({ item: produit })}
+                      <Text
+                        style={
+                          styles.titreRayon
+                        }
+                      >
+                        {info.label}
+                      </Text>
+
+                      <View
+                        style={
+                          styles.badgeNombre
+                        }
+                      >
+                        <Text
+                          style={
+                            styles.texteBadgeNombre
+                          }
+                        >
+                          {produits.length}
+                        </Text>
                       </View>
-                    ))}
-                </View>
-              );
-            })}
 
+                      <MaterialCommunityIcons
+                        name={
+                          ouvert
+                            ? 'chevron-up'
+                            : 'chevron-down'
+                        }
+                        size={22}
+                        color={
+                          Colors.subtitle
+                        }
+                      />
+                    </TouchableOpacity>
 
-            {/* Ajouter un produit */}
+                    {ouvert &&
+                      produits.map(
+                        (produit) => (
+                          <View
+                            key={produit.id}
+                          >
+                            {renderProduitCourse({
+                              item: produit,
+                            })}
+                          </View>
+                        )
+                      )}
+                  </View>
+                );
+              }
+            )}
 
             <View
               style={
                 styles.ajoutConteneur
               }
             >
-
               <TextInput
-                style={
-                  styles.champTexte
-                }
+                style={styles.champTexte}
                 placeholder="Ajouter un produit..."
                 placeholderTextColor={
                   Colors.subtitle
                 }
                 value={texte}
-                onChangeText={
-                  setTexte
-                }
+                onChangeText={setTexte}
                 onSubmitEditing={
                   handleAjouterCourse
                 }
                 returnKeyType="done"
               />
-
 
               <TouchableOpacity
                 style={
@@ -739,19 +671,13 @@ if (categorie === 'menage') {
                   handleAjouterCourse
                 }
               >
-
                 <MaterialCommunityIcons
                   name="plus"
                   size={22}
                   color={Colors.white}
                 />
-
               </TouchableOpacity>
-
             </View>
-
-
-            {/* Commencer les courses */}
 
             <TouchableOpacity
               style={[
@@ -768,7 +694,6 @@ if (categorie === 'menage') {
                 0
               }
             >
-
               <MaterialCommunityIcons
                 name="cart-arrow-right"
                 size={21}
@@ -782,80 +707,123 @@ if (categorie === 'menage') {
               >
                 Commencer mes courses
               </Text>
-
             </TouchableOpacity>
-
           </>
-
         )}
 
-
-        {/* ================================= */}
         {/* MODE COURSES */}
-        {/* ================================= */}
 
         {modeCourses && (
-
           <>
-
             <Text style={styles.titreMode}>
               🛒 Mes courses
             </Text>
 
-            <Text style={styles.sousTitreMode}>
+            <Text
+              style={styles.sousTitreMode}
+            >
               Coche les produits quand ils
               sont dans ton caddie.
             </Text>
 
-
-            {grouperParRayon(produitsSelectionnes).length === 0 && (
+            {groupesCourses.length === 0 && (
               <Text style={styles.vide}>
-                Tout est pris ! 🎉
+                Aucun produit sélectionné 🌿
               </Text>
             )}
 
-            {grouperParRayon(produitsSelectionnes).map(({ rayon, produits }) => {
-              const info = RAYONS_INFO[rayon];
-              const ouvert = rayonsOuverts.has(rayon);
+            {groupesCourses.map(
+              ({
+                rayon,
+                produits,
+              }) => {
+                const info =
+                  RAYONS_INFO[rayon];
 
-              return (
-                <View key={rayon} style={styles.sectionRayon}>
-                  <TouchableOpacity
-                    style={styles.enteteRayon}
-                    onPress={() => basculerRayonOuvert(rayon)}
+                const ouvert =
+                  rayonsOuverts.has(rayon);
+
+                return (
+                  <View
+                    key={rayon}
+                    style={
+                      styles.sectionRayon
+                    }
                   >
-                    <Text style={styles.icone}>{info.icone}</Text>
-                    <Text style={styles.titreRayon}>{info.label}</Text>
-                    <View style={styles.badgeNombre}>
-                      <Text style={styles.texteBadgeNombre}>{produits.length}</Text>
-                    </View>
-                    <MaterialCommunityIcons
-                      name={ouvert ? 'chevron-up' : 'chevron-down'}
-                      size={22}
-                      color={Colors.subtitle}
-                    />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={
+                        styles.enteteRayon
+                      }
+                      onPress={() =>
+                        basculerRayonOuvert(
+                          rayon
+                        )
+                      }
+                    >
+                      <Text
+                        style={styles.icone}
+                      >
+                        {info.icone}
+                      </Text>
 
-                  {ouvert &&
-                    produits.map((produit) => (
-                      <View key={produit.id}>
-                        {renderProduitCourse({ item: produit })}
+                      <Text
+                        style={
+                          styles.titreRayon
+                        }
+                      >
+                        {info.label}
+                      </Text>
+
+                      <View
+                        style={
+                          styles.badgeNombre
+                        }
+                      >
+                        <Text
+                          style={
+                            styles.texteBadgeNombre
+                          }
+                        >
+                          {produits.length}
+                        </Text>
                       </View>
-                    ))}
-                </View>
-              );
-            })}
 
+                      <MaterialCommunityIcons
+                        name={
+                          ouvert
+                            ? 'chevron-up'
+                            : 'chevron-down'
+                        }
+                        size={22}
+                        color={
+                          Colors.subtitle
+                        }
+                      />
+                    </TouchableOpacity>
+
+                    {ouvert &&
+                      produits.map(
+                        (produit) => (
+                          <View
+                            key={produit.id}
+                          >
+                            {renderProduitCourse({
+                              item: produit,
+                            })}
+                          </View>
+                        )
+                      )}
+                  </View>
+                );
+              }
+            )}
 
             <TouchableOpacity
               style={
                 styles.boutonPrincipal
               }
-              onPress={
-                finirCourses
-              }
+              onPress={finirCourses}
             >
-
               <MaterialCommunityIcons
                 name="check-circle-outline"
                 size={21}
@@ -869,9 +837,7 @@ if (categorie === 'menage') {
               >
                 J'ai terminé mes courses
               </Text>
-
             </TouchableOpacity>
-
 
             <TouchableOpacity
               style={
@@ -881,7 +847,6 @@ if (categorie === 'menage') {
                 setModeCourses(false)
               }
             >
-
               <Text
                 style={
                   styles.texteBoutonSecondaire
@@ -889,64 +854,61 @@ if (categorie === 'menage') {
               >
                 ← Retour à la préparation
               </Text>
-
             </TouchableOpacity>
-
           </>
-
         )}
 
         <SelecteurRayon
-          visible={produitEnEdition !== null}
-          rayonActuel={produitEnEdition?.rayon ?? null}
+          visible={
+            produitEnEdition !== null
+          }
+          rayonActuel={
+            produitEnEdition?.rayon ?? null
+          }
           onChoisir={(nouveauRayon) => {
             if (produitEnEdition) {
-              modifierRayon(produitEnEdition.id, nouveauRayon);
+              modifierRayon(
+                produitEnEdition.id,
+                nouveauRayon
+              );
             }
+
             setProduitEnEdition(null);
           }}
-          onFermer={() => setProduitEnEdition(null)}
+          onFermer={() =>
+            setProduitEnEdition(null)
+          }
         />
-
       </View>
-
     );
-
   }
-
 
   // =======================================
   // AUTRES CATÉGORIES
   // =======================================
 
   return (
-
     <View>
-
       <FlatList
-        data={items}
+        data={items as ProduitCourse []}
         keyExtractor={(item) =>
           item.id
         }
         renderItem={renderItem}
         ListEmptyComponent={
-
           <Text style={styles.vide}>
             Rien pour l’instant,
             c’est calme ici 🌿
           </Text>
-
         }
         scrollEnabled={false}
       />
-
 
       <View
         style={
           styles.ajoutConteneur
         }
       >
-
         <TextInput
           style={styles.champTexte}
           placeholder="Ajouter un élément..."
@@ -954,41 +916,29 @@ if (categorie === 'menage') {
             Colors.subtitle
           }
           value={texte}
-          onChangeText={
-            setTexte
-          }
+          onChangeText={setTexte}
           onSubmitEditing={
             handleAjouter
           }
           returnKeyType="done"
         />
 
-
         <TouchableOpacity
           style={
             styles.boutonAjouter
           }
-          onPress={
-            handleAjouter
-          }
+          onPress={handleAjouter}
         >
-
           <MaterialCommunityIcons
             name="plus"
             size={22}
             color={Colors.white}
           />
-
         </TouchableOpacity>
-
       </View>
-
     </View>
-
   );
-
 }
-
 
 // =======================================
 // STYLES
@@ -1022,7 +972,8 @@ const styles =
     },
 
     badgeNombre: {
-      backgroundColor: Colors.background,
+      backgroundColor:
+        Colors.background,
       borderRadius: 10,
       paddingHorizontal: 8,
       paddingVertical: 2,
@@ -1032,14 +983,6 @@ const styles =
       fontSize: 12,
       color: Colors.subtitle,
       fontWeight: '600',
-    },
-
-    badgeRayon: {
-      paddingHorizontal: 4,
-    },
-
-    texteBadgeRayon: {
-      fontSize: 16,
     },
 
     titreMode: {
@@ -1055,13 +998,13 @@ const styles =
       marginBottom: Spacing.md,
     },
 
-titreMenage: {
-  fontSize: 17,
-  fontWeight: '700',
-  color: Colors.text,
-  marginTop: Spacing.lg,
-  marginBottom: Spacing.xs,
-},
+    titreMenage: {
+      fontSize: 17,
+      fontWeight: '700',
+      color: Colors.text,
+      marginTop: Spacing.lg,
+      marginBottom: Spacing.xs,
+    },
 
     ligneItem: {
       flexDirection: 'row',
