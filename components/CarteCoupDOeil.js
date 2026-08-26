@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
   View,
   Text,
@@ -17,44 +18,28 @@ import {
   doitPrevenirRenouvellement,
 } from "../utils/traitementsUtils";
 
-import {
-  calculerResteDisponible,
-} from "../utils/budgetUtils";
 
 export default function CarteCoupDOeil() {
 
   const { traitements } = useSante();
 
   const {
-    revenuMensuel,
-    chargesFixes,
-    chargesVariables,
-    prets,
+    resteDisponible,
   } = useBudget();
-
-
-  // =======================================
-  // CALCUL DU BUDGET DISPONIBLE
-  // =======================================
-
-  const budgetDisponible =
-    calculerResteDisponible({
-      revenuMensuel,
-      chargesFixes,
-      chargesVariables,
-      prets,
-    });
 
 
   // =======================================
   // TRAITEMENTS À RENOUVELER
   // =======================================
 
-  const traitementsARenouveler = traitements.filter(
-    (traitement) =>
-      traitement.actif !== false &&
-      doitPrevenirRenouvellement(traitement)
-  );
+  const traitementsARenouveler =
+    traitements.filter(
+      (traitement) =>
+        traitement.actif !== false &&
+        doitPrevenirRenouvellement(
+          traitement
+        )
+    );
 
 
   return (
@@ -97,12 +82,14 @@ export default function CarteCoupDOeil() {
             <Text
               style={[
                 styles.montantBudget,
-                budgetDisponible < 0 &&
+                resteDisponible < 0 &&
                   styles.montantNegatif,
               ]}
               numberOfLines={1}
             >
-              {budgetDisponible.toFixed(2).replace(".", ",")} €
+              {Number(
+                resteDisponible
+              ).toFixed(2).replace(".", ",")} €
             </Text>
 
           </View>
@@ -111,50 +98,33 @@ export default function CarteCoupDOeil() {
 
 
         {/* ============================= */}
-        {/* TRAITEMENTS À RENOUVELER */}
+        {/* TRAITEMENTS */}
         {/* ============================= */}
 
-        {traitementsARenouveler.map((traitement) => (
+        {traitementsARenouveler.map(
+          (traitement) => (
 
-          <View
-            key={traitement.id}
-            style={styles.ligne}
-          >
-
-            <Text style={styles.emoji}>
-              💊
-            </Text>
-
-            <Text
-              style={styles.texte}
-              numberOfLines={3}
+            <View
+              key={traitement.id}
+              style={styles.ligne}
             >
-              Pense à renouveler {traitement.nom}
-            </Text>
 
-          </View>
+              <Text style={styles.emoji}>
+                💊
+              </Text>
 
-        ))}
+              <Text
+                style={styles.texte}
+                numberOfLines={3}
+              >
+                Pense à renouveler{" "}
+                {traitement.nom}
+              </Text>
 
+            </View>
 
-        {/* ============================= */}
-        {/* PROCHAINE TÂCHE */}
-        {/* ============================= */}
-
-        <View style={styles.ligne}>
-
-          <Text style={styles.emoji}>
-            🧹
-          </Text>
-
-          <Text
-            style={styles.texte}
-            numberOfLines={3}
-          >
-            Prochaine tâche
-          </Text>
-
-        </View>
+          )
+        )}
 
 
         {/* ============================= */}
@@ -171,7 +141,7 @@ export default function CarteCoupDOeil() {
             style={styles.texte}
             numberOfLines={3}
           >
-            Quelques courses
+            Des courses à faire
           </Text>
 
         </View>
@@ -179,7 +149,9 @@ export default function CarteCoupDOeil() {
       </View>
 
     </View>
+
   );
+
 }
 
 
@@ -189,47 +161,71 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
 
-    backgroundColor: Colors.card,
-    borderRadius: Radius.large,
+    backgroundColor:
+      Colors.card,
 
-    padding: Spacing.md,
+    borderRadius:
+      Radius.large,
 
-    marginTop: Spacing.lg,
+    padding:
+      Spacing.md,
+
+    marginTop:
+      Spacing.lg,
 
     ...Shadow.card,
   },
 
-  entete: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
 
-    marginBottom: -10,
+  entete: {
+    flexDirection:
+      "row",
+
+    alignItems:
+      "flex-start",
+
+    justifyContent:
+      "space-between",
+
+    marginBottom:
+      -10,
   },
+
 
   titre: {
     flex: 1,
     minWidth: 0,
 
-    marginRight: Spacing.xs,
+    marginRight:
+      Spacing.xs,
 
     fontSize: 19,
     lineHeight: 24,
-    fontWeight: "700",
 
-    color: Colors.text,
+    fontWeight:
+      "700",
+
+    color:
+      Colors.text,
   },
+
 
   liste: {
-    gap: Spacing.sm,
+    gap:
+      Spacing.sm,
   },
 
+
   ligne: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection:
+      "row",
+
+    alignItems:
+      "flex-start",
 
     minWidth: 0,
   },
+
 
   emoji: {
     width: 27,
@@ -239,10 +235,12 @@ const styles = StyleSheet.create({
     marginRight: 3,
   },
 
+
   texteBudget: {
     flex: 1,
     minWidth: 0,
   },
+
 
   texte: {
     flex: 1,
@@ -252,8 +250,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
 
-    color: Colors.subtitle,
+    color:
+      Colors.subtitle,
   },
+
 
   montantBudget: {
     marginTop: 1,
@@ -261,11 +261,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
 
-    color: Colors.text,
+    color:
+      Colors.text,
   },
 
+
   montantNegatif: {
-    color: Colors.text,
+    color:
+      Colors.danger,
   },
 
 });

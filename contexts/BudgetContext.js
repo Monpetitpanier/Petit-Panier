@@ -18,19 +18,25 @@ import {
   chargerRevenuMensuel,
   sauvegarderRevenuMensuel,
 
-  chargerSoldeActuel,
-  sauvegarderSoldeActuel,
+  chargerResteDisponible,
+  sauvegarderResteDisponible,
 
   chargerEpargne,
   sauvegarderEpargne,
 
+  chargerJourDePaie,
+  sauvegarderJourDePaie,
+
 } from "../services/BudgetStorage";
 
 
-const BudgetContext = createContext();
+const BudgetContext =
+  createContext(null);
 
 
-export function BudgetProvider({ children }) {
+export function BudgetProvider({
+  children,
+}) {
 
   // =======================================
   // ÉTATS
@@ -48,12 +54,35 @@ export function BudgetProvider({ children }) {
   const [revenuMensuel, setRevenuMensuel] =
     useState(0);
 
-  const [soldeActuel, setSoldeActuel] =
-    useState(0);
+
+  /*
+   * Le reste disponible représente
+   * actuellement ce que l'utilisateur
+   * considère comme disponible pour
+   * ses dépenses variables.
+   */
+  const [
+    resteDisponible,
+    setResteDisponible,
+  ] = useState(0);
+
 
   // ÉPARGNE RÉELLE ACTUELLE
   const [epargne, setEpargne] =
     useState(0);
+
+
+  /*
+   * Jour auquel l'utilisateur reçoit
+   * habituellement son salaire.
+   *
+   * null = pas encore renseigné.
+   */
+  const [
+    jourDePaie,
+    setJourDePaie,
+  ] = useState(null);
+
 
   const [chargement, setChargement] =
     useState(true);
@@ -74,8 +103,9 @@ export function BudgetProvider({ children }) {
           chargesVariablesChargees,
           pretsCharges,
           revenuCharge,
-          soldeCharge,
+          resteDisponibleCharge,
           epargneChargee,
+          jourDePaieCharge,
         ] = await Promise.all([
 
           chargerChargesFixes(),
@@ -86,9 +116,11 @@ export function BudgetProvider({ children }) {
 
           chargerRevenuMensuel(),
 
-          chargerSoldeActuel(),
+          chargerResteDisponible(),
 
           chargerEpargne(),
+
+          chargerJourDePaie(),
 
         ]);
 
@@ -106,16 +138,44 @@ export function BudgetProvider({ children }) {
         );
 
         setRevenuMensuel(
-          revenuCharge
+          Number(revenuCharge) || 0
         );
 
-        setSoldeActuel(
-          soldeCharge
+        setResteDisponible(
+          Number(
+            resteDisponibleCharge
+          ) || 0
         );
 
         setEpargne(
-          epargneChargee
+          Number(
+            epargneChargee
+          ) || 0
         );
+
+
+        /*
+         * On vérifie que la valeur chargée
+         * est bien comprise entre 1 et 31.
+         */
+        if (
+          jourDePaieCharge !== null &&
+          Number.isFinite(
+            Number(jourDePaieCharge)
+          ) &&
+          Number(jourDePaieCharge) >= 1 &&
+          Number(jourDePaieCharge) <= 31
+        ) {
+
+          setJourDePaie(
+            Number(jourDePaieCharge)
+          );
+
+        } else {
+
+          setJourDePaie(null);
+
+        }
 
       } catch (erreur) {
 
@@ -219,21 +279,21 @@ export function BudgetProvider({ children }) {
 
 
   // =======================================
-  // SAUVEGARDE DU SOLDE ACTUEL
+  // SAUVEGARDE DU RESTE DISPONIBLE
   // =======================================
 
   useEffect(() => {
 
     if (!chargement) {
 
-      sauvegarderSoldeActuel(
-        soldeActuel
+      sauvegarderResteDisponible(
+        resteDisponible
       );
 
     }
 
   }, [
-    soldeActuel,
+    resteDisponible,
     chargement,
   ]);
 
@@ -259,10 +319,32 @@ export function BudgetProvider({ children }) {
 
 
   // =======================================
+  // SAUVEGARDE DU JOUR DE PAIE
+  // =======================================
+
+  useEffect(() => {
+
+    if (!chargement) {
+
+      sauvegarderJourDePaie(
+        jourDePaie
+      );
+
+    }
+
+  }, [
+    jourDePaie,
+    chargement,
+  ]);
+
+
+  // =======================================
   // CHARGES FIXES
   // =======================================
 
-  function ajouterChargeFixe(charge) {
+  function ajouterChargeFixe(
+    charge
+  ) {
 
     setChargesFixes(
       (anciennesCharges) => [
@@ -282,7 +364,8 @@ export function BudgetProvider({ children }) {
       (anciennesCharges) =>
         anciennesCharges.map(
           (charge) =>
-            charge.id === chargeModifiee.id
+            charge.id ===
+            chargeModifiee.id
               ? chargeModifiee
               : charge
         )
@@ -291,12 +374,15 @@ export function BudgetProvider({ children }) {
   }
 
 
-  function supprimerChargeFixe(id) {
+  function supprimerChargeFixe(
+    id
+  ) {
 
     setChargesFixes(
       (anciennesCharges) =>
         anciennesCharges.filter(
-          (charge) => charge.id !== id
+          (charge) =>
+            charge.id !== id
         )
     );
 
@@ -307,7 +393,9 @@ export function BudgetProvider({ children }) {
   // CHARGES VARIABLES
   // =======================================
 
-  function ajouterChargeVariable(charge) {
+  function ajouterChargeVariable(
+    charge
+  ) {
 
     setChargesVariables(
       (anciennesCharges) => [
@@ -327,7 +415,8 @@ export function BudgetProvider({ children }) {
       (anciennesCharges) =>
         anciennesCharges.map(
           (charge) =>
-            charge.id === chargeModifiee.id
+            charge.id ===
+            chargeModifiee.id
               ? chargeModifiee
               : charge
         )
@@ -336,12 +425,15 @@ export function BudgetProvider({ children }) {
   }
 
 
-  function supprimerChargeVariable(id) {
+  function supprimerChargeVariable(
+    id
+  ) {
 
     setChargesVariables(
       (anciennesCharges) =>
         anciennesCharges.filter(
-          (charge) => charge.id !== id
+          (charge) =>
+            charge.id !== id
         )
     );
 
@@ -352,7 +444,9 @@ export function BudgetProvider({ children }) {
   // PRÊTS & CRÉDITS
   // =======================================
 
-  function ajouterPret(pret) {
+  function ajouterPret(
+    pret
+  ) {
 
     setPrets(
       (anciensPrets) => [
@@ -364,13 +458,16 @@ export function BudgetProvider({ children }) {
   }
 
 
-  function modifierPret(pretModifie) {
+  function modifierPret(
+    pretModifie
+  ) {
 
     setPrets(
       (anciensPrets) =>
         anciensPrets.map(
           (pret) =>
-            pret.id === pretModifie.id
+            pret.id ===
+            pretModifie.id
               ? pretModifie
               : pret
         )
@@ -379,7 +476,9 @@ export function BudgetProvider({ children }) {
   }
 
 
-  function soldePret(id) {
+  function soldePret(
+    id
+  ) {
 
     setPrets(
       (anciensPrets) =>
@@ -397,16 +496,164 @@ export function BudgetProvider({ children }) {
   }
 
 
-  function supprimerPret(id) {
+  function supprimerPret(
+    id
+  ) {
 
     setPrets(
       (anciensPrets) =>
         anciensPrets.filter(
-          (pret) => pret.id !== id
+          (pret) =>
+            pret.id !== id
         )
     );
 
   }
+
+
+  // =======================================
+  // RESTE DISPONIBLE
+  // =======================================
+
+  function modifierResteDisponible(
+    montant
+  ) {
+
+    const valeur =
+      Number(montant);
+
+    if (!Number.isFinite(valeur)) {
+      return false;
+    }
+
+    setResteDisponible(
+      valeur
+    );
+
+    return true;
+
+  }
+
+
+  function ajouterAuResteDisponible(
+    montant
+  ) {
+
+    const valeur =
+      Number(montant);
+
+    if (
+      !Number.isFinite(valeur) ||
+      valeur === 0
+    ) {
+      return false;
+    }
+
+    setResteDisponible(
+      (ancienReste) =>
+        ancienReste + valeur
+    );
+
+    return true;
+
+  }
+
+
+  function retirerDuResteDisponible(
+    montant
+  ) {
+
+    const valeur =
+      Number(montant);
+
+    if (
+      !Number.isFinite(valeur) ||
+      valeur === 0
+    ) {
+      return false;
+    }
+
+    setResteDisponible(
+      (ancienReste) =>
+        ancienReste - valeur
+    );
+
+    return true;
+
+  }
+
+
+  // =======================================
+  // ÉPARGNE
+  // =======================================
+
+  function utiliserEpargne(
+    montant
+  ) {
+
+    const montantDemande =
+      Number(montant);
+
+    if (
+      !Number.isFinite(
+        montantDemande
+      ) ||
+      montantDemande <= 0 ||
+      epargne <= 0
+    ) {
+      return false;
+    }
+
+
+    const montantUtilise =
+      Math.min(
+        montantDemande,
+        epargne
+      );
+
+
+    setEpargne(
+      (ancienneEpargne) =>
+        ancienneEpargne -
+        montantUtilise
+    );
+
+
+    setResteDisponible(
+      (ancienReste) =>
+        ancienReste +
+        montantUtilise
+    );
+
+
+    return true;
+
+  }
+
+
+  function alimenterEpargne(montant) {
+
+  const montantDemande = Number(montant);
+
+  if (
+    !Number.isFinite(montantDemande) ||
+    montantDemande <= 0
+  ) {
+    return false;
+  }
+
+  setResteDisponible(
+    (ancienReste) =>
+      ancienReste - montantDemande
+  );
+
+  setEpargne(
+    (ancienneEpargne) =>
+      ancienneEpargne + montantDemande
+  );
+
+  return true;
+}
 
 
   // =======================================
@@ -425,17 +672,37 @@ export function BudgetProvider({ children }) {
         prets,
 
         revenuMensuel,
-        soldeActuel,
+        resteDisponible,
         epargne,
+
+        jourDePaie,
 
         chargement,
 
 
-        // ACTIONS DIRECTES
+        // REVENU
 
         setRevenuMensuel,
-        setSoldeActuel,
+
+
+        // JOUR DE PAIE
+
+        setJourDePaie,
+
+
+        // RESTE DISPONIBLE
+
+        setResteDisponible,
+        modifierResteDisponible,
+        ajouterAuResteDisponible,
+        retirerDuResteDisponible,
+
+
+        // ÉPARGNE
+
         setEpargne,
+        utiliserEpargne,
+        alimenterEpargne,
 
 
         // CHARGES FIXES
