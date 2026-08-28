@@ -22,4 +22,7 @@ export const Pensees = [
 
   "Tu fais de ton mieux, et c'est déjà beaucoup.",
 
+  "La paix intérieur commence au moment où tu choisis de ne pas laisser les autres ou les situations contrôler tes émotions.",
+  
+
 ];
