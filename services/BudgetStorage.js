@@ -8,6 +8,8 @@ const CLE_RESTE_DISPONIBLE = "petit_panier_reste_disponible";
 const CLE_ANCIEN_SOLDE = "petit_panier_solde_actuel";
 const CLE_EPARGNE = "petit_panier_epargne";
 const CLE_JOUR_DE_PAIE = "petit_panier_jour_de_paie";
+const CLE_DERNIER_CYCLE = "petit_panier_dernier_cycle";
+const CLE_REMBOURSEMENTS = "petit_panier_remboursements";
 
 export async function chargerChargesFixes() {
   try {
@@ -199,4 +201,101 @@ export async function sauvegarderEpargne(epargne) {
   } catch (erreur) {
     console.error("Erreur lors de la sauvegarde de l'épargne :", erreur);
   }
+}
+
+// =======================================
+// DERNIER CYCLE BUDGÉTAIRE TRAITÉ
+// =======================================
+
+export async function chargerDernierCycle() {
+  try {
+    const donnees =
+      await AsyncStorage.getItem(
+        CLE_DERNIER_CYCLE
+      );
+
+    return donnees
+      ? JSON.parse(donnees)
+      : null;
+
+  } catch (erreur) {
+    console.error(
+      "Erreur lors du chargement du dernier cycle :",
+      erreur
+    );
+
+    return null;
+  }
+}
+
+
+export async function sauvegarderDernierCycle(
+  cycle
+) {
+  try {
+    await AsyncStorage.setItem(
+      CLE_DERNIER_CYCLE,
+      JSON.stringify(cycle)
+    );
+
+  } catch (erreur) {
+    console.error(
+      "Erreur lors de la sauvegarde du dernier cycle :",
+      erreur
+    );
+  }
+}
+
+// =======================================
+// REMBOURSEMENTS
+// =======================================
+
+export async function chargerRemboursements() {
+
+  try {
+
+    const donnees =
+      await AsyncStorage.getItem(
+        CLE_REMBOURSEMENTS
+      );
+
+    return donnees
+      ? JSON.parse(donnees)
+      : [];
+
+  } catch (erreur) {
+
+    console.error(
+      "Erreur lors du chargement des remboursements :",
+      erreur
+    );
+
+    return [];
+
+  }
+
+}
+
+export async function sauvegarderRemboursements(
+  remboursements
+) {
+
+  try {
+
+    await AsyncStorage.setItem(
+      CLE_REMBOURSEMENTS,
+      JSON.stringify(
+        remboursements
+      )
+    );
+
+  } catch (erreur) {
+
+    console.error(
+      "Erreur lors de la sauvegarde des remboursements :",
+      erreur
+    );
+
+  }
+
 }

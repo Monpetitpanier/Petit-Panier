@@ -9,6 +9,7 @@ import PretsCredits from "../screens/PretsCredits";
 import DetailsChargeFixe from "../screens/DetailsChargeFixe";
 import DetailsChargeVariable from "../screens/DetailsChargeVariable";
 import DetailsPretCredit from "../screens/DetailsPretCredit";
+import Remboursements from "../screens/Remboursements";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +48,11 @@ export default function BudgetNavigator() {
       <Stack.Screen
         name="DetailsChargeVariable"
         component={DetailsChargeVariable}
+      />
+
+      <Stack.Screen
+      name="Remboursements"
+      component={Remboursements}
       />
 
       <Stack.Screen

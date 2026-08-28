@@ -1225,6 +1225,47 @@ export default function Budget() {
 
         </TouchableOpacity>
 
+        {/* ================================= */}
+        {/* REMBOURSEMENTS */}
+        {/* ================================= */}
+
+         <TouchableOpacity
+  style={styles.carte}
+  activeOpacity={0.8}
+  onPress={() =>
+    navigation.navigate("Remboursements")
+  }
+>
+
+  <View style={styles.icone}>
+
+    <Text style={styles.emoji}>
+      💶
+    </Text>
+
+  </View>
+
+
+  <View style={styles.texteCarte}>
+
+    <Text style={styles.titreCarte}>
+      Remboursements
+    </Text>
+
+    <Text style={styles.description}>
+      Les sommes reçues ponctuellement qui augmentent votre budget disponible.
+    </Text>
+
+  </View>
+
+
+  <MaterialCommunityIcons
+    name="chevron-right"
+    size={28}
+    color={Colors.subtitle}
+  />
+
+</TouchableOpacity>   
 
         {/* ================================= */}
         {/* PRÊTS & CRÉDITS */}

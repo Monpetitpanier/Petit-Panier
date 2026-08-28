@@ -8,96 +8,153 @@ import React, {
 import {
   chargerChargesFixes,
   sauvegarderChargesFixes,
-
   chargerChargesVariables,
   sauvegarderChargesVariables,
-
   chargerPrets,
   sauvegarderPrets,
-
   chargerRevenuMensuel,
   sauvegarderRevenuMensuel,
-
   chargerResteDisponible,
   sauvegarderResteDisponible,
-
   chargerEpargne,
   sauvegarderEpargne,
-
   chargerJourDePaie,
   sauvegarderJourDePaie,
+  chargerDernierCycle,
+  sauvegarderDernierCycle,
 
+  chargerRemboursements,
+  sauvegarderRemboursements,
 } from "../services/BudgetStorage";
 
+const BudgetContext = createContext(null);
 
-const BudgetContext =
-  createContext(null);
+function nombreDeJoursDansLeMois(annee, mois) {
+  return new Date(annee, mois + 1, 0).getDate();
+}
 
+function dateDePaiePourMois(annee, mois, jourDePaie) {
+  const dernierJour = nombreDeJoursDansLeMois(annee, mois);
+  const jour = Math.min(jourDePaie, dernierJour);
 
-export function BudgetProvider({
-  children,
-}) {
+  return new Date(annee, mois, jour, 0, 0, 0, 0);
+}
 
-  // =======================================
-  // ÉTATS
-  // =======================================
+function formaterCleCycle(date) {
+  const annee = date.getFullYear();
+  const mois = String(date.getMonth() + 1).padStart(2, "0");
+  const jour = String(date.getDate()).padStart(2, "0");
 
-  const [chargesFixes, setChargesFixes] =
-    useState([]);
+  return `${annee}-${mois}-${jour}`;
+}
 
-  const [chargesVariables, setChargesVariables] =
-    useState([]);
+function calculerCycleActuel(jourDePaie, dateReference = new Date()) {
+  if (
+    !Number.isInteger(jourDePaie) ||
+    jourDePaie < 1 ||
+    jourDePaie > 31
+  ) {
+    return null;
+  }
 
-  const [prets, setPrets] =
-    useState([]);
+  const annee = dateReference.getFullYear();
+  const mois = dateReference.getMonth();
 
-  const [revenuMensuel, setRevenuMensuel] =
-    useState(0);
+  const paieCeMois = dateDePaiePourMois(
+    annee,
+    mois,
+    jourDePaie
+  );
 
+  if (dateReference.getTime() >= paieCeMois.getTime()) {
+    return formaterCleCycle(paieCeMois);
+  }
 
-  /*
-   * Le reste disponible représente
-   * actuellement ce que l'utilisateur
-   * considère comme disponible pour
-   * ses dépenses variables.
-   */
-  const [
-    resteDisponible,
-    setResteDisponible,
-  ] = useState(0);
+  const moisPrecedent = mois === 0 ? 11 : mois - 1;
+  const anneePrecedente = mois === 0 ? annee - 1 : annee;
 
+  const paieMoisPrecedent = dateDePaiePourMois(
+    anneePrecedente,
+    moisPrecedent,
+    jourDePaie
+  );
 
-  // ÉPARGNE RÉELLE ACTUELLE
-  const [epargne, setEpargne] =
-    useState(0);
+  return formaterCleCycle(paieMoisPrecedent);
+}
 
-
-  /*
-   * Jour auquel l'utilisateur reçoit
-   * habituellement son salaire.
-   *
-   * null = pas encore renseigné.
-   */
-  const [
+function calculerCyclePrecedent(jourDePaie, dateReference = new Date()) {
+  const cycleActuel = calculerCycleActuel(
     jourDePaie,
-    setJourDePaie,
-  ] = useState(null);
+    dateReference
+  );
 
+  if (!cycleActuel) {
+    return null;
+  }
 
-  const [chargement, setChargement] =
-    useState(true);
+  const [annee, mois, jour] = cycleActuel.split("-").map(Number);
 
+  const dateCycleActuel = new Date(
+    annee,
+    mois - 1,
+    jour,
+    0,
+    0,
+    0,
+    0
+  );
+
+  const moisPrecedent =
+    dateCycleActuel.getMonth() === 0
+      ? 11
+      : dateCycleActuel.getMonth() - 1;
+
+  const anneePrecedente =
+    dateCycleActuel.getMonth() === 0
+      ? dateCycleActuel.getFullYear() - 1
+      : dateCycleActuel.getFullYear();
+
+  const dateCyclePrecedent = dateDePaiePourMois(
+    anneePrecedente,
+    moisPrecedent,
+    jourDePaie
+  );
+
+  return formaterCleCycle(dateCyclePrecedent);
+}
+
+function estChargeEpargne(charge) {
+  const nom = String(charge?.nom || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  return nom === "epargne";
+}
+
+export function BudgetProvider({ children }) {
+  const [chargesFixes, setChargesFixes] = useState([]);
+  const [chargesVariables, setChargesVariables] = useState([]);
+  const [prets, setPrets] = useState([]);
+  const [revenuMensuel, setRevenuMensuel] = useState(0);
+  const [resteDisponible, setResteDisponible] = useState(0);
+  const [epargne, setEpargne] = useState(0);
+  const [jourDePaie, setJourDePaie] = useState(null);
+  const [dernierCycle, setDernierCycle] = useState(null);
+
+  const [remboursements, setRemboursements] =
+    useState([]);
+
+  const [chargement, setChargement] = useState(true);
 
   // =======================================
   // CHARGEMENT INITIAL
   // =======================================
 
   useEffect(() => {
-
     async function chargerDonnees() {
-
       try {
-
         const [
           chargesFixesChargees,
           chargesVariablesChargees,
@@ -106,406 +163,656 @@ export function BudgetProvider({
           resteDisponibleCharge,
           epargneChargee,
           jourDePaieCharge,
+          dernierCycleCharge,
+          remboursementsCharges,
         ] = await Promise.all([
-
           chargerChargesFixes(),
-
           chargerChargesVariables(),
-
           chargerPrets(),
-
           chargerRevenuMensuel(),
-
           chargerResteDisponible(),
-
           chargerEpargne(),
-
           chargerJourDePaie(),
-
+          chargerDernierCycle(),
+          chargerRemboursements(),
         ]);
 
+        setChargesFixes(chargesFixesChargees);
+        setChargesVariables(chargesVariablesChargees);
+        setPrets(pretsCharges);
+        setRevenuMensuel(Number(revenuCharge) || 0);
+        setResteDisponible(Number(resteDisponibleCharge) || 0);
+        setEpargne(Number(epargneChargee) || 0);
 
-        setChargesFixes(
-          chargesFixesChargees
+        const jour = Number(jourDePaieCharge);
+        setJourDePaie(
+          Number.isInteger(jour) && jour >= 1 && jour <= 31
+            ? jour
+            : null
         );
 
-        setChargesVariables(
-          chargesVariablesChargees
-        );
-
-        setPrets(
-          pretsCharges
-        );
-
-        setRevenuMensuel(
-          Number(revenuCharge) || 0
-        );
-
-        setResteDisponible(
-          Number(
-            resteDisponibleCharge
-          ) || 0
-        );
-
-        setEpargne(
-          Number(
-            epargneChargee
-          ) || 0
-        );
-
-
-        /*
-         * On vérifie que la valeur chargée
-         * est bien comprise entre 1 et 31.
-         */
-        if (
-          jourDePaieCharge !== null &&
-          Number.isFinite(
-            Number(jourDePaieCharge)
-          ) &&
-          Number(jourDePaieCharge) >= 1 &&
-          Number(jourDePaieCharge) <= 31
-        ) {
-
-          setJourDePaie(
-            Number(jourDePaieCharge)
-          );
-
-        } else {
-
-          setJourDePaie(null);
-
-        }
-
+        setDernierCycle(dernierCycleCharge);
+        setRemboursements(remboursementsCharges || []);
       } catch (erreur) {
-
         console.error(
           "Erreur lors du chargement du budget :",
           erreur
         );
-
       } finally {
-
         setChargement(false);
-
       }
-
     }
-
 
     chargerDonnees();
-
   }, []);
 
-
   // =======================================
-  // SAUVEGARDE DES CHARGES FIXES
+  // SAUVEGARDES
   // =======================================
 
   useEffect(() => {
+    if (!chargement) sauvegarderChargesFixes(chargesFixes);
+  }, [chargesFixes, chargement]);
 
-    if (!chargement) {
+  useEffect(() => {
+    if (!chargement) sauvegarderChargesVariables(chargesVariables);
+  }, [chargesVariables, chargement]);
 
-      sauvegarderChargesFixes(
-        chargesFixes
-      );
+  useEffect(() => {
+    if (!chargement) sauvegarderPrets(prets);
+  }, [prets, chargement]);
 
+  useEffect(() => {
+    if (!chargement) sauvegarderRevenuMensuel(revenuMensuel);
+  }, [revenuMensuel, chargement]);
+
+  useEffect(() => {
+    if (!chargement) sauvegarderResteDisponible(resteDisponible);
+  }, [resteDisponible, chargement]);
+
+  useEffect(() => {
+    if (!chargement) sauvegarderEpargne(epargne);
+  }, [epargne, chargement]);
+
+  useEffect(() => {
+    if (!chargement) sauvegarderJourDePaie(jourDePaie);
+  }, [jourDePaie, chargement]);
+
+  useEffect(() => {
+    if (!chargement) sauvegarderDernierCycle(dernierCycle);
+  }, [dernierCycle, chargement]);
+
+  useEffect(() => {
+    if (!chargement) sauvegarderRemboursements(remboursements);
+  }, [remboursements, chargement]);
+
+  // =======================================
+  // CYCLE BUDGÉTAIRE
+  // =======================================
+
+  useEffect(() => {
+    if (chargement || !jourDePaie) {
+      return;
     }
 
-  }, [
-    chargesFixes,
-    chargement,
-  ]);
+    const maintenant = new Date();
+    const cycleActuel = calculerCycleActuel(
+      jourDePaie,
+      maintenant
+    );
 
-
-  // =======================================
-  // SAUVEGARDE DES CHARGES VARIABLES
-  // =======================================
-
-  useEffect(() => {
-
-    if (!chargement) {
-
-      sauvegarderChargesVariables(
-        chargesVariables
-      );
-
+    if (!cycleActuel) {
+      return;
     }
 
-  }, [
-    chargesVariables,
-    chargement,
-  ]);
-
-
-  // =======================================
-  // SAUVEGARDE DES PRÊTS
-  // =======================================
-
-  useEffect(() => {
-
-    if (!chargement) {
-
-      sauvegarderPrets(
-        prets
-      );
-
-    }
-
-  }, [
-    prets,
-    chargement,
-  ]);
-
-
-  // =======================================
-  // SAUVEGARDE DU REVENU MENSUEL
-  // =======================================
-
-  useEffect(() => {
-
-    if (!chargement) {
-
-      sauvegarderRevenuMensuel(
-        revenuMensuel
-      );
-
-    }
-
-  }, [
-    revenuMensuel,
-    chargement,
-  ]);
-
-
-  // =======================================
-  // SAUVEGARDE DU RESTE DISPONIBLE
-  // =======================================
-
-  useEffect(() => {
-
-    if (!chargement) {
-
-      sauvegarderResteDisponible(
-        resteDisponible
-      );
-
-    }
-
-  }, [
-    resteDisponible,
-    chargement,
-  ]);
-
-
-  // =======================================
-  // SAUVEGARDE DE L'ÉPARGNE
-  // =======================================
-
-  useEffect(() => {
-
-    if (!chargement) {
-
-      sauvegarderEpargne(
-        epargne
-      );
-
-    }
-
-  }, [
-    epargne,
-    chargement,
-  ]);
-
-
-  // =======================================
-  // SAUVEGARDE DU JOUR DE PAIE
-  // =======================================
-
-  useEffect(() => {
-
-    if (!chargement) {
-
-      sauvegarderJourDePaie(
+    /*
+     * PREMIÈRE INITIALISATION
+     *
+     * Les montants déjà présents représentent
+     * la situation réelle saisie par l'utilisateur.
+     * On ne rejoue donc aucune charge.
+     *
+     * Cas particulier : si aujourd'hui est le jour
+     * de paie, le salaire du jour peut être ajouté.
+     */
+    if (dernierCycle === null) {
+      const paieCeMois = dateDePaiePourMois(
+        maintenant.getFullYear(),
+        maintenant.getMonth(),
         jourDePaie
       );
 
+      const paieEstAujourdHui =
+        maintenant.getFullYear() === paieCeMois.getFullYear() &&
+        maintenant.getMonth() === paieCeMois.getMonth() &&
+        maintenant.getDate() === paieCeMois.getDate();
+
+      if (
+        paieEstAujourdHui &&
+        Number(revenuMensuel) > 0
+      ) {
+        setResteDisponible(
+          (ancienReste) =>
+            ancienReste + Number(revenuMensuel)
+        );
+      }
+
+      if (paieEstAujourdHui) {
+        setDernierCycle(cycleActuel);
+      } else if (maintenant.getTime() < paieCeMois.getTime()) {
+        setDernierCycle(
+          calculerCyclePrecedent(
+            jourDePaie,
+            maintenant
+          )
+        );
+      } else {
+        /*
+         * La paie du cycle actuel est déjà passée.
+         * Le solde saisi est considéré comme réel
+         * et on n'ajoute rien rétroactivement.
+         */
+        setDernierCycle(cycleActuel);
+      }
+
+      return;
     }
 
-  }, [
-    jourDePaie,
-    chargement,
-  ]);
+    /* Même cycle : rien à faire. */
+    if (dernierCycle === cycleActuel) {
+      return;
+    }
 
+    // ===================================
+    // NOUVEAU CYCLE
+    // ===================================
+
+    const salaire = Number(revenuMensuel) || 0;
+
+    let totalChargesFixes = 0;
+    let montantEpargne = 0;
+
+    chargesFixes.forEach((charge) => {
+      const montant = Number(charge?.montant) || 0;
+
+      if (montant <= 0) {
+        return;
+      }
+
+      if (estChargeEpargne(charge)) {
+        montantEpargne += montant;
+      } else {
+        totalChargesFixes += montant;
+      }
+    });
+
+    /*
+     * Les charges variables de la liste sont
+     * reconduites au nouveau cycle.
+     */
+    const totalChargesVariables =
+      chargesVariables.reduce(
+        (total, charge) =>
+          total + (Number(charge?.montant) || 0),
+        0
+      );
+
+    /* Prêts / crédits actifs. */
+    const totalMensualitesPrets =
+      prets
+        .filter((pret) => pret?.actif)
+        .reduce(
+          (total, pret) =>
+            total + (Number(pret?.mensualite) || 0),
+          0
+        );
+
+    /*
+     * Nouveau cycle :
+     * + salaire
+     * - charges fixes
+     * - charges variables
+     * - prêts
+     * - épargne mensuelle
+     */
+    const variationReste =
+      salaire -
+      totalChargesFixes -
+      totalChargesVariables -
+      totalMensualitesPrets -
+      montantEpargne;
+
+    if (variationReste !== 0) {
+      setResteDisponible(
+        (ancienReste) =>
+          ancienReste + variationReste
+      );
+    }
+
+    if (montantEpargne > 0) {
+      setEpargne(
+        (ancienneEpargne) =>
+          ancienneEpargne + montantEpargne
+      );
+    }
+
+    setDernierCycle(cycleActuel);
+  }, [
+    chargement,
+    jourDePaie,
+    dernierCycle,
+  ]);
 
   // =======================================
   // CHARGES FIXES
   // =======================================
 
-  function ajouterChargeFixe(
-    charge
-  ) {
+  function ajouterChargeFixe(charge) {
+    const montant = Number(charge.montant) || 0;
 
-    setChargesFixes(
-      (anciennesCharges) => [
-        ...anciennesCharges,
-        charge,
-      ]
-    );
+    setChargesFixes((anciennesCharges) => [
+      ...anciennesCharges,
+      charge,
+    ]);
 
+    if (montant !== 0) {
+      setResteDisponible(
+        (ancienReste) =>
+          ancienReste - montant
+      );
+
+      if (estChargeEpargne(charge)) {
+        setEpargne(
+          (ancienneEpargne) =>
+            ancienneEpargne + montant
+        );
+      }
+    }
   }
 
+  function modifierChargeFixe(chargeModifiee) {
+    setChargesFixes((anciennesCharges) => {
+      const ancienneCharge = anciennesCharges.find(
+        (charge) =>
+          charge.id === chargeModifiee.id
+      );
 
-  function modifierChargeFixe(
-    chargeModifiee
-  ) {
+      const ancienMontant = ancienneCharge
+        ? Number(ancienneCharge.montant) || 0
+        : 0;
 
-    setChargesFixes(
-      (anciennesCharges) =>
-        anciennesCharges.map(
-          (charge) =>
-            charge.id ===
-            chargeModifiee.id
-              ? chargeModifiee
-              : charge
-        )
-    );
+      const nouveauMontant =
+        Number(chargeModifiee.montant) || 0;
 
+      const ancienneEstEpargne = ancienneCharge
+        ? estChargeEpargne(ancienneCharge)
+        : false;
+
+      const nouvelleEstEpargne =
+        estChargeEpargne(chargeModifiee);
+
+      if (
+        ancienneEstEpargne ===
+        nouvelleEstEpargne
+      ) {
+        const difference =
+          nouveauMontant - ancienMontant;
+
+        if (difference !== 0) {
+          setResteDisponible(
+            (ancienReste) =>
+              ancienReste - difference
+          );
+
+          if (nouvelleEstEpargne) {
+            setEpargne(
+              (ancienneEpargne) =>
+                ancienneEpargne + difference
+            );
+          }
+        }
+      } else if (
+        !ancienneEstEpargne &&
+        nouvelleEstEpargne
+      ) {
+        setResteDisponible(
+          (ancienReste) =>
+            ancienReste +
+            ancienMontant -
+            nouveauMontant
+        );
+
+        setEpargne(
+          (ancienneEpargne) =>
+            ancienneEpargne + nouveauMontant
+        );
+      } else if (
+        ancienneEstEpargne &&
+        !nouvelleEstEpargne
+      ) {
+        setResteDisponible(
+          (ancienReste) =>
+            ancienReste +
+            ancienMontant -
+            nouveauMontant
+        );
+
+        setEpargne(
+          (ancienneEpargne) =>
+            Math.max(
+              0,
+              ancienneEpargne -
+              ancienMontant
+            )
+        );
+      }
+
+      return anciennesCharges.map(
+        (charge) =>
+          charge.id === chargeModifiee.id
+            ? chargeModifiee
+            : charge
+      );
+    });
   }
 
+  function supprimerChargeFixe(id) {
+    setChargesFixes((anciennesCharges) => {
+      const chargeSupprimee = anciennesCharges.find(
+        (charge) =>
+          charge.id === id
+      );
 
-  function supprimerChargeFixe(
-    id
-  ) {
+      const montant = chargeSupprimee
+        ? Number(chargeSupprimee.montant) || 0
+        : 0;
 
-    setChargesFixes(
-      (anciennesCharges) =>
-        anciennesCharges.filter(
-          (charge) =>
-            charge.id !== id
-        )
-    );
+      if (montant !== 0) {
+        setResteDisponible(
+          (ancienReste) =>
+            ancienReste + montant
+        );
 
+        if (
+          chargeSupprimee &&
+          estChargeEpargne(chargeSupprimee)
+        ) {
+          setEpargne(
+            (ancienneEpargne) =>
+              Math.max(
+                0,
+                ancienneEpargne - montant
+              )
+          );
+        }
+      }
+
+      return anciennesCharges.filter(
+        (charge) =>
+          charge.id !== id
+      );
+    });
   }
-
 
   // =======================================
   // CHARGES VARIABLES
   // =======================================
 
-  function ajouterChargeVariable(
-    charge
-  ) {
+  function ajouterChargeVariable(charge) {
+    const montant = Number(charge.montant) || 0;
 
-    setChargesVariables(
-      (anciennesCharges) => [
-        ...anciennesCharges,
-        charge,
-      ]
-    );
+    setChargesVariables((anciennesCharges) => [
+      ...anciennesCharges,
+      charge,
+    ]);
 
+    if (montant !== 0) {
+      setResteDisponible(
+        (ancienReste) =>
+          ancienReste - montant
+      );
+    }
   }
 
+  function modifierChargeVariable(chargeModifiee) {
+    setChargesVariables((anciennesCharges) => {
+      const ancienneCharge = anciennesCharges.find(
+        (charge) =>
+          charge.id === chargeModifiee.id
+      );
 
-  function modifierChargeVariable(
-    chargeModifiee
-  ) {
+      const ancienMontant = ancienneCharge
+        ? Number(ancienneCharge.montant) || 0
+        : 0;
 
-    setChargesVariables(
-      (anciennesCharges) =>
-        anciennesCharges.map(
-          (charge) =>
-            charge.id ===
-            chargeModifiee.id
-              ? chargeModifiee
-              : charge
-        )
-    );
+      const nouveauMontant =
+        Number(chargeModifiee.montant) || 0;
 
+      const difference =
+        nouveauMontant - ancienMontant;
+
+      if (difference !== 0) {
+        setResteDisponible(
+          (ancienReste) =>
+            ancienReste - difference
+        );
+      }
+
+      return anciennesCharges.map(
+        (charge) =>
+          charge.id === chargeModifiee.id
+            ? chargeModifiee
+            : charge
+      );
+    });
   }
 
+  function supprimerChargeVariable(id) {
+    setChargesVariables((anciennesCharges) => {
+      const chargeSupprimee = anciennesCharges.find(
+        (charge) =>
+          charge.id === id
+      );
 
-  function supprimerChargeVariable(
-    id
-  ) {
+      const montant = chargeSupprimee
+        ? Number(chargeSupprimee.montant) || 0
+        : 0;
 
-    setChargesVariables(
-      (anciennesCharges) =>
-        anciennesCharges.filter(
-          (charge) =>
-            charge.id !== id
-        )
-    );
+      if (montant !== 0) {
+        setResteDisponible(
+          (ancienReste) =>
+            ancienReste + montant
+        );
+      }
 
+      return anciennesCharges.filter(
+        (charge) =>
+          charge.id !== id
+      );
+    });
   }
-
 
   // =======================================
   // PRÊTS & CRÉDITS
   // =======================================
 
-  function ajouterPret(
-    pret
+  function ajouterPret(pret) {
+    setPrets((anciensPrets) => [
+      ...anciensPrets,
+      pret,
+    ]);
+  }
+
+  function modifierPret(pretModifie) {
+    setPrets((anciensPrets) =>
+      anciensPrets.map(
+        (pret) =>
+          pret.id === pretModifie.id
+            ? pretModifie
+            : pret
+      )
+    );
+  }
+
+  function soldePret(id) {
+    setPrets((anciensPrets) =>
+      anciensPrets.map(
+        (pret) =>
+          pret.id === id
+            ? {
+                ...pret,
+                actif: false,
+              }
+            : pret
+      )
+    );
+  }
+
+  function supprimerPret(id) {
+    setPrets((anciensPrets) =>
+      anciensPrets.filter(
+        (pret) =>
+          pret.id !== id
+      )
+    );
+  }
+
+  // =======================================
+  // REMBOURSEMENTS
+  // =======================================
+
+  function ajouterRemboursement(
+    remboursement
   ) {
 
-    setPrets(
-      (anciensPrets) => [
-        ...anciensPrets,
-        pret,
+    const montant =
+      Number(
+        remboursement.montant
+      ) || 0;
+
+
+    setRemboursements(
+      (anciensRemboursements) => [
+        ...anciensRemboursements,
+        remboursement,
       ]
     );
 
+
+    if (
+      montant !== 0
+    ) {
+
+      setResteDisponible(
+        (ancienReste) =>
+          ancienReste + montant
+      );
+
+    }
+
   }
 
 
-  function modifierPret(
-    pretModifie
+  function modifierRemboursement(
+    remboursementModifie
   ) {
 
-    setPrets(
-      (anciensPrets) =>
-        anciensPrets.map(
-          (pret) =>
-            pret.id ===
-            pretModifie.id
-              ? pretModifie
-              : pret
-        )
+    setRemboursements(
+      (anciensRemboursements) => {
+
+        const ancienRemboursement =
+          anciensRemboursements.find(
+            (remboursement) =>
+              remboursement.id ===
+              remboursementModifie.id
+          );
+
+
+        const ancienMontant =
+          ancienRemboursement
+            ? Number(
+                ancienRemboursement.montant
+              ) || 0
+            : 0;
+
+
+        const nouveauMontant =
+          Number(
+            remboursementModifie.montant
+          ) || 0;
+
+
+        const difference =
+          nouveauMontant -
+          ancienMontant;
+
+
+        if (
+          difference !== 0
+        ) {
+
+          setResteDisponible(
+            (ancienReste) =>
+              ancienReste + difference
+          );
+
+        }
+
+
+        return anciensRemboursements.map(
+          (remboursement) =>
+            remboursement.id ===
+            remboursementModifie.id
+              ? remboursementModifie
+              : remboursement
+        );
+
+      }
     );
 
   }
 
 
-  function soldePret(
+  function supprimerRemboursement(
     id
   ) {
 
-    setPrets(
-      (anciensPrets) =>
-        anciensPrets.map(
-          (pret) =>
-            pret.id === id
-              ? {
-                  ...pret,
-                  actif: false,
-                }
-              : pret
-        )
-    );
+    setRemboursements(
+      (anciensRemboursements) => {
 
-  }
+        const remboursementSupprime =
+          anciensRemboursements.find(
+            (remboursement) =>
+              remboursement.id === id
+          );
 
 
-  function supprimerPret(
-    id
-  ) {
+        const montant =
+          remboursementSupprime
+            ? Number(
+                remboursementSupprime.montant
+              ) || 0
+            : 0;
 
-    setPrets(
-      (anciensPrets) =>
-        anciensPrets.filter(
-          (pret) =>
-            pret.id !== id
-        )
+
+        if (
+          montant !== 0
+        ) {
+
+          setResteDisponible(
+            (ancienReste) =>
+              ancienReste - montant
+          );
+
+        }
+
+
+        return anciensRemboursements.filter(
+          (remboursement) =>
+            remboursement.id !== id
+        );
+
+      }
     );
 
   }
@@ -515,32 +822,19 @@ export function BudgetProvider({
   // RESTE DISPONIBLE
   // =======================================
 
-  function modifierResteDisponible(
-    montant
-  ) {
-
-    const valeur =
-      Number(montant);
+  function modifierResteDisponible(montant) {
+    const valeur = Number(montant);
 
     if (!Number.isFinite(valeur)) {
       return false;
     }
 
-    setResteDisponible(
-      valeur
-    );
-
+    setResteDisponible(valeur);
     return true;
-
   }
 
-
-  function ajouterAuResteDisponible(
-    montant
-  ) {
-
-    const valeur =
-      Number(montant);
+  function ajouterAuResteDisponible(montant) {
+    const valeur = Number(montant);
 
     if (
       !Number.isFinite(valeur) ||
@@ -555,16 +849,10 @@ export function BudgetProvider({
     );
 
     return true;
-
   }
 
-
-  function retirerDuResteDisponible(
-    montant
-  ) {
-
-    const valeur =
-      Number(montant);
+  function retirerDuResteDisponible(montant) {
+    const valeur = Number(montant);
 
     if (
       !Number.isFinite(valeur) ||
@@ -579,94 +867,85 @@ export function BudgetProvider({
     );
 
     return true;
-
   }
-
 
   // =======================================
   // ÉPARGNE
   // =======================================
 
-  function utiliserEpargne(
-    montant
-  ) {
-
-    const montantDemande =
-      Number(montant);
+  function modifierEpargne(montant) {
+    const valeur = Number(montant);
 
     if (
-      !Number.isFinite(
-        montantDemande
-      ) ||
+      !Number.isFinite(valeur) ||
+      valeur < 0
+    ) {
+      return false;
+    }
+
+    setEpargne(valeur);
+    return true;
+  }
+
+  function utiliserEpargne(montant) {
+    const montantDemande = Number(montant);
+
+    if (
+      !Number.isFinite(montantDemande) ||
       montantDemande <= 0 ||
       epargne <= 0
     ) {
       return false;
     }
 
-
-    const montantUtilise =
-      Math.min(
-        montantDemande,
-        epargne
-      );
-
+    const montantUtilise = Math.min(
+      montantDemande,
+      epargne
+    );
 
     setEpargne(
       (ancienneEpargne) =>
-        ancienneEpargne -
-        montantUtilise
+        ancienneEpargne - montantUtilise
     );
-
 
     setResteDisponible(
       (ancienReste) =>
-        ancienReste +
-        montantUtilise
+        ancienReste + montantUtilise
     );
 
-
     return true;
-
   }
-
 
   function alimenterEpargne(montant) {
+    const montantDemande = Number(montant);
 
-  const montantDemande = Number(montant);
+    if (
+      !Number.isFinite(montantDemande) ||
+      montantDemande <= 0
+    ) {
+      return false;
+    }
 
-  if (
-    !Number.isFinite(montantDemande) ||
-    montantDemande <= 0
-  ) {
-    return false;
+    setResteDisponible(
+      (ancienReste) =>
+        ancienReste - montantDemande
+    );
+
+    setEpargne(
+      (ancienneEpargne) =>
+        ancienneEpargne + montantDemande
+    );
+
+    return true;
   }
-
-  setResteDisponible(
-    (ancienReste) =>
-      ancienReste - montantDemande
-  );
-
-  setEpargne(
-    (ancienneEpargne) =>
-      ancienneEpargne + montantDemande
-  );
-
-  return true;
-}
-
 
   // =======================================
   // CONTEXTE
   // =======================================
 
   return (
-
     <BudgetContext.Provider
       value={{
-
-        // DONNÉES
-
         chargesFixes,
         chargesVariables,
         prets,
@@ -676,50 +955,36 @@ export function BudgetProvider({
         epargne,
 
         jourDePaie,
+        dernierCycle,
+
+        remboursements,
 
         chargement,
 
-
-        // REVENU
-
         setRevenuMensuel,
-
-
-        // JOUR DE PAIE
-
         setJourDePaie,
-
-
-        // RESTE DISPONIBLE
 
         setResteDisponible,
         modifierResteDisponible,
         ajouterAuResteDisponible,
         retirerDuResteDisponible,
 
-
-        // ÉPARGNE
-
         setEpargne,
+        modifierEpargne,
         utiliserEpargne,
         alimenterEpargne,
-
-
-        // CHARGES FIXES
 
         ajouterChargeFixe,
         modifierChargeFixe,
         supprimerChargeFixe,
 
-
-        // CHARGES VARIABLES
+        ajouterRemboursement,
+        modifierRemboursement,
+        supprimerRemboursement,
 
         ajouterChargeVariable,
         modifierChargeVariable,
         supprimerChargeVariable,
-
-
-        // PRÊTS
 
         ajouterPret,
         modifierPret,
@@ -728,20 +993,11 @@ export function BudgetProvider({
 
       }}
     >
-
       {children}
-
     </BudgetContext.Provider>
-
   );
-
 }
 
-
 export function useBudget() {
-
-  return useContext(
-    BudgetContext
-  );
-
+  return useContext(BudgetContext);
 }
