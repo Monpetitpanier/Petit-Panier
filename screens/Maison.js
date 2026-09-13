@@ -86,7 +86,6 @@ const cartes = [
           />
         </TouchableOpacity>
 
-
         <View style={styles.ligneTitre}>
 
           <MaterialCommunityIcons
@@ -101,14 +100,13 @@ const cartes = [
 
         </View>
 
-
         <Text style={styles.accroche}>
           Tout pour la maison,
           {"\n"}
           bien rangé avec Fifi.
         </Text>
 
-</View>
+      </View>
 
       {/* ======================================= */}
       {/* CARTES MAISON */}
@@ -130,12 +128,13 @@ const cartes = [
             {/* Icône */}
 
             <View style={styles.bulleIcone}>
-  <Image
-    source={carte.image}
-    style={styles.imageCarte}
-    resizeMode="contain"
-  />
-</View>
+              <Image
+                source={carte.image}
+                style={styles.imageCarte}
+                resizeMode="contain"
+              />
+            </View>
+
             {/* Textes */}
 
             <View style={styles.contenuCarte}>
@@ -149,7 +148,6 @@ const cartes = [
               </Text>
 
             </View>
-
 
             {/* Chevron */}
 
@@ -169,7 +167,6 @@ const cartes = [
   );
 }
 
-
 // =======================================
 // STYLES
 // =======================================
@@ -181,13 +178,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-
   content: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.lg,
     paddingBottom: 45,
   },
-
 
   // =====================================
   // EN-TÊTE
@@ -197,7 +192,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: Spacing.md,
   },
-
 
   boutonRetour: {
     position: "absolute",
@@ -227,7 +221,6 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
 
-
   boutonReglages: {
     position: "absolute",
     top: 0,
@@ -256,13 +249,11 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
 
-
   ligneTitre: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: Spacing.xs,
+    marginTop: Spacing.md,
   },
-
 
   titre: {
     fontSize: 30,
@@ -270,7 +261,6 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
     color: Colors.text,
   },
-
 
   accroche: {
     marginTop: Spacing.sm,
@@ -282,43 +272,41 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
-
   // =====================================
   // FIFI
   // =====================================
 
- sceneFifi: {
-  width: "115%",
-  height: 235,
+  sceneFifi: {
+    width: "115%",
+    height: 235,
 
-  marginTop: Spacing.xs,
-  marginBottom: Spacing.xs,
+    marginTop: Spacing.xs,
+    marginBottom: Spacing.xs,
 
-  position: "relative",
-  overflow: "hidden",
-  borderRadius: 24,
-},
+    position: "relative",
+    overflow: "hidden",
+    borderRadius: 24,
+  },
 
-imageDecor: {
-  position: "absolute",
+  imageDecor: {
+    position: "absolute",
 
-  width: "100%",
-  height: "110%",
+    width: "100%",
+    height: "110%",
 
-  top: -10,
-  left: 0,
-},
+    top: -10,
+    left: 0,
+  },
 
-imageFifi: {
-  position: "absolute",
+  imageFifi: {
+    position: "absolute",
 
-  width: 200,
-  height: 190,
+    width: 200,
+    height: 190,
 
-  bottom: -25,
-  alignSelf: "center",
-},
-
+    bottom: -25,
+    alignSelf: "center",
+  },
 
   // =====================================
   // CARTES
@@ -328,9 +316,8 @@ imageFifi: {
     gap: Spacing.sm,
   },
 
-
   carte: {
-    minHeight: 20,
+    minHeight: 82,
 
     flexDirection: "row",
     alignItems: "center",
@@ -339,8 +326,8 @@ imageFifi: {
 
     borderRadius: 20,
 
-    paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
 
     shadowColor: "#000",
     shadowOpacity: 0.055,
@@ -353,29 +340,28 @@ imageFifi: {
     elevation: 2,
   },
 
-
   // =====================================
   // ICÔNE
   // =====================================
 
   bulleIcone: {
-  width: 56,
-  height: 56,
+    width: 62,
+    height: 62,
 
-  borderRadius: 28,
+    borderRadius: 31,
 
-  alignItems: "center",
-  justifyContent: "center",
+    alignItems: "center",
+    justifyContent: "center",
 
-  backgroundColor: Colors.background,
+    backgroundColor: Colors.background,
 
-  marginRight: 14,
-},
+    marginRight: 16,
+  },
 
-imageCarte: {
-  width: 52,
-  height: 52,
-},
+  imageCarte: {
+    width: 58,
+    height: 58,
+  },
 
   // =====================================
   // TEXTE
@@ -386,13 +372,11 @@ imageCarte: {
     justifyContent: "center",
   },
 
-
   titreCarte: {
     fontSize: 18,
     fontWeight: "700",
     color: Colors.text,
   },
-
 
   sousTitreCarte: {
     marginTop: 3,
