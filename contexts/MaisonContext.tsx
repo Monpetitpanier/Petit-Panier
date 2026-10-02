@@ -16,6 +16,7 @@ import {
   FrequenceMenage,
   CategorieRayon,
   EntretienMaison,
+  Garantie,
 } from '../types/maison';
 
 import {
@@ -75,6 +76,15 @@ interface MaisonContextType {
   frequenceMois: number,
   rappelActif?: boolean
 ) => void;
+
+  ajouterGarantie: (
+    produit: string,
+    dateAchat: string,
+    dureeAnnees: number,
+    magasin?: string,
+    reference?: string,
+    note?: string
+  ) => void;
 
   basculer: (
     categorie: MaisonCategorie,
@@ -226,6 +236,53 @@ const ajouterEntretien = useCallback(
   },
   []
 );
+
+  // =======================================
+  // AJOUTER UNE GARANTIE
+  // =======================================
+
+  const ajouterGarantie = useCallback(
+    (
+      produit: string,
+      dateAchat: string,
+      dureeAnnees: number,
+      magasin: string = "",
+      reference: string = "",
+      note: string = ""
+    ) => {
+      if (!produit.trim() || !dateAchat) {
+        return;
+      }
+
+      const debut = new Date(dateAchat);
+      if (Number.isNaN(debut.getTime())) {
+        return;
+      }
+
+      const fin = new Date(debut);
+      fin.setFullYear(fin.getFullYear() + dureeAnnees);
+
+      const nouvelleGarantie: Garantie = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        produit: produit.trim(),
+        dateAchat: debut.toISOString(),
+        dateFin: fin.toISOString(),
+        magasin: magasin.trim() || undefined,
+        reference: reference.trim() || undefined,
+        note: note.trim() || undefined,
+        dateCreation: new Date().toISOString(),
+      };
+
+      setListes((prev) => ({
+        ...prev,
+        garanties: [
+          ...prev.garanties,
+          nouvelleGarantie,
+        ],
+      }));
+    },
+    []
+  );
 
   // =======================================
   // CHARGEMENT INITIAL
@@ -715,6 +772,7 @@ const terminerUnEntretien =
         ajouter,
 
         ajouterEntretien,
+        ajouterGarantie,
 
         basculer,
 

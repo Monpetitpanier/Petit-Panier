@@ -1006,14 +1006,14 @@ const styles =
       marginBottom: Spacing.xs,
     },
 
-    ligneItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingVertical: Spacing.sm,
-      gap: Spacing.sm,
-      borderBottomWidth: 1,
-      borderBottomColor: Colors.border,
-    },
+   ligneItem: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingVertical: Spacing.sm,
+  gap: Spacing.sm,
+  borderBottomWidth: 1,
+  borderBottomColor: Colors.border,
+},
 
     ligneAchetee: {
       opacity: 0.5,

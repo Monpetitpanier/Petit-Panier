@@ -16,38 +16,38 @@ import { Spacing } from "../theme/spacing";
 export default function Maison() {
   const navigation = useNavigation();
 
-const cartes = [
-  {
-    titre: "Liste de courses",
-    sousTitre: "Les essentiels à ne pas oublier",
-    image: require("../assets/illustrations/maison/panier_courses.png"),
-    destination: "ListeCoursesMaison",
-  },
-  {
-    titre: "Ménage",
-    sousTitre: "Planifier mes tâches",
-    image: require("../assets/illustrations/maison/seau_menage.png"),
-    destination: "MenageMaison",
-  },
-  {
-    titre: "Entretien",
-    sousTitre: "Petits travaux, entretien annuel",
-    image: require("../assets/illustrations/maison/entretien_maison.png"),
-    destination: "EntretienMaison",
-  },
-  {
-    titre: "Garanties",
-    sousTitre: "Documents et garanties",
-    image: require("../assets/illustrations/maison/garanties.png"),
-    destination: "GarantiesMaison",
-  },
-  {
-    titre: "To-do",
-    sousTitre: "À prévoir sur l'année (cadeaux, vacances...)",
-    image: require("../assets/illustrations/maison/todo_liste.png"),
-    destination: "ToDoMaison",
-  },
-];
+  const cartes = [
+    {
+      titre: "Liste de courses",
+      sousTitre: "Les essentiels à ne pas oublier",
+      image: require("../assets/illustrations/maison/panier_courses.png"),
+      destination: "ListeCoursesMaison",
+    },
+    {
+      titre: "Ménage",
+      sousTitre: "Planifier mes tâches",
+      image: require("../assets/illustrations/maison/seau_menage.png"),
+      destination: "MenageMaison",
+    },
+    {
+      titre: "Entretien",
+      sousTitre: "Petits travaux, entretien annuel",
+      image: require("../assets/illustrations/maison/entretien_maison.png"),
+      destination: "EntretienMaison",
+    },
+    {
+      titre: "Garanties",
+      sousTitre: "Documents et garanties",
+      image: require("../assets/illustrations/maison/garanties.png"),
+      destination: "GarantiesMaison",
+    },
+    {
+      titre: "To-do",
+      sousTitre: "À prévoir sur l'année (cadeaux, vacances...)",
+      image: require("../assets/illustrations/maison/todo_liste.png"),
+      destination: "ToDoMaison",
+    },
+  ];
 
   return (
     <ScrollView
@@ -55,13 +55,11 @@ const cartes = [
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-
       {/* ======================================= */}
       {/* EN-TÊTE */}
       {/* ======================================= */}
 
       <View style={styles.entete}>
-
         <TouchableOpacity
           style={styles.boutonRetour}
           onPress={() => navigation.goBack()}
@@ -87,17 +85,12 @@ const cartes = [
         </TouchableOpacity>
 
         <View style={styles.ligneTitre}>
-
-          <MaterialCommunityIcons
-            name="home-outline"
-            size={36}
-            color={Colors.text}
+          <Image
+            source={require("../assets/illustrations/maison/bouton_maison.png")}
+            style={styles.imageTitre}
           />
 
-          <Text style={styles.titre}>
-            Maison
-          </Text>
-
+          <Text style={styles.titre}>Maison</Text>
         </View>
 
         <Text style={styles.accroche}>
@@ -105,7 +98,6 @@ const cartes = [
           {"\n"}
           bien rangé avec Fifi.
         </Text>
-
       </View>
 
       {/* ======================================= */}
@@ -113,9 +105,7 @@ const cartes = [
       {/* ======================================= */}
 
       <View style={styles.listeCartes}>
-
         {cartes.map((carte) => (
-
           <TouchableOpacity
             key={carte.destination}
             style={styles.carte}
@@ -124,7 +114,6 @@ const cartes = [
               navigation.navigate(carte.destination)
             }
           >
-
             {/* Icône */}
 
             <View style={styles.bulleIcone}>
@@ -138,7 +127,6 @@ const cartes = [
             {/* Textes */}
 
             <View style={styles.contenuCarte}>
-
               <Text style={styles.titreCarte}>
                 {carte.titre}
               </Text>
@@ -146,7 +134,6 @@ const cartes = [
               <Text style={styles.sousTitreCarte}>
                 {carte.sousTitre}
               </Text>
-
             </View>
 
             {/* Chevron */}
@@ -156,13 +143,9 @@ const cartes = [
               size={28}
               color={Colors.subtitle}
             />
-
           </TouchableOpacity>
-
         ))}
-
       </View>
-
     </ScrollView>
   );
 }
@@ -172,7 +155,6 @@ const cartes = [
 // =======================================
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: Colors.background,
@@ -255,6 +237,12 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
   },
 
+  imageTitre: {
+    width: 55,
+    height: 36,
+    resizeMode: "contain",
+  },
+
   titre: {
     fontSize: 30,
     fontWeight: "700",
@@ -317,7 +305,7 @@ const styles = StyleSheet.create({
   },
 
   carte: {
-    minHeight: 82,
+    minHeight: 95,
 
     flexDirection: "row",
     alignItems: "center",
@@ -386,5 +374,4 @@ const styles = StyleSheet.create({
 
     color: Colors.subtitle,
   },
-
 });
