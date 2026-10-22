@@ -132,8 +132,8 @@ illustration: {
 },
 
 citation: {
-  fontSize: 15,
-  lineHeight: 22,
+  fontSize: 20,
+  lineHeight: 20,
   color: Colors.subtitle,
 
   fontStyle: "italic",
