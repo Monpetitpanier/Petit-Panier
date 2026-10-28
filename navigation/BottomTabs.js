@@ -91,8 +91,8 @@ export default function BottomTabs() {
                 )}
 
                 style={{
-                  width: 75,
-                  height: 75,
+                  width: 60,
+                  height: 60,
                   resizeMode: "contain",
                 }}
               />

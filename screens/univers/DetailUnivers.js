@@ -116,6 +116,43 @@ export default function DetailUnivers() {
     ]);
   };
 
+
+  const supprimerObjectif = () => {
+    Alert.alert(
+      "Supprimer cet objectif ?",
+      "Toutes les étapes de cet objectif seront supprimées. Cette action est définitive.",
+      [
+        {
+          text: "Annuler",
+          style: "cancel",
+        },
+        {
+          text: "Supprimer",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const univers = await chargerUnivers();
+              const restants = univers.filter(
+                (item) => String(item.id) !== String(objectifId)
+              );
+
+              await sauvegarderUnivers(restants);
+              navigation.goBack();
+            } catch (erreur) {
+              console.error("Erreur lors de la suppression :", erreur);
+              Alert.alert(
+                "Erreur",
+                "Impossible de supprimer cet objectif. Réessaie."
+              );
+            }
+          },
+        },
+      ]
+    );
+  };
+
+
+
   const sauvegarderModifications = async () => {
     await enregistrerObjectif(objectif);
     setEdition(false);
@@ -302,6 +339,21 @@ export default function DetailUnivers() {
             <Text style={styles.messageReussite}>Bravo, tu as accompli toutes les étapes !</Text>
           </View>
         )}
+
+        <TouchableOpacity
+          style={styles.boutonSupprimer}
+          onPress={supprimerObjectif}
+        >
+          <MaterialCommunityIcons
+            name="trash-can-outline"
+            size={21}
+            color="#C0394B"
+          />
+          <Text style={styles.texteBoutonSupprimer}>
+            Supprimer l’objectif
+          </Text>
+        </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -390,4 +442,22 @@ const styles = StyleSheet.create({
   titreReussite: { color: VERT, fontSize: 20, fontWeight: "bold" },
   messageReussite: { color: "#666", textAlign: "center", marginTop: 6 },
   message: { color: "#777", textAlign: "center", marginTop: 20 },
+
+
+  boutonSupprimer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#FCEBEC",
+    borderRadius: 13,
+    padding: 14,
+    marginTop: 28,
+  },
+  texteBoutonSupprimer: {
+    color: "#C0394B",
+    fontWeight: "bold",
+  },
+
+
 });

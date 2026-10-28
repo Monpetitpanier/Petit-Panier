@@ -176,6 +176,20 @@ export default function Univers() {
         <Text style={styles.texteBouton}>Créer un objectif</Text>
       </TouchableOpacity>
 
+
+      <TouchableOpacity
+        style={styles.boutonAjouter}
+        onPress={() => navigation.navigate("Bibliotheque")}
+      >
+        <MaterialCommunityIcons
+          name="book-open-page-variant"
+          size={23}
+          color="#FFFFFF"
+        />
+        <Text style={styles.texteBouton}>Ajouter une lecture</Text>
+      </TouchableOpacity>
+
+
       {chargement ? (
         <Text style={styles.message}>
           Chargement de tes univers…

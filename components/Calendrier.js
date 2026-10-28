@@ -511,11 +511,11 @@ const styles = StyleSheet.create({
   fifiAgenda: {
     position: "absolute",
 
-    width: 95,
-    height: 95,
+    width: 75,
+    height: 75,
 
     right: 35,
-    top: -18,
+    top: -15,
 
     zIndex: 5,
   },

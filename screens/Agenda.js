@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
   },
 
  icone: {
-  width: 50,
-  height: 50,
+  width: 40,
+  height: 40,
   marginRight: 10,
   resizeMode: "contain",
 },
