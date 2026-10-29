@@ -15,10 +15,10 @@ export function analyserPensee(texte, medicamentsConnus = []) {
   resultat = analyserAgenda(texte);
   if (resultat) return resultat;
 
-  resultat = analyserBudget(texte);
+  resultat = analyserSante(texte, medicamentsConnus);
   if (resultat) return resultat;
 
-  resultat = analyserSante(texte, medicamentsConnus);
+  resultat = analyserBudget(texte);
   if (resultat) return resultat;
 
   resultat = analyserUnivers(texte);
