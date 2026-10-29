@@ -24,7 +24,14 @@ export function PanierProvider({ children }) {
   const [enAnalyse, setEnAnalyse] = useState(false);
   const { ajouterRendezVous } = useAgenda();
   const { ajouter: ajouterDansMaison, ouvrirRecap } = useMaison();
-  const {traitements, ajouterTraitement,renouvelerTraitement,ajouterMedicament,ajouterProduitPharmacie,} = useSante();
+ const {
+  traitements,
+  medicaments,
+  ajouterTraitement,
+  renouvelerTraitement,
+  ajouterMedicament,
+  ajouterProduitPharmacie,
+} = useSante();
 
   useEffect(() => {
     chargerNotes().then((notesChargees) => {
@@ -40,7 +47,7 @@ export function PanierProvider({ children }) {
   ) {
     setEnAnalyse(true);
 
-    const analyse = analyserPensee(contenu);
+    const analyse = analyserPensee(contenu, medicaments);
   if (analyse?.destination === "agenda") {
 
   // Plusieurs rendez-vous dans une même pensée
@@ -123,7 +130,7 @@ if (
 
     stock: analyse.stock,
     unitesParJour: analyse.unitesParJour,
-
+    dureeJours: analyse.dureeJours,
     dateMiseAJour: new Date().toISOString(),
 
     actif: true,

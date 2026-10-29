@@ -1,4 +1,4 @@
-export function analyserSante(texte) {
+export function analyserSante(texte, medicamentsConnus = []) {
   const contenu = texte.toLowerCase();
 
   // =======================================
@@ -132,9 +132,17 @@ export function analyserSante(texte) {
   // RECHERCHE D'UN MÉDICAMENT DANS LA LISTE
   // =======================================
 
-  const medicamentTrouve = motsMedicaments.find((mot) =>
-    contenu.includes(mot)
-  );
+  const medicamentPredefini = motsMedicaments.find((mot) =>
+  contenu.includes(mot)
+);
+
+const medicamentPersonnel = medicamentsConnus.find((medicament) => {
+  const nom = medicament.nom?.trim().toLowerCase();
+  return nom && contenu.includes(nom);
+});
+
+const medicamentTrouve =
+  medicamentPersonnel?.nom || medicamentPredefini || null;
 
   // Si un médicament connu est trouvé,
   // on considère automatiquement le message comme lié à la santé.
@@ -158,19 +166,22 @@ export function analyserSante(texte) {
   // EXTRACTION DU NOM DU TRAITEMENT
   // =======================================
 
-  let nomTraitement = null;
+ let nomTraitement = null;
 
-  const nomMatch =
-    contenu.match(
-      /traitement\s+(?:de\s+)?([a-zA-ZÀ-ÿ0-9-]+)/
-    ) ||
-    contenu.match(
-      /traitement\s*:\s*([a-zA-ZÀ-ÿ0-9-]+)/
-    );
+// Priorité au nom complet d'un médicament mémorisé
+if (medicamentTrouve) {
+  nomTraitement = medicamentTrouve;
+} else {
+  const nomMatch = contenu.match(
+    /traitement\s+(?:de\s+)?(.+?)(?=\s+(?:pendant|durant|pour)\s+\d+\s+jours?\b|\s+\d+\s+(?:comprimés?|comprises?|cachets?|gélules?)\b|$)/
+  );
 
   if (nomMatch) {
-    nomTraitement = nomMatch[1];
+    nomTraitement = nomMatch[1]
+      .trim()
+      .replace(/[.,!?]+$/, "");
   }
+}
 
   // Si aucun nom n'a été trouvé mais qu'un médicament
   // connu est présent dans la phrase, on l'utilise.
@@ -189,6 +200,18 @@ export function analyserSante(texte) {
   const unitesParJour = parJourMatch
     ? Number(parJourMatch[1])
     : null;
+
+// =======================================
+// EXTRACTION DE LA DURÉE DU TRAITEMENT
+// =======================================
+
+const dureeMatch = contenu.match(
+  /(?:pendant|durant|pour)\s+(\d+)\s+jours?/
+);
+
+const dureeJours = dureeMatch
+  ? Number(dureeMatch[1])
+  : null;
 
   // =======================================
   // EXTRACTION DU STOCK
@@ -399,7 +422,7 @@ export function analyserSante(texte) {
 
       stock,
       unitesParJour,
-
+      dureeJours,
       confiance:
         nomTraitement &&
         stock !== null &&

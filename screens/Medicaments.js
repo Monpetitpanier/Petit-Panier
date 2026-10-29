@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -26,7 +28,44 @@ import { Spacing } from "../theme/spacing";
 export default function Medicaments() {
   const navigation = useNavigation();
 
-  const { medicaments } = useSante();
+  const { medicaments, ajouterMedicament } = useSante();
+
+const [formulaireVisible, setFormulaireVisible] = useState(false);
+const [nom, setNom] = useState("");
+const [dosage, setDosage] = useState("");
+const [quantite, setQuantite] = useState("");
+const [datePeremption, setDatePeremption] = useState("");
+
+function enregistrerMedicament() {
+  if (!nom.trim()) {
+    Alert.alert(
+      "Nom obligatoire",
+      "Indique le nom du médicament."
+    );
+    return;
+  }
+
+  ajouterMedicament({
+    id: `${Date.now()}`,
+    nom: nom.trim(),
+    dosage: dosage.trim() || null,
+    quantite: quantite.trim()
+      ? Number(quantite)
+      : undefined,
+    datePeremption: datePeremption.trim() || null,
+  });
+
+  setNom("");
+  setDosage("");
+  setQuantite("");
+  setDatePeremption("");
+  setFormulaireVisible(false);
+
+  Alert.alert(
+    "Médicament enregistré",
+    "Fifi pourra désormais le reconnaître dans le Panier."
+  );
+}
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,7 +93,79 @@ export default function Medicaments() {
         <Text style={styles.sousTitre}>
           Garder un œil sur la pharmacie de la maison.
         </Text>
+<TouchableOpacity
+  style={styles.boutonAjouter}
+  onPress={() => setFormulaireVisible(!formulaireVisible)}
+>
+  <MaterialCommunityIcons
+    name={formulaireVisible ? "close" : "plus"}
+    size={22}
+    color={Colors.text}
+  />
+  <Text style={styles.texteBoutonAjouter}>
+    {formulaireVisible
+      ? "Annuler"
+      : "Ajouter un médicament"}
+  </Text>
+</TouchableOpacity>
 
+{formulaireVisible && (
+  <View style={styles.formulaire}>
+    <Text style={styles.labelChamp}>
+      Nom du médicament *
+    </Text>
+    <TextInput
+      style={styles.champ}
+      placeholder="Ex. : Mon médicament"
+      placeholderTextColor={Colors.subtitle}
+      value={nom}
+      onChangeText={setNom}
+    />
+
+    <Text style={styles.labelChamp}>
+      Dosage (facultatif)
+    </Text>
+    <TextInput
+      style={styles.champ}
+      placeholder="Ex. : 500 mg"
+      placeholderTextColor={Colors.subtitle}
+      value={dosage}
+      onChangeText={setDosage}
+    />
+
+    <Text style={styles.labelChamp}>
+      Quantité disponible (facultatif)
+    </Text>
+    <TextInput
+      style={styles.champ}
+      placeholder="Ex. : 20"
+      placeholderTextColor={Colors.subtitle}
+      value={quantite}
+      onChangeText={setQuantite}
+      keyboardType="numeric"
+    />
+
+    <Text style={styles.labelChamp}>
+      Date de péremption (facultatif)
+    </Text>
+    <TextInput
+      style={styles.champ}
+      placeholder="Ex. : 31/12/2027"
+      placeholderTextColor={Colors.subtitle}
+      value={datePeremption}
+      onChangeText={setDatePeremption}
+    />
+
+    <TouchableOpacity
+      style={styles.boutonEnregistrer}
+      onPress={enregistrerMedicament}
+    >
+      <Text style={styles.texteEnregistrer}>
+        Enregistrer le médicament
+      </Text>
+    </TouchableOpacity>
+  </View>
+)}
         <View style={styles.resume}>
           <Text style={styles.nombre}>
             {medicaments.length}
@@ -287,6 +398,64 @@ cartePerime: {
     marginTop: 2,
     fontSize: 13,
     color: Colors.subtitle,
+  },
+
+    boutonAjouter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.card,
+    borderRadius: Radius.large,
+    padding: Spacing.md,
+    marginBottom: Spacing.lg,
+    ...Shadow.card,
+  },
+
+  texteBoutonAjouter: {
+    marginLeft: Spacing.sm,
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.text,
+  },
+
+  formulaire: {
+    backgroundColor: Colors.card,
+    borderRadius: Radius.large,
+    padding: Spacing.lg,
+    marginBottom: Spacing.lg,
+    ...Shadow.card,
+  },
+
+  labelChamp: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.text,
+    marginBottom: Spacing.xs,
+    marginTop: Spacing.sm,
+  },
+
+  champ: {
+    borderWidth: 1,
+    borderColor: Colors.subtitle,
+    borderRadius: Radius.large,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    fontSize: 16,
+    color: Colors.text,
+  },
+
+  boutonEnregistrer: {
+    alignItems: "center",
+    backgroundColor: Colors.background,
+    borderRadius: Radius.large,
+    padding: Spacing.md,
+    marginTop: Spacing.lg,
+  },
+
+  texteEnregistrer: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: Colors.text,
   },
 
 });

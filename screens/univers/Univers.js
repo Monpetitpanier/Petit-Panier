@@ -160,7 +160,7 @@ export default function Univers() {
 
         <Text style={styles.titre}>Mes univers</Text>
         <Text style={styles.sousTitre}>
-          Chaque petit pas te rapproche de ton objectif.
+          Ton petit panier rien qu'à toi.
         </Text>
       </View>
 
@@ -205,7 +205,7 @@ export default function Univers() {
             Ton panier est prêt !
           </Text>
           <Text style={styles.message}>
-            Crée ton premier objectif et avance à ton rythme.
+            Un objectif? Un projet ? Un voyage ? Un nouveau livre? Je t'attends!
           </Text>
         </View>
       ) : (
@@ -336,12 +336,12 @@ const styles = StyleSheet.create({
     minHeight: 62,
   },
   imageFifi: {
-    width: 58,
-    height: 58,
+    width: 78,
+    height: 78,
   },
   espaceFifi: {
-    width: 58,
-    height: 58,
+    width: 78,
+    height: 78,
   },
   barreFond: {
     flex: 1,

@@ -107,7 +107,11 @@ export default function Bibliotheque() {
 
       return a.titre.localeCompare(b.titre, "fr");
     });
+const rangeesLivres = [];
 
+for (let i = 0; i < livresFiltres.length; i += 10) {
+  rangeesLivres.push(livresFiltres.slice(i, i + 10));
+}
   function ouvrirAjout() {
     navigation.navigate("AjouterLecture");
   }
@@ -130,60 +134,66 @@ export default function Bibliotheque() {
             />
           </TouchableOpacity>
 
-          <MaterialCommunityIcons
-            name="bookshelf"
-            size={38}
-            color={COULEUR}
-          />
           <Text style={styles.titre}>Ma bibliothèque</Text>
           <Text style={styles.sousTitre}>
             Un petit coin pour toutes tes histoires.
           </Text>
         </View>
-
-        <ImageBackground
-          source={require("../../../assets/illustrations/univers/Fifi_etagere.png")}
-          style={styles.etagereIllustration}
-          imageStyle={styles.imageEtagere}
-          resizeMode="contain"
-        >
-          {!chargement && livresFiltres.length > 0 && (
-            <View style={styles.zoneLivresSurEtagere}>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.rangeeSurEtagere}
+{!chargement && livresFiltres.length > 0 && (
+  <View>
+    {rangeesLivres.map((rangee, indexRangee) => (
+      <ImageBackground
+        key={`etagere-${indexRangee}`}
+        source={
+          indexRangee === 0
+            ? require("../../../assets/illustrations/univers/Fifi_etagere.png")
+            : require("../../../assets/illustrations/univers/etagere.png")
+        }
+        style={styles.etagereIllustration}
+        imageStyle={styles.imageEtagere}
+        resizeMode="contain"
+      >
+        <View style={styles.zoneLivresSurEtagere}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.rangeeSurEtagere}
+          >
+            {rangee.map((livre, indexLivre) => (
+              <TouchableOpacity
+                key={livre.id}
+                accessibilityRole="button"
+                accessibilityLabel={`Ouvrir ${livre.titre}`}
+                style={[
+                  styles.livreSurEtagere,
+                  styles[styleLivre(livre.statut)],
+                  { height: 88 + ((indexLivre % 3) * 10) },
+                ]}
+                onPress={() =>
+                  navigation.navigate("DetailLecture", { livre })
+                }
               >
-                {livresFiltres.map((livre, index) => (
-  <TouchableOpacity
-    key={livre.id}
-    accessibilityRole="button"
-    accessibilityLabel={`Ouvrir ${livre.titre}`}
-    style={[
-      styles.livreSurEtagere,
-      styles[styleLivre(livre.statut)],
-      { height: 88 + ((index % 3) * 10) },
-    ]}
-    onPress={() =>
-      navigation.navigate("DetailLecture", { livre })
-    }
-  >
-    <ImageBackground
-      source={TRANCHES_LIVRES[choisirTranche(livre)]}
-      style={styles.imageTranche}
-      imageStyle={styles.imageTrancheFond}
-      resizeMode="stretch"
-    >
-      <Text style={styles.texteTrancheLivre} numberOfLines={3}>
-        {livre.titre}
-      </Text>
-    </ImageBackground>
-  </TouchableOpacity>
-))}
-              </ScrollView>
-            </View>
-          )}
-        </ImageBackground>
+                <ImageBackground
+                  source={TRANCHES_LIVRES[choisirTranche(livre)]}
+                  style={styles.imageTranche}
+                  imageStyle={styles.imageTrancheFond}
+                  resizeMode="stretch"
+                >
+                  <Text
+                    style={styles.texteTrancheLivre}
+                    numberOfLines={3}
+                  >
+                    {livre.titre}
+                  </Text>
+                </ImageBackground>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </ImageBackground>
+    ))}
+  </View>
+)}
 
         {!chargement && livresFiltres.length === 0 && (
           <Text style={styles.texteEtagereVide}>
@@ -192,7 +202,7 @@ export default function Bibliotheque() {
         )}
 
         <TouchableOpacity
-          style={styles.boutonAjouter}
+          style={[styles.boutonAjouter, { marginTop: 40 }]}
           onPress={ouvrirAjout}
         >
           <MaterialCommunityIcons
@@ -346,7 +356,7 @@ const styles = StyleSheet.create({
   etagereIllustration: {
     width: "100%",
     aspectRatio: 1.5,
-    marginBottom: 2,
+    marginBottom: -95,
     justifyContent: "flex-end",
   },
   imageEtagere: {
