@@ -1,4 +1,6 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { Alert } from "react-native";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 
@@ -8,193 +10,372 @@ import {
 } from "../services/panierStorage";
 
 import { analyserPensee } from "../services/analyseurPanier";
+import {
+  chargerUnivers,
+  sauvegarderUnivers,
+} from "../services/universStorage";
+import {
+  chargerLectures,
+  sauvegarderLectures,
+} from "../services/lecturesStorage";
 import { useAgenda } from "./AgendaContext";
 import { useMaison } from "./MaisonContext";
 import { useSante } from "./SanteContext";
 
 const PanierContext = createContext(null);
-
-// Durée minimale (ms) pendant laquelle on affiche l'état "en analyse",
-// même si le traitement réel est instantané — laisse le temps à l'animation d'être visible.
 const DUREE_MIN_ANALYSE = 900;
+
+function normaliserTexte(texte) {
+  return texte
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function extraireCommandeObjectif(contenu) {
+  const correspondance = contenu.match(
+    /^\s*pour l['’]objectif\s+(?:"([^"]+)"|'([^']+)'|([^,]+?))\s*,\s*(.+)$/i
+  );
+
+  if (!correspondance) return null;
+
+  return {
+    titre: (
+      correspondance[1] ||
+      correspondance[2] ||
+      correspondance[3]
+    ).trim(),
+    texte: correspondance[4].trim(),
+  };
+}
+
+// Reconnaît les formulations explicites d'achat d'un livre.
+function extraireCommandeLivre(contenu) {
+  const correspondance = contenu.match(
+    /\b(?:je viens d['’]acheter|j['’]ai acheté)\s+(?:le|un|ce)\s+livre\b\s*(?:[:,-]\s*)?([\s\S]*)$/i
+  );
+
+  if (!correspondance) return null;
+
+  const titre = (correspondance[1] || "")
+    .trim()
+    .replace(/^[\s"'«»]+|[\s"'«»]+$/g, "")
+    .replace(/[.!?]+$/g, "")
+    .trim();
+
+  return { titre };
+}
 
 export function PanierProvider({ children }) {
   const [notes, setNotes] = useState([]);
   const [chargementTermine, setChargementTermine] = useState(false);
   const [enAnalyse, setEnAnalyse] = useState(false);
+
   const { ajouterRendezVous } = useAgenda();
-  const { ajouter: ajouterDansMaison, ouvrirRecap } = useMaison();
- const {
-  traitements,
-  medicaments,
-  ajouterTraitement,
-  renouvelerTraitement,
-  ajouterMedicament,
-  ajouterProduitPharmacie,
-} = useSante();
+
+  const {
+    ajouter: ajouterDansMaison,
+    ouvrirRecap,
+  } = useMaison();
+
+  const {
+    traitements,
+    medicaments,
+    ajouterTraitement,
+    renouvelerTraitement,
+    ajouterMedicament,
+    ajouterProduitPharmacie,
+  } = useSante();
 
   useEffect(() => {
-    chargerNotes().then((notesChargees) => {
-      setNotes(notesChargees);
-      setChargementTermine(true);
-    });
+    let actif = true;
+
+    async function charger() {
+      try {
+        const notesChargees = await chargerNotes();
+        if (actif) setNotes(notesChargees);
+      } catch (erreur) {
+        console.error("Erreur lors du chargement des notes :", erreur);
+      } finally {
+        if (actif) setChargementTermine(true);
+      }
+    }
+
+    charger();
+
+    return () => {
+      actif = false;
+    };
   }, []);
 
-  function ajouterNote(
-    contenu,
-    type = "texte",
-    pieceJointe = null
-  ) {
+  async function ajouterNote(contenu, type = "texte", pieceJointe = null) {
     setEnAnalyse(true);
 
-    const analyse = analyserPensee(contenu, medicaments);
-  if (analyse?.destination === "agenda") {
+    try {
+      // 1. Une commande explicite pour un objectif est prioritaire.
+      const commandeObjectif =
+        typeof contenu === "string"
+          ? extraireCommandeObjectif(contenu)
+          : null;
 
-  // Plusieurs rendez-vous dans une même pensée
-  if (
-    Array.isArray(analyse.rendezVous) &&
-    analyse.rendezVous.length > 0
-  ) {
+      if (commandeObjectif) {
+        const univers = await chargerUnivers();
 
-    analyse.rendezVous.forEach((rdv) => {
+        const objectif = univers.find(
+          (item) =>
+            normaliserTexte(item.titre || "") ===
+            normaliserTexte(commandeObjectif.titre)
+        );
 
-      ajouterRendezVous({
-        titre: rdv.titre,
-        date: rdv.date,
-        heure: rdv.heure,
-        categorie: rdv.categorie || "rendez-vous",
-      });
+        if (objectif) {
+          const noteObjectif = {
+            id: uuidv4(),
+            texte: commandeObjectif.texte,
+            dateCreation: new Date().toISOString(),
+          };
 
-    });
+          const objectifMisAJour = {
+            ...objectif,
+            notes: [
+              ...(Array.isArray(objectif.notes) ? objectif.notes : []),
+              noteObjectif,
+            ],
+          };
 
-  }
+          const universMisAJour = univers.map((item) =>
+            String(item.id) === String(objectif.id)
+              ? objectifMisAJour
+              : item
+          );
 
-  // =======================================
-// SANTÉ — PHARMACIE
-// =======================================
+          await sauvegarderUnivers(universMisAJour);
 
-if (analyse?.destination === "pharmacie") {
-  ajouterProduitPharmacie({
-    id: uuidv4(),
+          Alert.alert(
+            "Note ajoutée !",
+            `Fifi a rangé ta note dans l’objectif « ${objectif.titre} ».`
+          );
 
-    nom: analyse.nom,
-    quantite: analyse.quantite,
-    datePeremption: analyse.datePeremption,
-  });
-}
+          return {
+            destination: "objectif",
+            objectifId: objectif.id,
+            note: noteObjectif,
+          };
+        }
 
-  // Un seul rendez-vous
-  else {
+        Alert.alert(
+          "Objectif introuvable",
+          `Fifi n’a pas trouvé l’objectif « ${commandeObjectif.titre} ». La pensée restera dans ton panier.`
+        );
+      }
 
-    ajouterRendezVous({
-      titre: analyse.titre,
-      date: analyse.date,
-      heure: analyse.heure,
-      categorie: analyse.categorie,
-    });
+      // 2. Achat d'un livre : ajout direct dans « À lire ».
+      const commandeLivre =
+        typeof contenu === "string"
+          ? extraireCommandeLivre(contenu)
+          : null;
 
-  }
-}
+      if (commandeLivre) {
+        if (!commandeLivre.titre) {
+          Alert.alert(
+            "Quel est le titre du livre ?",
+            "Indique le titre après « Je viens d'acheter le livre », et Fifi pourra l'ajouter à ta bibliothèque."
+          );
+        } else {
+          const livres = await chargerLectures();
 
-    if (analyse?.destination === "recapSortie") {
-      ouvrirRecap();
+          const livreExistant = livres.find(
+            (livre) =>
+              normaliserTexte(livre.titre || "") ===
+              normaliserTexte(commandeLivre.titre)
+          );
+
+          if (livreExistant) {
+            Alert.alert(
+              "Livre déjà présent",
+              `« ${livreExistant.titre} » est déjà dans ta bibliothèque.`
+            );
+
+            return {
+              destination: "bibliotheque",
+              livreId: livreExistant.id,
+              dejaPresent: true,
+            };
+          }
+
+          const nouveauLivre = {
+            id: uuidv4(),
+            titre: commandeLivre.titre,
+            auteur: "",
+            pages: null,
+            genre: "Autre",
+            statut: "aLire",
+            dateAjout: new Date().toISOString(),
+            progression: 0,
+            note: null,
+            avis: "",
+            dateFin: null,
+          };
+
+          const sauvegardeOk = await sauvegarderLectures([
+            ...livres,
+            nouveauLivre,
+          ]);
+
+          if (sauvegardeOk) {
+            Alert.alert(
+              "Livre ajouté ! 📚",
+              `Fifi a ajouté « ${nouveauLivre.titre} » dans ta bibliothèque, onglet « À lire ». Tu pourras compléter sa fiche plus tard.`
+            );
+
+            return {
+              destination: "bibliotheque",
+              livreId: nouveauLivre.id,
+              livre: nouveauLivre,
+            };
+          }
+
+          Alert.alert(
+            "Sauvegarde impossible",
+            "Fifi n'a pas pu enregistrer ce livre dans ta bibliothèque. Ta pensée sera conservée dans le panier."
+          );
+        }
+      }
+
+      // 3. Analyse habituelle des autres pensées.
+      const analyse = analyserPensee(contenu, medicaments);
+
+      // Rendez-vous dans l'agenda
+      if (analyse?.destination === "agenda") {
+        if (
+          Array.isArray(analyse.rendezVous) &&
+          analyse.rendezVous.length > 0
+        ) {
+          analyse.rendezVous.forEach((rdv) => {
+            ajouterRendezVous({
+              titre: rdv.titre,
+              date: rdv.date,
+              heure: rdv.heure,
+              categorie: rdv.categorie || "rendez-vous",
+            });
+          });
+        } else if (analyse.date) {
+          ajouterRendezVous({
+            titre: analyse.titre,
+            date: analyse.date,
+            heure: analyse.heure,
+            categorie: analyse.categorie || "rendez-vous",
+          });
+        }
+      }
+
+      // Produits à ajouter à la pharmacie
+      if (analyse?.destination === "pharmacie") {
+        ajouterProduitPharmacie({
+          id: uuidv4(),
+          nom: analyse.nom,
+          quantite: analyse.quantite,
+          datePeremption: analyse.datePeremption,
+        });
+      }
+
+      // Récapitulatif de sortie
+      if (analyse?.destination === "recapSortie") {
+        ouvrirRecap();
+      }
+
+      // Éléments à ajouter dans la maison
+      if (analyse?.destination === "maison") {
+        ajouterDansMaison(
+          analyse.categorie,
+          analyse.texte || contenu,
+          "fifi"
+        );
+      }
+
+      // Nouveau médicament
+      if (analyse?.destination === "medicaments") {
+        ajouterMedicament({
+          id: uuidv4(),
+          nom: analyse.nom,
+          quantite: analyse.quantite,
+          datePeremption: analyse.datePeremption,
+        });
+      }
+
+      // Nouveau traitement
+      if (
+        analyse?.destination === "traitements" &&
+        analyse.type === "nouveau_traitement"
+      ) {
+        ajouterTraitement({
+          id: uuidv4(),
+          nom: analyse.nom,
+          dosage: null,
+          stock: analyse.stock,
+          unitesParJour: analyse.unitesParJour,
+          dureeJours: analyse.dureeJours,
+          dateMiseAJour: new Date().toISOString(),
+          actif: true,
+        });
+      }
+
+      // Renouvellement d'un traitement existant
+      if (
+        analyse?.destination === "traitements" &&
+        analyse.type === "renouvellement"
+      ) {
+        const traitementExistant = traitements.find(
+          (traitement) =>
+            traitement.nom?.toLowerCase() ===
+            analyse.nom?.toLowerCase()
+        );
+
+        if (traitementExistant) {
+          renouvelerTraitement(
+            traitementExistant.id,
+            analyse.stock,
+            analyse.unitesParJour
+          );
+        }
+      }
+
+      // Enregistrement de la pensée dans le panier
+      const nouvelleNote = {
+        id: uuidv4(),
+        contenu,
+        type,
+        pieceJointe,
+        dateCreation: new Date().toISOString(),
+        dateModification: null,
+        analyse,
+        statut: "non_classee",
+        univers: null,
+        favori: false,
+        archivee: false,
+      };
+
+      const nouvellesNotes = [nouvelleNote, ...notes];
+      setNotes(nouvellesNotes);
+      await sauvegarderNotes(nouvellesNotes);
+
+      return analyse;
+    } catch (erreur) {
+      console.error("Erreur lors de l'ajout de la note :", erreur);
+      Alert.alert(
+        "Oups !",
+        "Fifi n’a pas réussi à enregistrer cette pensée. Réessaie."
+      );
+      return null;
+    } finally {
+      setTimeout(() => {
+        setEnAnalyse(false);
+      }, DUREE_MIN_ANALYSE);
     }
-
-    if (analyse?.destination === "maison") {
-      ajouterDansMaison(analyse.categorie, analyse.texte || contenu, "fifi");
-    }
-
-    if (analyse?.destination === "medicaments") {
-  ajouterMedicament({
-    id: uuidv4(),
-
-    nom: analyse.nom,
-    quantite: analyse.quantite,
-    datePeremption: analyse.datePeremption,
-  });
-}
-
-   // =======================================
-// SANTÉ — TRAITEMENTS
-// =======================================
-
-if (
-  analyse?.destination === "traitements" &&
-  analyse.type === "nouveau_traitement"
-) {
-  ajouterTraitement({
-    id: uuidv4(),
-
-    nom: analyse.nom,
-    dosage: null,
-
-    stock: analyse.stock,
-    unitesParJour: analyse.unitesParJour,
-    dureeJours: analyse.dureeJours,
-    dateMiseAJour: new Date().toISOString(),
-
-    actif: true,
-  });
-} 
-
-// =======================================
-// SANTÉ — RENOUVELLEMENT
-// =======================================
-
-if (
-  analyse?.destination === "traitements" &&
-  analyse.type === "renouvellement"
-) {
-  const traitementExistant = traitements.find(
-    (traitement) =>
-      traitement.nom?.toLowerCase() ===
-      analyse.nom?.toLowerCase()
-  );
-
-  if (traitementExistant) {
-    renouvelerTraitement(
-      traitementExistant.id,
-      analyse.stock,
-      analyse.unitesParJour
-    );
-  }
-}
-
-    const nouvelleNote = {
-      id: uuidv4(),
-
-      contenu,
-      type,
-
-      pieceJointe,
-
-      dateCreation: new Date().toISOString(),
-      dateModification: null,
-
-      analyse,
-
-      statut: "non_classee",
-      univers: null,
-
-      favori: false,
-      archivee: false,
-    };
-
-    const nouvellesNotes = [nouvelleNote, ...notes];
-
-    setNotes(nouvellesNotes);
-    sauvegarderNotes(nouvellesNotes);
-
-    setTimeout(() => setEnAnalyse(false), DUREE_MIN_ANALYSE);
-
-    return analyse;
   }
 
   function supprimerNote(id) {
-    const nouvellesNotes = notes.filter(
-      (note) => note.id !== id
-    );
-
+    const nouvellesNotes = notes.filter((note) => note.id !== id);
     setNotes(nouvellesNotes);
     sauvegarderNotes(nouvellesNotes);
   }

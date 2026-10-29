@@ -91,7 +91,7 @@ export default function Bibliotheque() {
   );
 
   const livresFiltres = livres
-    .filter((livre) => livroStatut(livre) === ongletActif)
+    .filter((livre) => livre.statut === ongletActif)
     .sort((a, b) => {
       if (tri === "date") {
         return new Date(b.dateAjout || 0) - new Date(a.dateAjout || 0);

@@ -272,6 +272,27 @@ export default function DetailUnivers() {
           </>
         )}
 
+<View style={styles.notesSection}>
+  <Text style={styles.section}>Mes notes</Text>
+
+  {(objectif.notes || []).length === 0 ? (
+    <Text style={styles.notesVides}>
+      Fifi rangera ici les pensées liées à cet objectif.
+    </Text>
+  ) : (
+    objectif.notes.map((note) => (
+      <View key={note.id} style={styles.noteObjectif}>
+        <Text style={styles.texteNote}>{note.texte}</Text>
+        <Text style={styles.dateNote}>
+          Ajoutée le{" "}
+          {new Date(note.dateCreation).toLocaleDateString("fr-FR")}
+        </Text>
+      </View>
+    ))
+  )}
+</View>
+
+
         <View style={styles.progressionLigne}>
           <Text style={styles.section}>Mes étapes</Text>
           <Text style={styles.pourcentage}>{progression}%</Text>
@@ -458,6 +479,34 @@ const styles = StyleSheet.create({
     color: "#C0394B",
     fontWeight: "bold",
   },
+
+notesSection: {
+  marginTop: 26,
+},
+notesVides: {
+  color: "#777777",
+  fontSize: 14,
+  marginTop: 10,
+  lineHeight: 21,
+},
+noteObjectif: {
+  backgroundColor: "#FFFFFF",
+  borderRadius: 12,
+  padding: 14,
+  marginTop: 10,
+  borderWidth: 1,
+  borderColor: "#E9E1D7",
+},
+texteNote: {
+  color: "#4B4036",
+  fontSize: 15,
+  lineHeight: 22,
+},
+dateNote: {
+  color: "#888888",
+  fontSize: 11,
+  marginTop: 8,
+},
 
 
 });
