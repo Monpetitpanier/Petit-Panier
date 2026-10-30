@@ -207,6 +207,11 @@ export default function Univers() {
           <Text style={styles.message}>
             Crée ton premier objectif et avance à ton rythme.
           </Text>
+          <Image
+            source={require("../../assets/illustrations/univers/fifi_basdepage.png")}
+            style={styles.imageFifiBas}
+            resizeMode="contain"
+          />
         </View>
       ) : (
         <FlatList
@@ -214,6 +219,13 @@ export default function Univers() {
           keyExtractor={(item) => String(item.id)}
           renderItem={afficherObjectif}
           contentContainerStyle={styles.liste}
+          ListFooterComponent={
+            <Image
+              source={require("../../assets/illustrations/univers/fifi_basdepage.png")}
+              style={styles.imageFifiBas}
+              resizeMode="contain"
+            />
+          }
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -373,6 +385,12 @@ const styles = StyleSheet.create({
     width: 130,
     height: 130,
     marginBottom: 12,
+  },
+  imageFifiBas: {
+    width: "100%",
+    height: 190,
+    marginTop: 14,
+    marginBottom: 18,
   },
   titreVide: {
     fontSize: 20,
