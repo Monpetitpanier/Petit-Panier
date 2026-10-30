@@ -182,8 +182,8 @@ export default function Sante() {
           />
 
         </TouchableOpacity>
-
         {/* FIFI — BAS DE PAGE */}
+
         <View style={styles.zoneFifi}>
           <Image
             source={require("../assets/illustrations/sante/fifi_blouse.png")}
@@ -191,7 +191,6 @@ export default function Sante() {
             resizeMode="contain"
           />
         </View>
-
       </ScrollView>
 
     </SafeAreaView>
@@ -319,5 +318,16 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: Colors.subtitle,
   },
+  // FIFI — BAS DE PAGE
 
+  zoneFifi: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: Spacing.md,
+  },
+
+  imageFifiBas: {
+    width: "100%",
+    height: 210,
+  },
 });

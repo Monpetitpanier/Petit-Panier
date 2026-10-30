@@ -220,7 +220,7 @@ export default function Univers() {
             Un objectif? Un projet ? Un voyage ? Un nouveau livre? Je t'attends!
           </Text>
         </View>
-      ) : (
+         ) : (
         <FlatList
           data={univers}
           keyExtractor={(item) => String(item.id)}
@@ -234,6 +234,13 @@ export default function Univers() {
             />
           }
           showsVerticalScrollIndicator={false}
+          ListFooterComponent={
+            <Image
+              source={require("../../assets/illustrations/univers/fifi_basdepage.png")}
+              style={styles.imageFifiBas}
+              resizeMode="contain"
+            />
+          }
         />
       )}
 
@@ -472,5 +479,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 20,
   },
+  imageFifiBas: {
+  width: "100%",
+  height: 190,
+  marginTop: 14,
+  marginBottom: 18,
+},
 
 });

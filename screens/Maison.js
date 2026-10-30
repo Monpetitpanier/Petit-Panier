@@ -122,6 +122,7 @@ export default function Maison() {
       </View>
 
       {/* FIFI — BAS DE PAGE */}
+
       <View style={styles.zoneFifi}>
         <Image
           source={require("../assets/illustrations/maison/fifi_porteentree.png")}
@@ -309,5 +310,17 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     color: Colors.subtitle,
+  },
+    // FIFI — BAS DE PAGE
+
+  zoneFifi: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: Spacing.md,
+  },
+
+  imageFifiBas: {
+    width: "100%",
+    height: 210,
   },
 });
