@@ -1,4 +1,3 @@
-
 import React, { useCallback, useState } from "react";
 import {
   SafeAreaView,
@@ -147,11 +146,8 @@ export default function Univers() {
 
   return (
     <SafeAreaView style={styles.container}>
-
       {/* EN-TÊTE */}
-
       <View style={styles.entete}>
-
         <TouchableOpacity
           style={styles.boutonRetour}
           onPress={() => navigation.goBack()}
@@ -169,12 +165,9 @@ export default function Univers() {
         <Text style={styles.sousTitre}>
           Ton petit panier rien qu'à toi.
         </Text>
-
       </View>
 
-
       {/* BOUTONS D'AJOUT */}
-
       <TouchableOpacity
         style={styles.boutonAjouter}
         onPress={() => navigation.navigate("CreationUnivers")}
@@ -199,9 +192,7 @@ export default function Univers() {
         <Text style={styles.texteBouton}>Ajouter une lecture</Text>
       </TouchableOpacity>
 
-
       {/* OBJECTIFS */}
-
       {chargement ? (
         <Text style={styles.message}>
           Chargement de tes univers…
@@ -220,19 +211,12 @@ export default function Univers() {
             Un objectif? Un projet ? Un voyage ? Un nouveau livre? Je t'attends!
           </Text>
         </View>
-         ) : (
+      ) : (
         <FlatList
           data={univers}
           keyExtractor={(item) => String(item.id)}
           renderItem={afficherObjectif}
           contentContainerStyle={styles.liste}
-          ListFooterComponent={
-            <Image
-              source={require("../../assets/illustrations/univers/fifi_basdepage.png")}
-              style={styles.imageFifiBas}
-              resizeMode="contain"
-            />
-          }
           showsVerticalScrollIndicator={false}
           ListFooterComponent={
             <Image
@@ -243,21 +227,17 @@ export default function Univers() {
           }
         />
       )}
-
     </SafeAreaView>
   );
 }
 
-
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: FOND,
   },
 
   // EN-TÊTE
-
   entete: {
     alignItems: "center",
     paddingTop: 18,
@@ -269,17 +249,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 12,
     left: 16,
-
     width: 48,
     height: 48,
-
     borderRadius: 24,
-
     alignItems: "center",
     justifyContent: "center",
-
     backgroundColor: "#FFFFFF",
-
     shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowRadius: 7,
@@ -287,7 +262,6 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-
     elevation: 2,
     zIndex: 5,
   },
@@ -308,7 +282,6 @@ const styles = StyleSheet.create({
   },
 
   // BOUTONS D'AJOUT
-
   boutonAjouter: {
     backgroundColor: COULEUR,
     marginHorizontal: 20,
@@ -330,7 +303,6 @@ const styles = StyleSheet.create({
   },
 
   // LISTE
-
   liste: {
     padding: 16,
     paddingTop: 8,
@@ -445,7 +417,6 @@ const styles = StyleSheet.create({
   },
 
   // PANIER VIDE
-
   vide: {
     flex: 1,
     alignItems: "center",
@@ -459,12 +430,6 @@ const styles = StyleSheet.create({
     height: 130,
     marginBottom: 12,
   },
-  imageFifiBas: {
-    width: "100%",
-    height: 190,
-    marginTop: 14,
-    marginBottom: 18,
-  },
 
   titreVide: {
     fontSize: 20,
@@ -472,6 +437,7 @@ const styles = StyleSheet.create({
     color: COULEUR,
     marginBottom: 8,
   },
+
   message: {
     color: "#777777",
     textAlign: "center",
@@ -479,11 +445,11 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 20,
   },
-  imageFifiBas: {
-  width: "100%",
-  height: 190,
-  marginTop: 14,
-  marginBottom: 18,
-},
 
+  imageFifiBas: {
+    width: "100%",
+    height: 190,
+    marginTop: 14,
+    marginBottom: 18,
+  },
 });
