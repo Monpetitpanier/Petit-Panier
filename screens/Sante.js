@@ -225,6 +225,15 @@ export default function Sante() {
 
         </TouchableOpacity>
 
+        {/* FIFI — BAS DE PAGE */}
+        <View style={styles.zoneFifi}>
+          <Image
+            source={require("../assets/illustrations/sante/fifi_blouse.png")}
+            style={styles.imageFifiBas}
+            resizeMode="contain"
+          />
+        </View>
+
       </ScrollView>
 
     </SafeAreaView>
@@ -282,6 +291,21 @@ const styles = StyleSheet.create({
     color: Colors.subtitle,
   },
 
+
+  /* ============================= */
+  /* FIFI — BAS DE PAGE */
+  /* ============================= */
+
+  zoneFifi: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: Spacing.md,
+  },
+
+  imageFifiBas: {
+    width: "100%",
+    height: 210,
+  },
 
   /* ============================= */
   /* CARTES */
