@@ -46,11 +46,13 @@
       ],
       "expo-font",
       [
-        "expo-splash-screen",
-        {
-          "backgroundColor": "#FBF6EF"
-        }
-      ]
+  "expo-splash-screen",
+  {
+    "image": "./assets/illustrations/appli_panier.png",
+    "imageWidth": 150,
+    "backgroundColor": "#FBF6EF"
+  }
+]
     ],
     "extra": {
       "eas": {
