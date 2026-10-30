@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Image,
@@ -55,14 +56,14 @@ export default function Maison() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* ======================================= */}
       {/* EN-TÊTE */}
-      {/* ======================================= */}
 
       <View style={styles.entete}>
+
         <TouchableOpacity
           style={styles.boutonRetour}
           onPress={() => navigation.goBack()}
+          activeOpacity={0.8}
         >
           <MaterialCommunityIcons
             name="chevron-left"
@@ -71,38 +72,17 @@ export default function Maison() {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.boutonReglages}
-          onPress={() =>
-            navigation.navigate("ReglagesRappelsMaison")
-          }
-        >
-          <MaterialCommunityIcons
-            name="cog-outline"
-            size={25}
-            color={Colors.subtitle}
-          />
-        </TouchableOpacity>
-
-        <View style={styles.ligneTitre}>
-          <Image
-            source={require("../assets/illustrations/maison/bouton_maison.png")}
-            style={styles.imageTitre}
-          />
-
-          <Text style={styles.titre}>Maison</Text>
-        </View>
+        <Text style={styles.titre}>Maison</Text>
 
         <Text style={styles.accroche}>
           Tout pour la maison,
           {"\n"}
           bien rangé avec Fifi.
         </Text>
+
       </View>
 
-      {/* ======================================= */}
       {/* CARTES MAISON */}
-      {/* ======================================= */}
 
       <View style={styles.listeCartes}>
         {cartes.map((carte) => (
@@ -114,8 +94,6 @@ export default function Maison() {
               navigation.navigate(carte.destination)
             }
           >
-            {/* Icône */}
-
             <View style={styles.bulleIcone}>
               <Image
                 source={carte.image}
@@ -123,8 +101,6 @@ export default function Maison() {
                 resizeMode="contain"
               />
             </View>
-
-            {/* Textes */}
 
             <View style={styles.contenuCarte}>
               <Text style={styles.titreCarte}>
@@ -135,8 +111,6 @@ export default function Maison() {
                 {carte.sousTitre}
               </Text>
             </View>
-
-            {/* Chevron */}
 
             <MaterialCommunityIcons
               name="chevron-right"
@@ -159,10 +133,6 @@ export default function Maison() {
   );
 }
 
-// =======================================
-// STYLES
-// =======================================
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -175,9 +145,7 @@ const styles = StyleSheet.create({
     paddingBottom: 45,
   },
 
-  // =====================================
   // EN-TÊTE
-  // =====================================
 
   entete: {
     alignItems: "center",
@@ -208,67 +176,24 @@ const styles = StyleSheet.create({
     },
 
     elevation: 2,
-
     zIndex: 5,
-  },
-
-  boutonReglages: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-
-    width: 48,
-    height: 48,
-
-    borderRadius: 24,
-
-    alignItems: "center",
-    justifyContent: "center",
-
-    backgroundColor: Colors.card,
-
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 7,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-
-    elevation: 2,
-
-    zIndex: 5,
-  },
-
-  ligneTitre: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: Spacing.md,
-  },
-
-  imageTitre: {
-    width: 55,
-    height: 36,
-    resizeMode: "contain",
   },
 
   titre: {
     fontSize: 30,
     fontWeight: "700",
-    marginLeft: Spacing.sm,
     color: Colors.text,
+    textAlign: "center",
+    marginTop: Spacing.md,
   },
 
   accroche: {
     marginTop: Spacing.sm,
-
     color: Colors.subtitle,
     fontSize: 17,
     lineHeight: 24,
-
     textAlign: "center",
   },
-
   // =====================================
   // FIFI
   // =====================================
@@ -322,7 +247,6 @@ const styles = StyleSheet.create({
 
   // =====================================
   // CARTES
-  // =====================================
 
   listeCartes: {
     gap: Spacing.sm,
@@ -335,7 +259,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
 
     backgroundColor: Colors.card,
-
     borderRadius: 20,
 
     paddingVertical: 10,
@@ -352,10 +275,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
 
-  // =====================================
-  // ICÔNE
-  // =====================================
-
   bulleIcone: {
     width: 62,
     height: 62,
@@ -366,7 +285,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
 
     backgroundColor: Colors.background,
-
     marginRight: 16,
   },
 
@@ -374,10 +292,6 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
   },
-
-  // =====================================
-  // TEXTE
-  // =====================================
 
   contenuCarte: {
     flex: 1,
@@ -392,10 +306,8 @@ const styles = StyleSheet.create({
 
   sousTitreCarte: {
     marginTop: 3,
-
     fontSize: 13,
     lineHeight: 18,
-
     color: Colors.subtitle,
   },
 });

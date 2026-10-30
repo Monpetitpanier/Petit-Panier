@@ -15,6 +15,7 @@ import { chargerUnivers } from "../../services/universStorage";
 
 const COULEUR = "#e0aec0";
 const FOND = "#F8F5F0";
+const MARRON = "#4B4036";
 
 const FIFI_IMAGES = {
   depart: require("../../assets/illustrations/univers/Fifi_depart.png"),
@@ -146,23 +147,33 @@ export default function Univers() {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      {/* EN-TÊTE */}
+
       <View style={styles.entete}>
+
         <TouchableOpacity
           style={styles.boutonRetour}
           onPress={() => navigation.goBack()}
+          activeOpacity={0.8}
         >
           <MaterialCommunityIcons
             name="chevron-left"
-            size={28}
-            color={COULEUR}
+            size={25}
+            color="#79543F"
           />
         </TouchableOpacity>
 
         <Text style={styles.titre}>Mes univers</Text>
+
         <Text style={styles.sousTitre}>
           Ton petit panier rien qu'à toi.
         </Text>
+
       </View>
+
+
+      {/* BOUTONS D'AJOUT */}
 
       <TouchableOpacity
         style={styles.boutonAjouter}
@@ -176,7 +187,6 @@ export default function Univers() {
         <Text style={styles.texteBouton}>Créer un objectif</Text>
       </TouchableOpacity>
 
-
       <TouchableOpacity
         style={styles.boutonAjouter}
         onPress={() => navigation.navigate("Bibliotheque")}
@@ -189,6 +199,8 @@ export default function Univers() {
         <Text style={styles.texteBouton}>Ajouter une lecture</Text>
       </TouchableOpacity>
 
+
+      {/* OBJECTIFS */}
 
       {chargement ? (
         <Text style={styles.message}>
@@ -224,38 +236,72 @@ export default function Univers() {
           showsVerticalScrollIndicator={false}
         />
       )}
+
     </SafeAreaView>
   );
 }
 
+
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
     backgroundColor: FOND,
   },
+
+  // EN-TÊTE
+
   entete: {
     alignItems: "center",
     paddingTop: 18,
     paddingHorizontal: 20,
+    marginBottom: 8,
   },
+
   boutonRetour: {
     position: "absolute",
     top: 12,
     left: 16,
-    padding: 4,
-    zIndex: 1,
+
+    width: 48,
+    height: 48,
+
+    borderRadius: 24,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    backgroundColor: "#FFFFFF",
+
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 7,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 2,
+    zIndex: 5,
   },
+
   titre: {
-    fontSize: 27,
-    fontWeight: "bold",
-    color: COULEUR,
-    marginBottom: 8,
+    fontSize: 30,
+    fontWeight: "700",
+    color: MARRON,
+    textAlign: "center",
+    marginTop: 12,
   },
+
   sousTitre: {
     fontSize: 15,
     color: "#666666",
     textAlign: "center",
+    marginTop: 8,
   },
+
+  // BOUTONS D'AJOUT
+
   boutonAjouter: {
     backgroundColor: COULEUR,
     marginHorizontal: 20,
@@ -269,16 +315,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 9,
   },
+
   texteBouton: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "bold",
   },
+
+  // LISTE
+
   liste: {
     padding: 16,
     paddingTop: 8,
     paddingBottom: 30,
   },
+
   carte: {
     backgroundColor: "#FFFFFF",
     borderRadius: 18,
@@ -287,11 +338,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E9E5DC",
   },
+
   enteteCarte: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 18,
   },
+
   iconeCategorie: {
     width: 44,
     height: 44,
@@ -301,48 +354,58 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 12,
   },
+
   infos: {
     flex: 1,
   },
+
   titreCarte: {
     fontSize: 17,
     fontWeight: "bold",
     color: COULEUR,
   },
+
   categorie: {
     fontSize: 12,
     color: "#777777",
     marginTop: 5,
     textTransform: "capitalize",
   },
+
   ligneProgression: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 8,
   },
+
   labelProgression: {
     fontSize: 13,
     color: "#666666",
   },
+
   pourcentage: {
     fontSize: 13,
     fontWeight: "bold",
     color: COULEUR,
   },
+
   parcours: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
     minHeight: 62,
   },
+
   imageFifi: {
     width: 78,
     height: 78,
   },
+
   espaceFifi: {
     width: 78,
     height: 78,
   },
+
   barreFond: {
     flex: 1,
     height: 9,
@@ -350,25 +413,32 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     overflow: "hidden",
   },
+
   barreRemplie: {
     height: "100%",
     backgroundColor: "#9DB58B",
     borderRadius: 10,
   },
+
   imagePanier: {
     width: 58,
     height: 58,
   },
+
   nombreEtapes: {
     fontSize: 12,
     color: "#777777",
     marginTop: 8,
   },
+
   ouvrirDetail: {
     fontSize: 12,
     color: COULEUR,
     marginTop: 8,
   },
+
+  // PANIER VIDE
+
   vide: {
     flex: 1,
     alignItems: "center",
@@ -376,6 +446,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingBottom: 70,
   },
+
   fifiVide: {
     width: 130,
     height: 130,
@@ -387,6 +458,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
     marginBottom: 18,
   },
+
   titreVide: {
     fontSize: 20,
     fontWeight: "bold",
@@ -400,4 +472,5 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingHorizontal: 20,
   },
+
 });

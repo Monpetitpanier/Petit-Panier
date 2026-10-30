@@ -16,7 +16,6 @@ export default function EcranMaisonVide({ route }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.contenu}>
-        <Text style={styles.icone}>{icone}</Text>
         <Text style={styles.titre}>{titre}</Text>
         <Text style={styles.texte}>
           Cette section sera bientôt prête à accueillir tes repères.
@@ -39,10 +38,6 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
   },
 
-  icone: {
-    marginBottom: Spacing.md,
-    fontSize: 48,
-  },
 
   titre: {
     fontSize: 24,

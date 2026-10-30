@@ -1,3 +1,4 @@
+
 import React from "react";
 
 import {
@@ -21,7 +22,6 @@ import { Shadow } from "../theme/shadow";
 import { Spacing } from "../theme/spacing";
 
 export default function Sante() {
-
   const navigation = useNavigation();
 
   const {
@@ -30,48 +30,42 @@ export default function Sante() {
     pharmacie,
   } = useSante();
 
-
   return (
-
     <SafeAreaView style={styles.container}>
-
-      {/* ============================= */}
-      {/* RETOUR */}
-      {/* ============================= */}
-
-      <TouchableOpacity
-        style={styles.boutonRetour}
-        onPress={() => navigation.goBack()}
-      >
-        <MaterialCommunityIcons
-          name="chevron-left"
-          size={28}
-          color={Colors.text}
-        />
-      </TouchableOpacity>
-
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.content}
       >
 
-        {/* ============================= */}
-        {/* TITRE */}
-        {/* ============================= */}
+        {/* EN-TÊTE */}
 
-        <Text style={styles.titre}>
-          Santé
-        </Text>
+        <View style={styles.entete}>
 
-        <Text style={styles.sousTitre}>
-          Prendre soin de soi et de sa petite pharmacie.
-        </Text>
+          <TouchableOpacity
+            style={styles.boutonRetour}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.8}
+          >
+            <MaterialCommunityIcons
+              name="chevron-left"
+              size={25}
+              color={Colors.subtitle}
+            />
+          </TouchableOpacity>
+
+          <Text style={styles.titre}>
+            Santé
+          </Text>
+
+          <Text style={styles.sousTitre}>
+            Prendre soin de soi et de sa petite pharmacie.
+          </Text>
+
+        </View>
 
 
-        {/* ============================= */}
         {/* TRAITEMENTS */}
-        {/* ============================= */}
 
         <TouchableOpacity
           style={styles.carte}
@@ -82,18 +76,12 @@ export default function Sante() {
         >
 
           <Image
-            source={
-              require(
-                "../assets/illustrations/sante/bouton_traitement.png"
-              )
-            }
+            source={require("../assets/illustrations/sante/bouton_traitement.png")}
             style={styles.illustration}
             resizeMode="contain"
           />
 
-
           <View style={styles.texteCarte}>
-
             <Text style={styles.titreCarte}>
               Traitements
             </Text>
@@ -102,14 +90,10 @@ export default function Sante() {
               {traitements.length === 0
                 ? "Aucun traitement en cours."
                 : `${traitements.length} traitement${
-                    traitements.length > 1
-                      ? "s"
-                      : ""
+                    traitements.length > 1 ? "s" : ""
                   } en cours.`}
             </Text>
-
           </View>
-
 
           <MaterialCommunityIcons
             name="chevron-right"
@@ -120,9 +104,7 @@ export default function Sante() {
         </TouchableOpacity>
 
 
-        {/* ============================= */}
         {/* MÉDICAMENTS */}
-        {/* ============================= */}
 
         <TouchableOpacity
           style={styles.carte}
@@ -133,18 +115,12 @@ export default function Sante() {
         >
 
           <Image
-            source={
-              require(
-                "../assets/illustrations/sante/bouton_medicament.png"
-              )
-            }
+            source={require("../assets/illustrations/sante/bouton_medicament.png")}
             style={styles.illustration}
             resizeMode="contain"
           />
 
-
           <View style={styles.texteCarte}>
-
             <Text style={styles.titreCarte}>
               Médicaments
             </Text>
@@ -153,14 +129,10 @@ export default function Sante() {
               {medicaments.length === 0
                 ? "Votre stock est vide."
                 : `${medicaments.length} médicament${
-                    medicaments.length > 1
-                      ? "s"
-                      : ""
+                    medicaments.length > 1 ? "s" : ""
                   } en stock.`}
             </Text>
-
           </View>
-
 
           <MaterialCommunityIcons
             name="chevron-right"
@@ -171,9 +143,7 @@ export default function Sante() {
         </TouchableOpacity>
 
 
-        {/* ============================= */}
         {/* PHARMACIE */}
-        {/* ============================= */}
 
         <TouchableOpacity
           style={styles.carte}
@@ -184,18 +154,12 @@ export default function Sante() {
         >
 
           <Image
-            source={
-              require(
-                "../assets/illustrations/sante/bouton_pharmacie.png"
-              )
-            }
+            source={require("../assets/illustrations/sante/bouton_pharmacie.png")}
             style={styles.illustration}
             resizeMode="contain"
           />
 
-
           <View style={styles.texteCarte}>
-
             <Text style={styles.titreCarte}>
               Pharmacie
             </Text>
@@ -204,18 +168,12 @@ export default function Sante() {
               {pharmacie.length === 0
                 ? "Aucun produit enregistré."
                 : `${pharmacie.length} produit${
-                    pharmacie.length > 1
-                      ? "s"
-                      : ""
+                    pharmacie.length > 1 ? "s" : ""
                   } enregistré${
-                    pharmacie.length > 1
-                      ? "s"
-                      : ""
+                    pharmacie.length > 1 ? "s" : ""
                   }.`}
             </Text>
-
           </View>
-
 
           <MaterialCommunityIcons
             name="chevron-right"
@@ -237,9 +195,7 @@ export default function Sante() {
       </ScrollView>
 
     </SafeAreaView>
-
   );
-
 }
 
 
@@ -250,47 +206,64 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-
   content: {
-    padding: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
     paddingBottom: Spacing.xl,
   },
 
+  // EN-TÊTE
+
+  entete: {
+    alignItems: "center",
+    marginBottom: Spacing.md,
+  },
 
   boutonRetour: {
-    marginLeft: Spacing.md,
-    marginTop: Spacing.sm,
+    position: "absolute",
+    top: 0,
+    left: 0,
 
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
+
+    borderRadius: 24,
 
     alignItems: "center",
     justifyContent: "center",
 
-    borderRadius: 22,
-  },
+    backgroundColor: Colors.card,
 
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 7,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 2,
+    zIndex: 5,
+  },
 
   titre: {
-    marginTop: Spacing.md,
-
     fontSize: 30,
     fontWeight: "700",
-
     color: Colors.text,
+    textAlign: "center",
+    marginTop: Spacing.md,
   },
 
-
   sousTitre: {
-    marginTop: Spacing.xs,
+    marginTop: Spacing.sm,
     marginBottom: Spacing.xl,
 
     fontSize: 16,
     lineHeight: 23,
 
     color: Colors.subtitle,
+    textAlign: "center",
   },
-
 
   /* ============================= */
   /* FIFI — BAS DE PAGE */
@@ -310,7 +283,6 @@ const styles = StyleSheet.create({
   /* ============================= */
   /* CARTES */
   /* ============================= */
-
   carte: {
     flexDirection: "row",
     alignItems: "center",
@@ -325,38 +297,26 @@ const styles = StyleSheet.create({
     ...Shadow.card,
   },
 
-
-  /* ============================= */
-  /* ILLUSTRATIONS */
-  /* ============================= */
-
   illustration: {
     width: 78,
     height: 78,
-
     marginRight: Spacing.md,
   },
-
 
   texteCarte: {
     flex: 1,
   },
 
-
   titreCarte: {
     fontSize: 18,
     fontWeight: "700",
-
     color: Colors.text,
   },
 
-
   description: {
     marginTop: 4,
-
     fontSize: 14,
     lineHeight: 20,
-
     color: Colors.subtitle,
   },
 

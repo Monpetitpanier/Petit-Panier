@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Image,
@@ -9,7 +10,6 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import CarteSection from "../../components/CarteSection";
@@ -25,15 +25,12 @@ export default function BienEtre() {
 
   return (
     <SafeAreaView style={styles.container}>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.contenu}
       >
 
-        {/* ================================= */}
         {/* EN-TÊTE */}
-        {/* ================================= */}
 
         <View style={styles.entete}>
 
@@ -43,31 +40,25 @@ export default function BienEtre() {
             activeOpacity={0.8}
           >
             <MaterialCommunityIcons
-              name="arrow-left"
-              size={28}
-              color={Colors.text}
+              name="chevron-left"
+              size={25}
+              color={Colors.subtitle}
             />
           </TouchableOpacity>
 
-          <View style={styles.titreZone}>
+          <Text style={styles.titre}>
+            Bien-être
+          </Text>
 
-            <Text style={styles.titre}>
-              Bien-être
-            </Text>
-
-            <Text style={styles.sousTitre}>
-              Quelques petits moments{"\n"}
-              pour prendre soin de toi.
-            </Text>
-
-          </View>
+          <Text style={styles.sousTitre}>
+            Quelques petits moments{"\n"}
+            pour prendre soin de toi.
+          </Text>
 
         </View>
 
 
-        {/* ================================= */}
         {/* CARTES */}
-        {/* ================================= */}
 
         <View style={styles.listeCartes}>
 
@@ -84,7 +75,6 @@ export default function BienEtre() {
             }
           />
 
-
           <CarteSection
             iconeNom="heart-outline"
             titre="Gratitude"
@@ -97,7 +87,6 @@ export default function BienEtre() {
               navigation.navigate("Gratitude")
             }
           />
-
 
           {contenuBienEtre === "pensees" && (
             <CarteSection
@@ -113,7 +102,6 @@ export default function BienEtre() {
               }
             />
           )}
-
 
           {contenuBienEtre === "paroles" && (
             <CarteSection
@@ -133,12 +121,9 @@ export default function BienEtre() {
         </View>
 
 
-        {/* ================================= */}
         {/* FIFI — BAS DE PAGE */}
-        {/* ================================= */}
 
         <View style={styles.zoneFifi}>
-
           <Image
             source={require(
               "../../assets/illustrations/bienetre/Fifi_accueil_bienetre.png"
@@ -146,11 +131,9 @@ export default function BienEtre() {
             style={styles.imageFifi}
             resizeMode="contain"
           />
-
         </View>
 
       </ScrollView>
-
     </SafeAreaView>
   );
 }
@@ -163,89 +146,79 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
 
-
   contenu: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.lg,
     paddingBottom: 25,
   },
 
-
-  // =====================================
   // EN-TÊTE
-  // =====================================
 
   entete: {
-    marginBottom: Spacing.lg,
+    alignItems: "center",
+    marginBottom: Spacing.md,
   },
 
-
   boutonRetour: {
-    alignSelf: "flex-start",
+    position: "absolute",
+    top: 0,
+    left: 0,
 
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
 
-    borderRadius: 22,
+    borderRadius: 24,
 
     alignItems: "center",
     justifyContent: "center",
 
-    marginBottom: Spacing.md,
+    backgroundColor: Colors.card,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 7,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    elevation: 2,
+    zIndex: 5,
   },
-
-
-  titreZone: {
-    alignItems: "center",
-  },
-
 
   titre: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "700",
     color: Colors.text,
-
     textAlign: "center",
+    marginTop: Spacing.md,
   },
-
 
   sousTitre: {
-    marginTop: Spacing.xs,
-
+    marginTop: Spacing.sm,
     fontSize: 16,
     lineHeight: 23,
-
     color: Colors.subtitle,
-
     textAlign: "center",
   },
 
-
-  // =====================================
   // CARTES
-  // =====================================
 
   listeCartes: {
     width: "100%",
   },
 
-
-  // =====================================
   // FIFI
-  // =====================================
 
   zoneFifi: {
     width: "100%",
-
     marginTop: Spacing.sm,
-
     alignItems: "center",
   },
 
-
-imageFifi: {
-  width: 385,
-  height: 200,
-},
+  imageFifi: {
+    width: 385,
+    height: 200,
+  },
 
 });
