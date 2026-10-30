@@ -146,6 +146,15 @@ export default function Maison() {
           </TouchableOpacity>
         ))}
       </View>
+
+      {/* FIFI — BAS DE PAGE */}
+      <View style={styles.zoneFifi}>
+        <Image
+          source={require("../assets/illustrations/maison/fifi_porteentree.png")}
+          style={styles.imageFifiBas}
+          resizeMode="contain"
+        />
+      </View>
     </ScrollView>
   );
 }
@@ -294,6 +303,21 @@ const styles = StyleSheet.create({
 
     bottom: -25,
     alignSelf: "center",
+  },
+
+  // =====================================
+  // FIFI — BAS DE PAGE
+  // =====================================
+
+  zoneFifi: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: Spacing.md,
+  },
+
+  imageFifiBas: {
+    width: "100%",
+    height: 210,
   },
 
   // =====================================
