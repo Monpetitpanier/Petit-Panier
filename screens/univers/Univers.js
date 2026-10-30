@@ -207,11 +207,6 @@ export default function Univers() {
           <Text style={styles.message}>
             Crée ton premier objectif et avance à ton rythme.
           </Text>
-          <Image
-            source={require("../../assets/illustrations/univers/fifi_basdepage.png")}
-            style={styles.imageFifiBas}
-            resizeMode="contain"
-          />
         </View>
       ) : (
         <FlatList
